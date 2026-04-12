@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.22" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="8.0.22" />
+    <PackageReference Include="Polly" Version="8.6.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DomainQueryEngine.Application\DomainQueryEngine.Application.csproj" />
+    <ProjectReference Include="..\DomainQueryEngine.Core\DomainQueryEngine.Core.csproj" />
+    <ProjectReference Include="..\DomainQueryEngine.Infrastructure\DomainQueryEngine.Infrastructure.csproj" />
+    <ProjectReference Include="..\DomainQueryEngine.PostgreSQL\DomainQueryEngine.PostgreSQL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\source\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\source\query_engine_horizontal_logo.png" />
+    <None Include="wwwroot\source\query_engine_logo.png" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,443 @@
+﻿/* GLOBAL BACKGROUND */
+.page-bg {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #eaf0ff, #cfdcff);
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+
+/* FIXED HEADER */
+.top-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 75px;
+    background: rgba(234, 240, 255, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25%;
+    z-index: 50;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .logo img {
+        width: 130px;
+    }
+
+
+/* MAIN CONTENT OFFSET */
+.main-container {
+    margin-top: 110px;
+    padding-bottom: 120px;
+}
+
+
+/* HERO */
+.hero {
+    text-align: center;
+    padding-top: 140px;
+}
+
+    .hero h1 {
+        font-size: 30px;
+        font-weight: bold;
+    }
+
+    .hero p {
+        font-size: 15px;
+        color: #555;
+    }
+
+
+/* SEARCH BOX */
+.search-box {
+    margin: 40px auto;
+    width: 600px;
+    height: 52px;
+    background: white;
+    border-radius: 40px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 2px solid transparent;
+    transition: border .2s;
+}
+
+    .search-box.input-error {
+        border-color: indianred;
+    }
+
+    .search-box input {
+        flex: 1;
+        border: none;
+        padding-left: 20px;
+        font-size: 16px;
+        outline: none;
+    }
+
+    .search-box button {
+        width: 145px;
+        border: none;
+        background: #5a7de6;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+
+/* FIXED FOOTER */
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    background: rgba(207, 220, 255, 0.85);
+    backdrop-filter: blur(5px);
+    text-align: center;
+    padding-top: 15px;
+    font-size: 14px;
+    z-index: 50;
+}
+
+
+/* RESULTS */
+.result-list {
+    padding-top: 10px;
+}
+
+.result-title {
+    width: 35%;
+    margin: 20px auto;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14pt;
+}
+
+.result-card {
+    width: 35%;
+    margin: 20px auto;
+    padding: 22px;
+    background: white;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.result-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.provider-logo {
+    width: 55px;
+}
+
+.result-right {
+    display: flex;
+    align-items: center;
+}
+
+.action-btn {
+    background: #5a7de6;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 13px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.status-ok {
+    color: green;
+    font-weight: bold;
+}
+
+.status-bad {
+    color: red;
+    font-weight: bold;
+}
+
+.status-transfer {
+    color: #0a67c7;
+    font-weight: bold;
+}
+
+
+/* LOADER (ŞEFFAF ARKA PLAN + DÖNEN CIRCLE) */
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.loader-box {
+    background: white;
+    padding: 20px 35px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.2);
+}
+
+.spinner {
+    width: 28px;
+    height: 28px;
+    border: 4px solid #ddd;
+    border-top-color: #5a7de6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* WHY SECTION */
+.why-section {
+    width: 100%;
+    margin-top: 60px;
+    display: flex;
+    justify-content: center;
+}
+
+.why-container {
+    width: 85%;
+    max-width: 1000px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.why-box {
+    flex: 1 1 calc(33.33% - 20px);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 25px 20px;
+    border-radius: 14px;
+    text-align: center;
+    backdrop-filter: blur(2px);
+    min-width: 260px;
+    color: #222; /* Yazı rengi koyu */
+    transition: 0.25s ease;
+}
+
+    .why-box:hover {
+        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+.why-icon {
+    font-size: 38px;
+    margin-bottom: 15px;
+    color: #0d6efd;
+}
+
+.why-box h3 {
+    margin-bottom: 12px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.why-box p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333; /* Metin daha koyu */
+}
+
+
+/* ===========================================
+   RESPONSIVE DESIGN
+   =========================================== */
+
+/* Tablet için iyileştirme (max 992px) */
+@media (max-width: 992px) {
+
+    .top-header {
+        padding: 0 15%;
+        height: 65px;
+    }
+
+    .logo img {
+        width: 110px;
+    }
+
+    .hero {
+        padding-top: 110px;
+    }
+
+    .search-box {
+        width: 80%;
+        height: 48px;
+    }
+
+    .result-card {
+        width: 60%;
+    }
+
+    .why-container {
+        width: 90%;
+        justify-content: center;
+    }
+
+    .why-box {
+        flex: 1 1 calc(50% - 20px);
+        min-width: 240px;
+    }
+}
+
+
+/* Mobil tasarım (max 768px) */
+@media (max-width: 768px) {
+
+    /* HEADER */
+    .top-header {
+        padding: 0 10%;
+        height: 60px;
+    }
+
+    .logo img {
+        width: 100px;
+    }
+
+    /* MAIN OFFSET */
+    .main-container {
+        margin-top: 95px;
+    }
+
+    /* HERO */
+    .hero h1 {
+        font-size: 22px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+
+    /* SEARCH BOX */
+    .search-box {
+        width: 90%;
+        height: 46px;
+    }
+
+        .search-box button {
+            width: 110px;
+            font-size: 14px;
+            padding: 0;
+        }
+
+    /* RESULT CARD */
+    .result-card {
+        width: 85%;
+        padding: 18px;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .result-left {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .provider-logo {
+        width: 50px;
+    }
+
+    .result-right {
+        justify-content: center;
+    }
+
+    .action-btn {
+        padding: 10px 20px;
+    }
+
+    /* WHY SECTION */
+    .why-container {
+        width: 95%;
+    }
+
+    .why-box {
+        flex: 1 1 100%;
+        min-width: unset;
+        padding: 20px 15px;
+    }
+}
+
+
+/* Küçük mobil (max 480px) */
+@media (max-width: 480px) {
+
+    .top-header {
+        padding: 0 6%;
+        height: 55px;
+    }
+
+    .logo img {
+        width: 90px;
+    }
+
+    .hero {
+        padding-top: 90px;
+    }
+
+        .hero h1 {
+            font-size: 20px;
+        }
+
+    /* SEARCH BOX */
+    .search-box {
+        width: 92%;
+        height: 44px;
+    }
+
+        .search-box input {
+            font-size: 14px;
+            padding-left: 14px;
+        }
+
+        .search-box button {
+            width: 95px;
+            font-size: 13px;
+        }
+
+    /* RESULT CARD */
+    .result-card {
+        width: 92%;
+    }
+
+    /* WHY BOX */
+    .why-box h3 {
+        font-size: 18px;
+    }
+
+    .why-box p {
+        font-size: 13px;
+    }
+}

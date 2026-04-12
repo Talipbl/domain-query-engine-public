@@ -1,0 +1,96 @@
+﻿@model List<DomainQueryEngine.Core.SearchResult>
+@using System.Linq
+@using DomainQueryEngine.Core.Utilities
+
+@if (Model == null || !Model.Any())
+{
+    <div class="result-placeholder">Henüz bir arama yapılmadı.</div>
+}
+else
+{
+    <div class="result-list">
+        @{
+            var domainName = Model.Where(d => d.Domain != null)?.FirstOrDefault()?.Domain?.DomainName;
+        }
+        <div class="result-title">@domainName arama sonuçları</div>
+
+        @* @if (Model.Any(x => !x.Domain.IsAvailable))
+        {
+            <div class="result-card">
+                <div class="result-left">
+                    <div class="provider-info">
+                        <div class="provider-name">Sorguladığınız alan adı müsait görünmüyor</div>
+                    </div>
+                </div>
+
+                <div class="result-right">
+                    <a href="/" target="_blank" class="action-btn">Whois</a>
+                </div>
+            </div>
+        } *@
+
+        @foreach (var item in Model)
+        {
+            if (item.Domain.IsSuccess)
+            {
+                var prices = item.Domain?.Prices ?? new List<DomainQueryEngine.Core.DomainPrice>();
+                var minPriceEntry = prices.OrderBy(p => p.Period).FirstOrDefault();
+                var visitLink = item.ProviderInfo?.VisitLink;
+
+                <div class="result-card">
+                    <div class="result-left">
+                        <img src="@item.ProviderInfo?.LogoUrl" class="provider-logo" />
+
+                        <div class="provider-info">
+                            <div class="provider-name">@item.ProviderInfo?.Name</div>
+
+                            @if (item.Domain.IsAvailable)
+                            {
+                                <div class="status-ok">Müsait</div>
+                            }
+                            else if (item.Domain.IsTransferable)
+                            {
+                                <div class="status-transfer">Transfer Edilebilir</div>
+                            }
+                            else
+                            {
+                                if (!item.Domain.IsValidDomain)
+                                {
+                                    <div class="status-bad">Geçersiz Domain</div>
+                                }
+                                else
+                                {
+                                    <div class="status-bad">Müsait Değil</div>
+                                }
+                            }
+
+                            @if (item.Domain.IsAvailable)
+                            {
+                                if (minPriceEntry != null && minPriceEntry.RegistrationPrice != null)
+                                {
+                                    <div class="price"><b>@(PriceHelper.GetCurrencySymbol(minPriceEntry.RegistrationPrice.Currency))</b> @minPriceEntry.RegistrationPrice.Amount / @minPriceEntry.Period yıl</div>
+                                }
+                            }
+                            else if (!item.Domain.IsAvailable && item.Domain.IsTransferable)
+                            {
+                                if (minPriceEntry != null && minPriceEntry.TransferPrice != null)
+                                {
+                                    <div class="price">@(PriceHelper.GetCurrencySymbol(minPriceEntry.TransferPrice.Currency)) @minPriceEntry.TransferPrice.Amount / @minPriceEntry.Period month</div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(visitLink))
+                    {
+                        var btnLabel = item.Domain.IsAvailable ? "Satın Al" : "Ziyaret Et";
+
+                        <div class="result-right">
+                            <a href="@visitLink" target="_blank" class="action-btn">@btnLabel</a>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+}

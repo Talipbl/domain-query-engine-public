@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "En Ucuz Domain Sorgula";
+}
+
+<link rel="stylesheet" href="~/css/main.css" />
+
+<section class="hero">
+    <h1>En Ucuz Domain Sorgula</h1>
+    <p>Aradığın alan adı en uygun fiyata burada</p>
+
+    <form id="domainSearchForm">
+        <div class="search-box" id="searchBox">
+            <input id="domainInput" name="domain" type="text" placeholder="ornek.com" />
+            <button type="submit">SORGULA</button>
+        </div>
+    </form>
+</section>
+
+<div id="loader" class="loader hidden">
+    <div class="loader-box">
+        <div class="spinner"></div>
+        <span>Sorgulanıyor...</span>
+    </div>
+</div>
+
+<div id="searchResults"></div>
+
+<section class="why-section">
+    <div class="why-container">
+
+        <div class="why-box">
+            <div class="why-icon">
+                <i class="bi bi-speedometer2"></i>
+            </div>
+            <h3>Hızlı Sorgulama Motoru</h3>
+            <p>Sorgular global domain sağlayıcılarından yüksek hızda çekilir. Sistem, yoğun trafik altında bile gecikme olmadan çalışır.</p>
+        </div>
+
+        <div class="why-box">
+            <div class="why-icon">
+                <i class="bi bi-clipboard-check-fill"></i>
+            </div>
+            <h3>Akıllı TLD Tanılama</h3>
+            <p>Girdiğin alan adını otomatik analiz eder. Eksik, hatalı veya farklı TLD formatlarını doğru şekilde ayrıştırır.</p>
+        </div>
+
+        <div class="why-box">
+            <div class="why-icon">
+                <i class="bi bi-broadcast-pin"></i>
+            </div>
+            <h3>Anlık Veri Güncellemesi</h3>
+            <p>Sonuçlar gerçek zamanlı olarak sağlanır. Anlık durum değişikliklerini (boş/dolu) anında algılar ve ekrana yansıtır.</p>
+        </div>
+
+    </div>
+</section>
+
+
+
+@section Scripts {
+    <script>
+        const form = document.getElementById("domainSearchForm");
+        const input = document.getElementById("domainInput");
+        const searchBox = document.getElementById("searchBox");
+        const loader = document.getElementById("loader");
+        const searchResults = document.getElementById("searchResults");
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const domain = input.value.trim();
+
+            if (!domain) {
+                searchBox.classList.add("input-error");
+                return;
+            }
+
+            searchBox.classList.remove("input-error");
+
+            loader.classList.remove("hidden");
+
+            fetch(`api/lookup/${encodeURIComponent(domain)}`, {
+                method: "GET"
+            })
+                .then(r => r.text())
+                .then(html => {
+                    searchResults.innerHTML = html;
+                })
+                .finally(() => {
+                    loader.classList.add("hidden");
+                    form.scrollIntoView();
+                });
+        });
+    </script>
+}

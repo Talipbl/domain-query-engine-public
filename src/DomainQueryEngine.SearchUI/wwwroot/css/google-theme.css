@@ -1,0 +1,287 @@
+/* Minimal Google-like theme for demo purposes */
+:root{
+    --bg:#ffffff;
+    --muted:#70757a;
+    --input-border:#dfe1e5;
+    --accent:#1a73e8;
+}
+
+html,body{
+    height:100%;
+    margin:0;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background:var(--bg);
+    color:#202124;
+}
+
+.g-page{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.g-header{
+    margin-top:80px;
+    text-align:center;
+}
+
+.g-logo{
+    font-weight:700;
+    font-size:64px;
+    display:inline-flex;
+    gap:2px;
+    align-items:center;
+}
+
+.g-letter{
+    display:inline-block;
+    font-size:64px;
+    line-height:1;
+    transform: translateY(2px);
+}
+
+.g-blue{ color:#4285F4; }
+.g-red{ color:#EA4335; }
+.g-yellow{ color:#FBBC05; }
+.g-green{ color:#34A853; }
+
+.g-main{
+    width:100%;
+    max-width:640px;
+    margin-top:36px;
+    padding:0 16px;
+    box-sizing:border-box;
+}
+
+.g-search-form{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    align-items:center;
+    width:100%;
+}
+
+.g-input{
+    flex:1 1 auto;
+    height:44px;
+    padding:10px 16px;
+    font-size:16px;
+    border:1px solid var(--input-border);
+    border-radius:24px;
+    box-shadow:0 1px 6px rgba(32,33,36,0.08);
+    outline:none;
+    transition:box-shadow .15s ease, border-color .15s ease;
+}
+
+.g-input:focus{
+    box-shadow:0 4px 16px rgba(66,133,244,0.18);
+    border-color: var(--accent);
+}
+
+.g-button{
+    background-color:var(--accent);
+    color:#fff;
+    border:none;
+    height:44px;
+    padding:0 18px;
+    border-radius:20px;
+    cursor:pointer;
+    font-weight:600;
+    box-shadow:0 1px 3px rgba(60,64,67,0.3);
+}
+
+.g-button:active{ transform:translateY(1px); }
+
+.g-results{
+    margin-top:28px;
+    background:transparent;
+    width:100%;
+    min-height:80px;
+    padding:8px;
+}
+
+.g-empty{
+    color:var(--muted);
+    text-align:center;
+    margin:12px 0;
+}
+
+.g-results-title{
+    font-size:16px;
+    color:var(--muted);
+    margin:6px 0 12px;
+    font-weight:500;
+}
+
+.g-results-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    counter-reset:res;
+}
+
+.g-result-item{
+    padding:12px 0;
+    border-bottom:1px solid #f1f3f4;
+}
+
+.g-result-link{
+    color:var(--accent);
+    text-decoration:none;
+    font-size:14px;
+}
+
+.g-result-url{
+    display:block;
+    font-size:12px;
+    color:#006621;
+    margin-bottom:4px;
+}
+
+.g-result-title{
+    color:#1a0dab;
+    font-size:16px;
+    font-weight:500;
+}
+
+/* Footer */
+.g-footer{
+    margin-top:auto;
+    padding:28px 0;
+    color:var(--muted);
+    font-size:13px;
+}
+
+/* Card styles for search results (Bootstrap-like) */
+.g-results-grid{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+/* Card */
+.g-result-card{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    padding:14px;
+    border:1px solid #e6e6e6;
+    border-radius:8px;
+    background:#fff;
+    box-shadow:0 1px 4px rgba(32,33,36,0.06);
+}
+
+/* Left: provider logo + name */
+.g-card-left{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:110px;
+    min-width:110px;
+    gap:8px;
+    text-align:center;
+}
+
+.g-provider-logo{
+    width:72px;
+    height:72px;
+    object-fit:contain;
+    border-radius:6px;
+    background:transparent;
+    box-shadow:0 1px 2px rgba(60,64,67,0.08);
+}
+
+.g-provider-name{
+    font-size:13px;
+    color:#3c4043;
+    font-weight:600;
+    word-break:break-word;
+}
+
+/* Body: domain info and prices */
+.g-card-body{
+    flex:1 1 auto;
+    min-width:0;
+}
+
+.g-domain-name{
+    margin:0;
+    font-size:16px;
+    color:#1a0dab;
+    font-weight:600;
+}
+
+.g-domain-flags{
+    margin-top:6px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+.g-badge{
+    font-size:12px;
+    padding:4px 8px;
+    border-radius:999px;
+    color:#fff;
+}
+
+.g-available{ background:#1a73e8; }
+.g-unavailable{ background:#6c6c6c; }
+.g-premium{ background:#e37400; }
+.g-invalid{ background:#d93025; }
+
+/* Price row */
+.g-price-row{
+    margin-top:10px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    font-size:14px;
+    color:#202124;
+}
+
+.g-price-label{ color:#5f6368; font-weight:600; }
+.g-price-value{ color:#0b5ed7; font-weight:700; }
+.g-price-period{ color:#5f6368; font-size:13px; }
+
+/* Right: action button */
+.g-card-right{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    min-width:110px;
+}
+
+.g-visit-btn{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:6px;
+    background:#1a73e8;
+    color:#fff;
+    text-decoration:none;
+    font-weight:600;
+    box-shadow:0 1px 3px rgba(60,64,67,0.15);
+}
+
+.g-visit-btn:active{ transform:translateY(1px); }
+.g-visit-btn:hover{ filter:brightness(.95); }
+
+/* Responsive adjustments */
+@media (max-width:700px){
+    .g-result-card{
+        flex-direction:column;
+        align-items:stretch;
+    }
+    .g-card-left, .g-card-right{
+        width:100%;
+        min-width:0;
+        flex-direction:row;
+        justify-content:space-between;
+        padding:0 4px;
+    }
+    .g-card-right{
+        margin-top:8px;
+    }
+}
