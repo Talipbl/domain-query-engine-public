@@ -20,6 +20,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
     {
         ILookupService _lookupService;
         IDomainService _domainService;
+        IProviderService _providerService;
         IHttpContextAccessor _httpContextAccessor;
         private readonly IRazorViewEngine _viewEngine;
         private readonly ITempDataProvider _tempDataProvider;
@@ -27,10 +28,11 @@ namespace DomainQueryEngine.SearchUI.Controllers
         private string AccessToken { get; set; }
         public UserAgentModel UserAgent { get; private set; }
 
-        public LookupController(ILookupService lookupService, IRazorViewEngine viewEngine, ITempDataProvider tempDataProvider, IHttpContextAccessor httpContextAccessor, IDomainService domainService)
+        public LookupController(ILookupService lookupService, IRazorViewEngine viewEngine, ITempDataProvider tempDataProvider, IHttpContextAccessor httpContextAccessor, IDomainService domainService, IProviderService providerService)
         {
             _lookupService = lookupService;
             _domainService = domainService;
+            _providerService = providerService;
             _viewEngine = viewEngine;
             _tempDataProvider = tempDataProvider;
             _httpContextAccessor = httpContextAccessor;
@@ -40,12 +42,12 @@ namespace DomainQueryEngine.SearchUI.Controllers
         }
 
         [HttpGet("{domain}")]
-        [ResponseCache(VaryByHeader = "User-Agent", Duration = 30)]
+        [ResponseCache(VaryByHeader = "User-Agent", Duration = 120)]
         public async Task<IActionResult> DomainLookup(string domain)
         {
-            Domain domainDto = await SaveLookupRequest(domain);
-
             string validatedDomain = DomainHelper.ValidateAndNormalizeDomain(domain);
+
+            Domain domainDto = await SaveLookupRequest(validatedDomain);
 
             var results = await _lookupService.LookupDomainAsync(validatedDomain);
 
@@ -59,11 +61,15 @@ namespace DomainQueryEngine.SearchUI.Controllers
         {
             foreach (var r in results)
             {
+                ProviderInfo providerInfo = r.ProviderInfo;
+
+                var provider = await _providerService.GetOrCreateProviderAsync(providerInfo);
+
                 var minPriceEntry = r.Domain?.Prices?.OrderBy(p => p.Period).FirstOrDefault();
                 var lookupResult = new DomainLookupResult
                 {
                     DomainId = domainDto.Id,
-                    ProviderId = Guid.Parse("9b9f7a5c-757e-4777-b1a3-c67e893da188"),
+                    ProviderId = provider.Id,
                     IsSuccess = r.Domain.IsSuccess,
                     IsAvailable = r.Domain.IsAvailable,
                     ResponseTimeMs = 500,

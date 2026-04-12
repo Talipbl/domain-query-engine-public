@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 
 namespace DomainQueryEngine.Application.Lookup
 {
-
     public class LookupService : ILookupService
     {
         private readonly IEnumerable<IDomainLookupStrategy> _strategies;

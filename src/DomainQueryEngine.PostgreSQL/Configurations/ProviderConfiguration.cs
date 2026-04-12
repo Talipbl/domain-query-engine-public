@@ -1,6 +1,7 @@
 ﻿using DomainQueryEngine.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace DomainQueryEngine.PostgreSQL
 {
@@ -43,6 +44,9 @@ namespace DomainQueryEngine.PostgreSQL
                 .WithOne(v => v.Provider)
                 .HasForeignKey(v => v.ProviderId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(p => p.Name)
+                .IsUnique();
         }
     }
 }

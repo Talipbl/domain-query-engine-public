@@ -27,6 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<ILookupService, LookupService>();
 builder.Services.AddScoped<IDomainService, DomainService>();
+builder.Services.AddScoped<IProviderService, ProviderService>();
 builder.Services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
 builder.Services.AddSingleton<IAsyncPolicy<HttpResponseMessage>>(sp =>
 {
