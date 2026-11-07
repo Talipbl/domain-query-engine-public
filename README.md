@@ -97,7 +97,3 @@ Current registrations include (names inferred from strategy classes):
 - The web host configures resiliency with Polly retry (2 retries, exponential backoff).
 - Session is enabled with a 30-minute idle timeout.
 - Postgres repositories are wired in `src/DomainQueryEngine.PostgreSQL/ServiceRegistrations/PostgreSQLServiceRegistration.cs`.
-
-## License
-
-Add a license file (for example `LICENSE`) and update this section accordingly.
