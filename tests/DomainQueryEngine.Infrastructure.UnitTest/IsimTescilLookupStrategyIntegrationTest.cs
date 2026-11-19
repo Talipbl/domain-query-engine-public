@@ -9,7 +9,7 @@ namespace DomainQueryEngine.Natro
         public IsimTescilLookupStrategyIntegrationTest()
         {
             _parser = new IsimTescilStrategyParser();
-            _lookupStrategy = new IsimTescilLookupStrategy(_parser);
+            _lookupStrategy = new IsimTescilLookupStrategy(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]

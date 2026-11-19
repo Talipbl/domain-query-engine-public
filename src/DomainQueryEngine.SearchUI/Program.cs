@@ -21,8 +21,16 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' is not configured. " +
+        "Set it with 'dotnet user-secrets' (development) or the 'ConnectionStrings__DefaultConnection' environment variable.");
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<ILookupService, LookupService>();

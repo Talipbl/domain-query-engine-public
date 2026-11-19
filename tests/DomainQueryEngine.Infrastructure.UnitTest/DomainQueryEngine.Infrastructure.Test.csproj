@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <Using Include="DomainQueryEngine.Infrastructure.Test" />
   </ItemGroup>
 
 </Project>

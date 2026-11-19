@@ -7,7 +7,7 @@ namespace DomainQueryEngine.YildizBilisim
         public YildizBilisimLookupStrategyIntegrationTest()
         {
             _parser = new YildizBilisimStrategyParser();
-            _lookupStrategy = new YildizBilisimLookupStrategy(_parser);
+            _lookupStrategy = new YildizBilisimLookupStrategy(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]

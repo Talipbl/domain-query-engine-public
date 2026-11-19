@@ -10,7 +10,7 @@ namespace DomainQueryEngine.Infrastructure.Test
         public YoncuBilisimLookupStrategyIntegrationTest()
         {
             _parser = new YoncuBilisimStrategyParser();
-            _lookupStrategy = new YoncuBilisimLookupStrategy(_parser); 
+            _lookupStrategy = new YoncuBilisimLookupStrategy(_parser, TestHttpClientFactory.Create()); 
         }
 
         [Fact]

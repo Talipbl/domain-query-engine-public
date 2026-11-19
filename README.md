@@ -38,17 +38,29 @@ Domain Query Engine is a .NET 8 web application and supporting libraries for que
 
 ### Configure database connection
 
-Update the connection string in `src/DomainQueryEngine.SearchUI/appsettings.json`:
+Credentials are **not** stored in the repository. `appsettings.json` ships with an empty `ConnectionStrings:DefaultConnection`, and the app refuses to start until one is provided.
 
-- `ConnectionStrings:DefaultConnection`: `Host=localhost;Database=dqe_db;Username=postgres;Password=...`
+For local development, use [User Secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets):
+
+```powershell
+cd .\src\DomainQueryEngine.SearchUI
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=dqe_db;Username=postgres;Password=<your-password>"
+```
+
+For containers / hosting (e.g. Render), set the environment variable instead:
+
+- `ConnectionStrings__DefaultConnection` = `Host=...;Database=...;Username=...;Password=...`
 
 ### Apply EF Core migrations
 
-From the repository root (or from Visual Studio Package Manager Console), run:
+The design-time `AppDbContextFactory` reads the connection string from the `ConnectionStrings__DefaultConnection` environment variable (User Secrets are not used by `dotnet ef` here). From the repository root, run:
 
 ```powershell
 # from repo root
 cd .\src\DomainQueryEngine.SearchUI
+
+# point EF Core at your database for this shell session
+$env:ConnectionStrings__DefaultConnection = "Host=localhost;Port=5432;Database=dqe_db;Username=postgres;Password=<your-password>"
 
 # create the database + apply migrations
 # (adjust paths if you run from a different working directory)
