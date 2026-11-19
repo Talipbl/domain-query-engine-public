@@ -3,8 +3,8 @@ namespace DomainQueryEngine.Infrastructure.Test.Fixtures
     /// <summary>
     /// Provider responses used by the parser unit tests.
     /// <para>
-    /// <see cref="WhmcsAvailable"/> and <see cref="YoncuAvailable"/> are real responses that were
-    /// captured earlier (they come from the original tests). The others are minimal samples written
+    /// <see cref="WhmcsAvailable"/> is a real response that was
+    /// captured earlier (it comes from the original tests). The others are minimal samples written
     /// to match the structure each parser reads; replace them with real captures when convenient.
     /// </para>
     /// </summary>
@@ -64,9 +64,5 @@ namespace DomainQueryEngine.Infrastructure.Test.Fixtures
             </table>
             """;
 
-        /// <summary>Yoncu "DomSorgula.php" response for an available domain.</summary>
-        public const string YoncuAvailable = "<code id=\"ekle_salihotoyikama2.com\">salihotoyikama2.com</code><strong>Boş</strong><a class=\"full\"><h5><select id=\"hssalihotoyikama2.com\">\t\t\t\t\t<option value=\"1\">&nbsp;&nbsp;1 Yil&nbsp;&nbsp;/&nbsp;&nbsp;580&nbsp;₺</option>\r\n\t\t\t\t\t<option value=\"2\">&nbsp;&nbsp;2 Yil&nbsp;&nbsp;/&nbsp;&nbsp;1260&nbsp;₺</option>\r\n\t\t\t\t\t<option value=\"3\">&nbsp;&nbsp;3 Yil&nbsp;&nbsp;/&nbsp;&nbsp;1940&nbsp;₺</option>\r\n\t\t\t\t\t<option value=\"4\">&nbsp;&nbsp;4 Yil&nbsp;&nbsp;/&nbsp;&nbsp;2620&nbsp;₺</option>\r\n\t\t\t\t\t<option value=\"5\">&nbsp;&nbsp;5 Yil&nbsp;&nbsp;/&nbsp;&nbsp;3300&nbsp;₺</option>\r\n\t\t\t\t\t<option value=\"6\">&nbsp;&nbsp;6 Yil&nbsp;&nbsp;/&nbsp;&nbsp;3980&nbsp;₺</option>\r\n\t\t\t\t\t<option value=\"7\">&nbsp;&nbsp;7 Yil&nbsp;&nbsp;/&nbsp;&nbsp;4660&nbsp;₺</option>\r\n\t\t\t\t\t<option value=\"8\">&nbsp;&nbsp;8 Yil&nbsp;&nbsp;/&nbsp;&nbsp;5340&nbsp;₺</option>\r\n\t\t\t\t\t<option value=\"9\">&nbsp;&nbsp;9 Yil&nbsp;&nbsp;/&nbsp;&nbsp;6020&nbsp;₺</option>\r\n\t\t\t\t\t<option value=\"10\">10 Yil&nbsp;&nbsp;/&nbsp;&nbsp;6700&nbsp;₺</option>\r\n</select><input type=\"hidden\" value=\"1\"/></h5><h4 style=\"cursor:pointer;\" onclick=\"sepetime_ekle('ekle_salihotoyikama2.com','12',encodeURIComponent('alan_adi=salihotoyikama2.com&alan_adi_durumu=1&uzanti_id=49&hizmet_suresi='+document.getElementById('hssalihotoyikama2.com').value));\">Sepete Ekle</h4></a>";
-
-        public const string YoncuTaken = "<code id=\"ekle_google.com\">google.com</code><strong>Dolu</strong>";
     }
 }

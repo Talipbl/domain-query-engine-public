@@ -154,7 +154,7 @@ Strategies are registered in `src/DomainQueryEngine.Infrastructure/ServiceRegist
 | Turhost | `TurhostLookupStrategy` | `GET panel.turhost.com/api/v1/domain/query` (JSONP) | Active |
 | Turkticaret.net | `TurkticaretLookupStrategy` | `POST smartquery_v2.php` (`trquery` for .tr) | Active |
 | Hosting.com.tr | `HostingComTrLookupStrategy` | `POST /web/domain/querynew/lookup` (session + CSRF token) | Active |
-| Yöncü Bilişim | `YoncuBilisimLookupStrategy` | HTML endpoint | Registered, currently returns 404 |
+| Yöncü Bilişim | `YoncuBilisimLookupStrategy` | JSON API (`/API/Domain/Check`, cftoken) | Registered |
 | İsim Kayıt | `IsimKayitLookupStrategy` | WHMCS domain check | Registered, currently returns 403 |
 | İsim Tescil | `IsimTescilLookupStrategy` | HTML form post | Not registered |
 | Güzel Hosting | `GuzelHostingLookupStrategy` | WHMCS `checkAvailabilityOne` | Not registered: Cloudflare answers server-side requests with a bot challenge |
@@ -166,7 +166,7 @@ We do not work around bot protection or captchas. When Turkticaret.net asks for 
 Unit tests run offline against provider responses and fake strategies. The only network access they need is a one-time download of the public suffix list.
 
 - `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/Responses/`: real responses captured from Atak Domain, Turhost, Turkticaret.net, Hosting.com.tr and Güzel Hosting
-- `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/SampleResponses.cs`: responses for the older providers (Yıldız and Yöncü are real captures; the others were written to match the parsers)
+- `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/SampleResponses.cs`: responses for the older providers (Yıldız is a real capture; the others were written to match the parsers)
 - `tests/DomainQueryEngine.SearchUI.Test`: page tests that start the whole app with `WebApplicationFactory`. The database, provider sites and TCMB are replaced by fakes, so they need neither PostgreSQL nor network access
 
 ```powershell

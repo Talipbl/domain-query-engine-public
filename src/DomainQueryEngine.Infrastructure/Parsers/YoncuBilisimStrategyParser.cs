@@ -1,106 +1,83 @@
 ﻿using DomainQueryEngine.Core;
 using DomainQueryEngine.Core.Utilities;
 using DomainQueryEngine.Infrastructure.Parsers;
-using HtmlAgilityPack;
+using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace DomainQueryEngine.YoncuBilisim
 {
     public class YoncuBilisimStrategyParser : StrategyParserBase
     {
-        public override List<DomainResult> ParseDomainResult(string htmlResponse)
+        private const int StatusAvailable = 1;
+        private const int StatusForbidden = 9;
+
+        /// <summary>Current time; replaced in tests to check campaign expiry.</summary>
+        public Func<DateTimeOffset> Now { get; init; } = () => DateTimeOffset.UtcNow;
+
+        /// <summary>Reads the <c>window.cftoken = "..."</c> value the API expects in the "cftoken" header.</summary>
+        public static string GetCfToken(string html)
         {
-            var doc = new HtmlDocument();
-            doc.LoadHtml(htmlResponse);
+            var match = Regex.Match(html ?? string.Empty, @"window\.cftoken\s*=\s*([""'])(?<token>[^""']+)\1");
+            return match.Success ? match.Groups["token"].Value : string.Empty;
+        }
 
-            var node = doc.DocumentNode;
-            var domainNode = node.SelectSingleNode("//code");
-            var domainName = domainNode?.InnerText?.Trim() ?? string.Empty;
-            var tld = DomainHelper.GetTldFromDomainName(domainName);
+        public override List<DomainResult> ParseDomainResult(string rawResponse)
+        {
+            if (JToken.Parse(rawResponse) is not JArray { Count: >= 2 } root || root[0].Type != JTokenType.Boolean)
+                throw new ArgumentException("Invalid response format", nameof(rawResponse));
 
-            var availableText = new string[] { "boş (!)", "boş" }; 
-            var statusNode = node.SelectSingleNode("//strong") ?? node.SelectSingleNode("//b");
-            var isAvailable = availableText.Contains(statusNode?.InnerText?.Trim().ToLower());
+            if (!root[0].Value<bool>() || root[1] is not JObject domains)
+                throw new InvalidOperationException($"Yöncü returned an error: {root[1]}");
 
-            var priceOptions = new List<DomainPrice>();
-
-            var isPremium = statusNode?.InnerText?.Trim().ToLower() == "premium";
-            if (isPremium)
+            var results = new List<DomainResult>();
+            foreach (var (domainName, value) in domains)
             {
-                var premiumNode = node.SelectSingleNode("//h5[contains(text(),'Premium')]");
-                if (premiumNode != null)
-                {
-                    priceOptions.Add(new DomainPrice()
-                    {
-                        Period = 1,
-                        RegistrationPrice = TryParsePrice(premiumNode.InnerText) ?? new()
-                    });
-                }
-            }
+                if (value is not JObject item)
+                    continue;
 
-            var transferNode = node.SelectSingleNode("//h2[contains(text(), 'Transfer Yap')]");
-            bool isTransferable = transferNode != null;
-            if (transferNode != null)
-            {
-                var priceNode = node.SelectSingleNode("//h1");
-                if (priceNode != null)
-                {
-                    var priceText = priceNode.InnerText
-                        .Replace("&nbsp;", " ")
-                        .Trim();
+                var status = item.Value<int?>("status");
+                var isAvailable = status == StatusAvailable;
+                var isTransferable = item["transfer"]?.Value<int?>("status") == 1;
+                var tldInfo = item["tldinfo"] as JObject; // an empty array when the TLD is unknown or forbidden
 
-                    priceOptions.Add(new DomainPrice()
-                    {
-                        Period = 1,
-                        TransferPrice = TryParsePrice(priceText) ?? new()
-                    });
-                }
-            }
-
-            var selectNode = node.SelectSingleNode("//select");
-            var options = selectNode?.SelectNodes(".//option");
-
-            if (options != null)
-            {
-                foreach (var opt in options)
-                {
-                    var text = opt.InnerText
-                        .Replace("&nbsp;", " ")
-                        .Trim();
-
-                    var parts = text.Split('/', StringSplitOptions.RemoveEmptyEntries)
-                                    .Select(x => x.Trim()).ToArray();
-
-                    if (parts.Length >= 2)
-                    {
-                        var yearStr = new string(parts[0].Where(char.IsDigit).ToArray());
-                        var priceStr = new string(parts[1].Split("=").Count() > 1 ? parts[1].Split("=")[1].ToArray() : parts[1].Split("=")[0].ToArray());
-
-                        if (int.TryParse(yearStr, out var year))
-                        {
-                            priceOptions.Add(new DomainPrice
-                            {
-                                Period = year,
-                                RegistrationPrice = TryParsePrice(priceStr) ?? new()
-                            });
-                        }
-                    }
-                }
-            }
-
-            return new List<DomainResult>()
-            {
-                new()
+                var result = new DomainResult
                 {
                     DomainName = domainName,
-                    Tld = tld,
-                    CheckedAt = DateTime.UtcNow,
+                    Tld = tldInfo?.Value<string>("tld") ?? DomainHelper.GetTldFromDomainName(domainName),
                     IsAvailable = isAvailable,
-                    IsPremium = isPremium,
                     IsTransferable = isTransferable,
-                    IsValidDomain = true,
-                    Prices = priceOptions,
-                    RawResponse = htmlResponse
-                }
+                    IsValidDomain = status != StatusForbidden,
+                    RawResponse = item.ToString(Newtonsoft.Json.Formatting.None),
+                    CheckedAt = DateTime.UtcNow
+                };
+
+                if (tldInfo != null && (isAvailable || isTransferable))
+                    result.Prices.Add(BuildPrice(tldInfo, isAvailable));
+
+                results.Add(result);
+            }
+
+            return results;
+        }
+
+        private DomainPrice BuildPrice(JObject tld, bool includeRegistration)
+        {
+            var currency = tld.Value<string>("currency");
+            var regular = CreatePrice(tld.Value<decimal?>("register"), currency);
+
+            // campaign_register stays filled after a campaign ends; only trust it before campaign_expiry.
+            var expiry = tld.Value<long?>("campaign_expiry");
+            var campaignActive = expiry is > 0 && DateTimeOffset.FromUnixTimeSeconds(expiry.Value) > Now();
+            var campaign = campaignActive ? CreatePrice(tld.Value<decimal?>("campaign_register"), currency) : null;
+            var (price, regularPrice) = CampaignAndRegular(campaign, regular);
+
+            return new DomainPrice
+            {
+                Period = Math.Max(1, tld.Value<int?>("minrenew") ?? 1),
+                RegistrationPrice = includeRegistration ? price! : null!,
+                RegularRegistrationPrice = includeRegistration ? regularPrice : null,
+                RenewalPrice = CreatePrice(tld.Value<decimal?>("renew"), currency)!,
+                TransferPrice = CreatePrice(tld.Value<decimal?>("transfer"), currency)!
             };
         }
     }
