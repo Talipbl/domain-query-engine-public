@@ -2,6 +2,7 @@
 using DomainQueryEngine.AtakDomain;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.GriNet;
+using DomainQueryEngine.GuzelHosting;
 using DomainQueryEngine.HostingComTr;
 using DomainQueryEngine.Ihs;
 using DomainQueryEngine.IsimKayit;
@@ -30,6 +31,9 @@ namespace DomainQueryEngine.Infrastructure
             //services.AddScoped<IDomainLookupStrategy, IsimTescilLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, AtakDomainLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, TurhostLookupStrategy>();
+            // Disabled: Cloudflare answers server-side requests with a bot challenge (cf-mitigated: challenge).
+            // We do not work around bot protection; enable this again only if the provider allows it.
+            //services.AddScoped<IDomainLookupStrategy, GuzelHostingLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, TurkticaretLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, HostingComTrLookupStrategy>();
 
@@ -43,6 +47,7 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<IsimTescilStrategyParser>();
             services.AddScoped<AtakDomainStrategyParser>();
             services.AddScoped<TurhostStrategyParser>();
+            //services.AddScoped<GuzelHostingStrategyParser>();
             services.AddScoped<TurkticaretStrategyParser>();
             services.AddScoped<HostingComTrStrategyParser>();
             return services;
