@@ -16,7 +16,9 @@ Domain Query Engine is a .NET 8 web application and supporting libraries for que
 ## Features
 
 - Parallel domain lookup execution via pluggable `IDomainLookupStrategy` implementations
-- Aggregated results sorted by availability, then by lowest registration price (TRY prices first; other currencies are grouped, not converted)
+- Aggregated results sorted by availability, then by lowest registration price in the currency the visitor picks (TRY, USD or EUR)
+- Prices are converted with the TCMB daily forex selling rates (refreshed hourly); converted prices are marked "≈" and show the provider's original price. If no rates can be loaded, prices are shown as the providers sent them, TRY first
+- The history stores the providers' original prices; changing the display currency is not counted as a new search
 - Campaign prices are compared when a provider offers one, otherwise the regular price
 - Each provider gets 8 seconds; a slower provider is reported as failed instead of holding up the page
 - Results are cached in memory per domain for 5 minutes (1 minute if a provider failed) to limit requests to the providers
@@ -85,7 +87,9 @@ Then open the printed URL (for example `https://localhost:xxxx`).
 
 `GET /api/lookup/{domain}`
 
-- Example: `GET /api/lookup/example.com`
+- Example: `GET /api/lookup/example.com?currency=USD`
+- `currency` (optional): `TRY` (default), `USD` or `EUR`
+- `reprice=true` (optional): re-show a search in another currency without saving it to the history
 - Returns: HTML fragment rendered from `Views/Lookup/_Results.cshtml` (content type `text/html`)
 
 Notes:

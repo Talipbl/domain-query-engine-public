@@ -11,6 +11,11 @@
     <form id="domainSearchForm">
         <div class="search-box" id="searchBox">
             <input id="domainInput" name="domain" type="text" placeholder="ornek.com" />
+            <select id="currencySelect" class="currency-select" aria-label="Para birimi">
+                <option value="TRY">₺ TRY</option>
+                <option value="USD">$ USD</option>
+                <option value="EUR">€ EUR</option>
+            </select>
             <button type="submit">SORGULA</button>
         </div>
     </form>
@@ -64,6 +69,35 @@
         const searchBox = document.getElementById("searchBox");
         const loader = document.getElementById("loader");
         const searchResults = document.getElementById("searchResults");
+        const currencySelect = document.getElementById("currencySelect");
+        const currencyKey = "dqe.currency";
+        let lastSearchedDomain = null;
+
+        // Remember the chosen currency in this browser; storage may be unavailable (private mode).
+        try {
+            const saved = localStorage.getItem(currencyKey);
+            if (saved && [...currencySelect.options].some(o => o.value === saved)) currencySelect.value = saved;
+        } catch (e) { }
+
+        // reprice: only re-show the last search in another currency; the server does not count it as a new query.
+        function search(domain, reprice) {
+            loader.classList.remove("hidden");
+
+            const currency = encodeURIComponent(currencySelect.value);
+            const repriceParam = reprice ? "&reprice=true" : "";
+            fetch(`api/lookup/${encodeURIComponent(domain)}?currency=${currency}${repriceParam}`, {
+                method: "GET"
+            })
+                .then(r => r.text())
+                .then(html => {
+                    searchResults.innerHTML = html;
+                    lastSearchedDomain = domain;
+                })
+                .finally(() => {
+                    loader.classList.add("hidden");
+                    form.scrollIntoView();
+                });
+        }
 
         form.addEventListener("submit", function (e) {
             e.preventDefault();
@@ -76,20 +110,13 @@
             }
 
             searchBox.classList.remove("input-error");
+            search(domain, false);
+        });
 
-            loader.classList.remove("hidden");
-
-            fetch(`api/lookup/${encodeURIComponent(domain)}`, {
-                method: "GET"
-            })
-                .then(r => r.text())
-                .then(html => {
-                    searchResults.innerHTML = html;
-                })
-                .finally(() => {
-                    loader.classList.add("hidden");
-                    form.scrollIntoView();
-                });
+        // Show the last results in the new currency; the server answers from its cache.
+        currencySelect.addEventListener("change", function () {
+            try { localStorage.setItem(currencyKey, currencySelect.value); } catch (e) { }
+            if (lastSearchedDomain) search(lastSearchedDomain, true);
         });
     </script>
 }

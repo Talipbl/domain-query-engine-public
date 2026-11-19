@@ -48,6 +48,8 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<AtakDomainStrategyParser>();
             services.AddScoped<TurhostStrategyParser>();
             //services.AddScoped<GuzelHostingStrategyParser>();
+
+            services.AddSingleton<Core.Abstractions.IExchangeRateProvider, ExchangeRates.TcmbExchangeRateProvider>();
             services.AddScoped<TurkticaretStrategyParser>();
             services.AddScoped<HostingComTrStrategyParser>();
             return services;

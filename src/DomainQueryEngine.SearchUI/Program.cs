@@ -36,6 +36,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<LookupService>();
 builder.Services.AddScoped<ILookupService, CachedLookupService>();
+builder.Services.AddScoped<PriceComparisonService>();
 builder.Services.AddScoped<IDomainService, DomainService>();
 builder.Services.AddScoped<IProviderService, ProviderService>();
 builder.Services.AddSingleton<IHttpClientFactory, HttpClientFactory>();

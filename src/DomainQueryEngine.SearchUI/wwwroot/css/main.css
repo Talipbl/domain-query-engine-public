@@ -95,6 +95,50 @@
         cursor: pointer;
     }
 
+    .search-box .currency-select {
+        flex: 0 0 auto;
+        border: none;
+        border-left: 1px solid #e5e7eb;
+        background: white;
+        padding: 0 10px;
+        font-size: 15px;
+        color: #374151;
+        cursor: pointer;
+        outline: none;
+    }
+
+/* PRICE DETAILS */
+.price-original {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.price-kind {
+    font-size: 12px;
+    font-weight: normal;
+    color: #6b7280;
+}
+
+.rate-note {
+    width: 35%;
+    margin: 10px auto 80px;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .rate-note {
+        width: 90%;
+    }
+
+    .search-box .currency-select {
+        padding: 0 6px;
+        font-size: 13px;
+    }
+}
+
 
 /* FIXED FOOTER */
 .footer {

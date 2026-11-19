@@ -24,13 +24,15 @@ namespace DomainQueryEngine.SearchUI.Controllers
         IHttpContextAccessor _httpContextAccessor;
         private readonly IRazorViewEngine _viewEngine;
         private readonly ITempDataProvider _tempDataProvider;
+        private readonly PriceComparisonService _priceComparison;
 
         private string AccessToken { get; set; }
         public UserAgentModel UserAgent { get; private set; }
 
-        public LookupController(ILookupService lookupService, IRazorViewEngine viewEngine, ITempDataProvider tempDataProvider, IHttpContextAccessor httpContextAccessor, IDomainService domainService, IProviderService providerService)
+        public LookupController(ILookupService lookupService, IRazorViewEngine viewEngine, ITempDataProvider tempDataProvider, IHttpContextAccessor httpContextAccessor, IDomainService domainService, IProviderService providerService, PriceComparisonService priceComparison)
         {
             _lookupService = lookupService;
+            _priceComparison = priceComparison;
             _domainService = domainService;
             _providerService = providerService;
             _viewEngine = viewEngine;
@@ -41,8 +43,14 @@ namespace DomainQueryEngine.SearchUI.Controllers
             UserAgent = _httpContextAccessor.GetUserAgent();
         }
 
+        /// <param name="domain">Domain or pasted URL.</param>
+        /// <param name="currency">Display currency (TRY, USD or EUR); anything else falls back to TRY.</param>
+        /// <param name="reprice">
+        /// True when the page only re-shows the last search in another currency. Such requests are not
+        /// saved to the history, so query counts per domain stay accurate.
+        /// </param>
         [HttpGet("{domain}")]
-        public async Task<IActionResult> DomainLookup(string domain)
+        public async Task<IActionResult> DomainLookup(string domain, [FromQuery] string? currency = null, [FromQuery] bool reprice = false)
         {
             string validatedDomain;
             try
@@ -56,13 +64,18 @@ namespace DomainQueryEngine.SearchUI.Controllers
                 return Content("<div class=\"result-placeholder\">Geçerli bir alan adı girin (örnek: ornek.com).</div>", "text/html");
             }
 
-            Domain domainDto = await SaveLookupRequest(validatedDomain);
-
             var results = await _lookupService.LookupDomainAsync(validatedDomain);
 
-            await SaveLookupResult(domainDto, results);
+            if (!reprice)
+            {
+                Domain domainDto = await SaveLookupRequest(validatedDomain);
+                await SaveLookupResult(domainDto, results);
+            }
 
-            var html = await RenderViewToStringAsync("/Views/Lookup/_Results.cshtml", results);
+            // History keeps the providers' original prices; conversion only affects what is shown.
+            var comparison = await _priceComparison.CompareAsync(results, currency);
+
+            var html = await RenderViewToStringAsync("/Views/Lookup/_Results.cshtml", comparison);
             return Content(html, "text/html");
         }
 
