@@ -6,6 +6,7 @@ using DomainQueryEngine.Ihs;
 using DomainQueryEngine.IsimKayit;
 using DomainQueryEngine.IsimTescil;
 using DomainQueryEngine.Natro;
+using DomainQueryEngine.Turhost;
 using DomainQueryEngine.YildizBilisim;
 using DomainQueryEngine.YoncuBilisim;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<IDomainLookupStrategy, IsimKayitLookupStrategy>();
             //services.AddScoped<IDomainLookupStrategy, IsimTescilLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, AtakDomainLookupStrategy>();
+            services.AddScoped<IDomainLookupStrategy, TurhostLookupStrategy>();
 
             services.AddScoped<YildizBilisimStrategyParser>();
             services.AddScoped<YoncuBilisimStrategyParser>();
@@ -36,6 +38,7 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<IsimKayitStrategyParser>();
             services.AddScoped<IsimTescilStrategyParser>();
             services.AddScoped<AtakDomainStrategyParser>();
+            services.AddScoped<TurhostStrategyParser>();
             return services;
         }
     }
