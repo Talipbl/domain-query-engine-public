@@ -13,8 +13,7 @@ namespace DomainQueryEngine.Infrastructure
 {
     //bkz: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-6.0
     public static class InfrastructureServiceRegistration
-    {
-        public static IServiceProvider ServiceProvider { get; private set; }
+    {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
             services.AddScoped<IDomainLookupStrategy, YildizBilisimLookupStrategy>();
@@ -34,8 +33,6 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<IhsStrategyParser>();
             services.AddScoped<IsimKayitStrategyParser>();
             services.AddScoped<IsimTescilStrategyParser>();
-
-            ServiceProvider = services.BuildServiceProvider();
             return services;
         }
     }

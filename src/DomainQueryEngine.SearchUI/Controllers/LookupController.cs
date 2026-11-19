@@ -42,7 +42,6 @@ namespace DomainQueryEngine.SearchUI.Controllers
         }
 
         [HttpGet("{domain}")]
-        [ResponseCache(VaryByHeader = "User-Agent", Duration = 120)]
         public async Task<IActionResult> DomainLookup(string domain)
         {
             string validatedDomain = DomainHelper.ValidateAndNormalizeDomain(domain);
@@ -72,7 +71,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
                     ProviderId = provider.Id,
                     IsSuccess = r.Domain.IsSuccess,
                     IsAvailable = r.Domain.IsAvailable,
-                    ResponseTimeMs = 500,
+                    ResponseTimeMs = r.ResponseTimeMs,
                     RawResponse = r.Domain.RawResponse,
                     PriceAmount = minPriceEntry?.RegistrationPrice?.Amount,
                     PriceCurrency = minPriceEntry?.RegistrationPrice?.Currency,

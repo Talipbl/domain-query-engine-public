@@ -1,4 +1,5 @@
-﻿using DomainQueryEngine.Core;
+﻿using System.Diagnostics;
+using DomainQueryEngine.Core;
 using DomainQueryEngine.Core.Abstractions;
 using DomainQueryEngine.Core.Entities;
 using DomainQueryEngine.Core.Utilities;
@@ -32,6 +33,7 @@ namespace DomainQueryEngine.Application.Lookup
             var tasks = _strategies.Select(async strategy =>
             {
                 var visitLink = BuildVisitLink(strategy.Provider.VisitLink, domain);
+                var stopwatch = Stopwatch.StartNew();
                 try
                 {
                     var result = await strategy.LookupAsync(domain, ct);
@@ -39,7 +41,8 @@ namespace DomainQueryEngine.Application.Lookup
                     {
                         ProviderInfo = strategy.Provider,
                         Domain = result,
-                        VisitLink = visitLink
+                        VisitLink = visitLink,
+                        ResponseTimeMs = stopwatch.ElapsedMilliseconds
                     };
                 }
                 catch (Exception ex)
@@ -48,6 +51,7 @@ namespace DomainQueryEngine.Application.Lookup
                     {
                         ProviderInfo = strategy.Provider,
                         VisitLink = visitLink,
+                        ResponseTimeMs = stopwatch.ElapsedMilliseconds,
                         Domain = new DomainResult
                         {
                             DomainName = domain,

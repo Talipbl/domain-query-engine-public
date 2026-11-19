@@ -7,7 +7,7 @@
         public Guid DomainId { get; set; }
         public Guid ProviderId { get; set; }
         public string VisitLink { get; set; }
-        public DateTime VisitedAt { get; set; } = DateTime.Now;
+        public DateTime VisitedAt { get; set; } = DateTime.UtcNow;
 
         public virtual Domain Domain { get; set; }
         public virtual Provider Provider { get; set; }

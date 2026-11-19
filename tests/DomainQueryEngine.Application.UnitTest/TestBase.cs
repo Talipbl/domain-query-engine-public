@@ -55,9 +55,13 @@ namespace DomainQueryEngine.Application.Test
                 return Task.FromResult(entity);
             }
 
-            public void Update(DomainLookupResult entity) { }
+            public Task UpdateAsync(DomainLookupResult entity) => Task.CompletedTask;
 
-            public void Delete(DomainLookupResult entity) => _items.Remove(entity);
+            public Task DeleteAsync(DomainLookupResult entity)
+            {
+                _items.Remove(entity);
+                return Task.CompletedTask;
+            }
 
             public Task<List<DomainLookupResult>> GetByDomainIdAsync(Guid domainId)
                 => Task.FromResult(_items.Where(i => i.DomainId == domainId).ToList());

@@ -10,7 +10,7 @@ namespace DomainQueryEngine.SearchUI.Helpers
             CookieDto cookie = new CookieDto();
             cookie.Options = new CookieOptions();
 
-            cookie.Options.Expires = DateTime.Now.AddMinutes(20);
+            cookie.Options.Expires = DateTime.UtcNow.AddMinutes(20);
             cookie.Options.HttpOnly = false;
 
             var hmac = new HMACSHA256();

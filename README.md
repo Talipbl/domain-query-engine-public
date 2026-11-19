@@ -16,8 +16,7 @@ Domain Query Engine is a .NET 8 web application and supporting libraries for que
 ## Features
 
 - Parallel domain lookup execution via pluggable `IDomainLookupStrategy` implementations
-- Aggregated results sorted primarily by availability and then by lowest registration price
-- Response caching on lookup endpoint (`VaryByHeader: User-Agent`, 30s)
+- Aggregated results sorted by availability, then by lowest registration price (TRY prices first; other currencies are grouped, not converted)
 - Session + cookie-based lightweight tracking (session id / access token)
 - Persistence of lookup requests and lookup results to PostgreSQL (EF Core)
 

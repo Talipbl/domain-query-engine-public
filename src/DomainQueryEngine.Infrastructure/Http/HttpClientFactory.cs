@@ -10,11 +10,8 @@ namespace DomainQueryEngine.Http
 {
     public class HttpClientFactory : IHttpClientFactory
     {
-        private readonly string proxyUrl = "http://185.18.250.194:80";
         private readonly HttpClientHandler _handler = new()
         {
-            //Proxy = new WebProxy(proxyUrl),
-            //UseProxy = true,
             CookieContainer = new CookieContainer(),
             UseCookies = true,
             MaxConnectionsPerServer = 500,

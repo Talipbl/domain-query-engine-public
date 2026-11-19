@@ -49,8 +49,6 @@ builder.Services.AddInfrastructureServices();
 builder.Services.AddPostgreSQLServices();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddResponseCaching();
-
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -70,7 +68,6 @@ if (!app.Environment.IsDevelopment())
 app.UseSession();
 
 app.UseHttpsRedirection();
-app.UseResponseCaching();
 app.UseStaticFiles();
 
 app.UseRouting();

@@ -13,5 +13,10 @@
         /// The provider's visit link with the searched domain filled in.
         /// </summary>
         public string VisitLink { get; set; } = string.Empty;
+
+        /// <summary>
+        /// How long the provider lookup took, including retries.
+        /// </summary>
+        public long ResponseTimeMs { get; set; }
     }
 }

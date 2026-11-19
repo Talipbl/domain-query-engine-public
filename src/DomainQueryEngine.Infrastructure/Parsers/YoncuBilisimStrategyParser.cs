@@ -93,7 +93,7 @@ namespace DomainQueryEngine.YoncuBilisim
                 {
                     DomainName = domainName,
                     Tld = tld,
-                    CheckedAt = DateTime.Now,
+                    CheckedAt = DateTime.UtcNow,
                     IsAvailable = isAvailable,
                     IsPremium = isPremium,
                     IsTransferable = isTransferable,
