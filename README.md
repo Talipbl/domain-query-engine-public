@@ -17,6 +17,9 @@ Domain Query Engine is a .NET 8 web application and supporting libraries for que
 
 - Parallel domain lookup execution via pluggable `IDomainLookupStrategy` implementations
 - Aggregated results sorted by availability, then by lowest registration price (TRY prices first; other currencies are grouped, not converted)
+- Campaign prices are compared when a provider offers one, otherwise the regular price
+- Each provider gets 8 seconds; a slower provider is reported as failed instead of holding up the page
+- Results are cached in memory per domain for 5 minutes (1 minute if a provider failed) to limit requests to the providers
 - Session + cookie-based lightweight tracking (session id / access token)
 - Persistence of lookup requests and lookup results to PostgreSQL (EF Core)
 
@@ -94,19 +97,30 @@ Notes:
 
 Strategies are registered in `src/DomainQueryEngine.Infrastructure/ServiceRegistrations/InfrastructureServiceRegistration.cs` via `AddInfrastructureServices()`.
 
-Current registrations include (names inferred from strategy classes):
+| Provider | Strategy | How it queries | Status |
+|---|---|---|---|
+| Yıldız Bilişim | `YildizBilisimLookupStrategy` | WHMCS domain check (CSRF token) | Active |
+| GriNet | `GriNetLookupStrategy` | WHMCS domain check (CSRF token) | Active |
+| Alan Adı Kayıt | `AlanAdiKayitLookupStrategy` | WHMCS domain check (CSRF token) | Active |
+| Natro | `NatroLookupStrategy` | JSON query service | Active |
+| IHS | `IhsLookupStrategy` | HTML form post | Active |
+| Atak Domain | `AtakDomainLookupStrategy` | `POST /api/domain/getavailability` (JSON) | Active |
+| Turhost | `TurhostLookupStrategy` | `GET panel.turhost.com/api/v1/domain/query` (JSONP) | Active |
+| Turkticaret.net | `TurkticaretLookupStrategy` | `POST smartquery_v2.php` (`trquery` for .tr) | Active |
+| Hosting.com.tr | `HostingComTrLookupStrategy` | `POST /web/domain/querynew/lookup` (session + CSRF token) | Active |
+| Yöncü Bilişim | `YoncuBilisimLookupStrategy` | HTML endpoint | Registered, currently returns 404 |
+| İsim Kayıt | `IsimKayitLookupStrategy` | WHMCS domain check | Registered, currently returns 403 |
+| İsim Tescil | `IsimTescilLookupStrategy` | HTML form post | Not registered |
+| Güzel Hosting | `GuzelHostingLookupStrategy` | WHMCS `checkAvailabilityOne` | Not registered: Cloudflare answers server-side requests with a bot challenge |
 
-- `YildizBilisimLookupStrategy`
-- `YoncuBilisimLookupStrategy`
-- `GriNetLookupStrategy`
-- `AlanAdiKayitLookupStrategy`
-- `NatroLookupStrategy`
-- `IhsLookupStrategy`
-- `IsimKayitLookupStrategy`
+We do not work around bot protection or captchas. When Turkticaret.net asks for its image challenge (`E_KEY_ERROR`), that lookup is reported as failed.
 
 ## Tests
 
-Unit tests run offline against saved provider responses (`tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/SampleResponses.cs`) and fake strategies. The only network access they need is a one-time download of the public suffix list.
+Unit tests run offline against provider responses and fake strategies. The only network access they need is a one-time download of the public suffix list.
+
+- `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/Responses/`: real responses captured from Atak Domain, Turhost, Turkticaret.net, Hosting.com.tr and Güzel Hosting
+- `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/SampleResponses.cs`: responses for the older providers (Yıldız and Yöncü are real captures; the others were written to match the parsers)
 
 ```powershell
 # unit tests (default)
