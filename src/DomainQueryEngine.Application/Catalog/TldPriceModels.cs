@@ -61,6 +61,24 @@ namespace DomainQueryEngine.Application.Catalog
         public bool IsCheapest { get; init; }
     }
 
+    public sealed class ProviderTldRow
+    {
+        public TldEntry Entry { get; init; } = new();
+        public PricedOffer? Registration { get; init; }
+        public PricedOffer? Renewal { get; init; }
+        public PricedOffer? Transfer { get; init; }
+    }
+
+    public sealed class ProviderPriceList
+    {
+        public ProviderEntry Provider { get; init; } = new();
+        public string Currency { get; init; } = ExchangeRates.BaseCurrency;
+        public ExchangeRates? Rates { get; init; }
+        public bool IsSample { get; init; }
+        public DateTime AsOf { get; init; }
+        public List<ProviderTldRow> Rows { get; init; } = new();
+    }
+
     public sealed class TldPriceDetail
     {
         public TldEntry Entry { get; init; } = new();

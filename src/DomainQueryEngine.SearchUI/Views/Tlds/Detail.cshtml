@@ -1,0 +1,164 @@
+@model TldDetailPageViewModel
+@{
+    var tld = Model.Entry.Tld;
+    var detail = Model.Detail;
+    var priced = detail.Rows.Count(r => r.Registration != null);
+    ViewData["Title"] = $".{tld} fiyatları";
+    ViewData["Description"] = $".{tld} alan adı kayıt, yenileme ve transfer fiyatlarını {priced} sağlayıcıda karşılaştır.";
+    ViewData["Nav"] = "tlds";
+}
+
+<div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)">
+    <nav class="breadcrumb" aria-label="Konum">
+        <a href="@Url.Action("Index")">Uzantı fiyatları</a><span aria-hidden="true">/</span><span aria-current="page">.@tld</span>
+    </nav>
+
+    <div class="page-title">
+        <div class="page-title__text">
+            <h1>.@tld fiyatları</h1>
+            @if (!string.IsNullOrEmpty(Model.Entry.Description))
+            {
+                <p class="lead">@Model.Entry.Description @priced sağlayıcının 1 yıllık kayıt fiyatı, kampanyalarıyla birlikte.</p>
+            }
+        </div>
+        <form class="search-form search-form--compact" role="search" method="get" action="@Url.Action("Index", "Search")" style="flex: 0 1 440px">
+            <input type="hidden" name="uzanti" value="@tld" />
+            <label for="tld-name" class="sr-only">.@tld alan adı ara</label>
+            <div class="suffix-input">
+                <input id="tld-name" name="ad" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="alanadin" required />
+                <span aria-hidden="true">.@tld</span>
+            </div>
+            <btn variant="Primary" type="submit">Müsait mi?</btn>
+        </form>
+    </div>
+
+    <div class="stats">
+        <div class="stat stat--best">
+            <div class="stat__label">En ucuz kayıt</div>
+            @if (detail.CheapestRegistration != null)
+            {
+                <div class="stat__value">@(detail.CheapestRegistration.IsConverted ? "≈ " : "")@PriceFormatter.Format(detail.CheapestRegistration.Display)</div>
+                <div class="stat__note">@detail.CheapestRegistration.Provider.Name</div>
+            }
+            else
+            {
+                <div class="stat__value">—</div>
+            }
+        </div>
+        <div class="stat">
+            <div class="stat__label">Ortanca fiyat</div>
+            <div class="stat__value">@(detail.MedianRegistration != null ? PriceFormatter.Format(detail.MedianRegistration) : "—")</div>
+            <div class="stat__note">@priced sağlayıcı</div>
+        </div>
+        <div class="stat">
+            <div class="stat__label">Belge</div>
+            <div class="stat__value">@(Model.Entry.DocumentRequired switch { true => "Gerekir", false => "Gerekmez", _ => "—" })</div>
+            <div class="stat__note">@(Model.Entry.DocumentRequired switch { true => "Kayıt için belge istenir", false => "Belgesiz kayıt yapılabilir", _ => "Sağlayıcıya sor" })</div>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Entry.Registry))
+        {
+            <div class="stat">
+                <div class="stat__label">Kayıt otoritesi</div>
+                <div class="stat__value">@Model.Entry.Registry</div>
+            </div>
+        }
+    </div>
+
+    <section class="stack" style="gap: var(--space-3)" aria-labelledby="providers-title">
+        <h2 id="providers-title">Sağlayıcılara göre fiyat</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <caption class="sr-only">.@tld için sağlayıcı fiyatları (@detail.Currency)</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Sağlayıcı</th>
+                        <th scope="col" class="num">1 yıl kayıt</th>
+                        <th scope="col" class="num">Yenileme</th>
+                        <th scope="col" class="num">Transfer</th>
+                        <th scope="col"><span class="sr-only">Sağlayıcının sitesi</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in detail.Rows)
+                    {
+                        <tr>
+                            <th scope="row">
+                                <div class="cluster">
+                                    <a href="@Url.Action("Detail", "Providers", new { slug = row.Provider.Slug })" style="font-weight: 600; text-decoration: none; color: var(--color-ink)">@row.Provider.Name</a>
+                                    @if (row.IsCheapest)
+                                    {
+                                        <badge kind="Best">En ucuz</badge>
+                                    }
+                                    @if (row.Registration?.IsCampaign == true)
+                                    {
+                                        <badge kind="Campaign">Kampanya</badge>
+                                    }
+                                </div>
+                                @if (Model.IsOutlier(row.Registration))
+                                {
+                                    <div class="small" style="color: var(--color-campaign); font-weight: 500; margin-top: 4px">Diğer sağlayıcılardan çok yüksek</div>
+                                }
+                            </th>
+                            <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Registration, ShowDetails: true, Highlight: row.IsCheapest)" /></td>
+                            <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Renewal)" /></td>
+                            <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Transfer)" /></td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(row.Provider.Website))
+                                {
+                                    <btn variant="Link" href="@row.Provider.Website" external="true">Sağlayıcıya git</btn>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="split">
+        @if (Model.History.Count > 0)
+        {
+            <section class="card" aria-labelledby="history-title">
+                <div class="card__head">
+                    <h2 id="history-title" style="font-size: var(--text-xl)">En ucuz fiyatın son @Model.History.Count ayı</h2>
+                    @if (detail.IsSample)
+                    {
+                        <badge kind="Mock"></badge>
+                    }
+                </div>
+                <div class="bars" role="img" aria-label="@string.Join(", ", Model.History.Select(b => $"{b.Label} {PriceFormatter.Format(b.Point.Amount, "TRY")}"))">
+                    @foreach (var bar in Model.History)
+                    {
+                        <div class="bars__item@(bar.IsLatest ? " bars__item--latest" : "")">
+                            <span class="bars__value">@bar.Point.Amount.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</span>
+                            <div class="bars__bar" style="height: @bar.BarHeightPercent%"></div>
+                        </div>
+                    }
+                </div>
+                <div class="bars__labels" aria-hidden="true">
+                    @foreach (var bar in Model.History)
+                    {
+                        <span>@bar.Label</span>
+                    }
+                </div>
+                <p class="small muted" style="margin-top: var(--space-3)">Aylık en düşük 1 yıllık kayıt fiyatı, TL.</p>
+            </section>
+        }
+
+        @if (Model.Entry.Faq.Count > 0)
+        {
+            <section class="card faq" aria-labelledby="faq-title">
+                <h2 id="faq-title" style="font-size: var(--text-xl); margin-bottom: var(--space-2)">Sık sorulanlar</h2>
+                @for (var i = 0; i < Model.Entry.Faq.Count; i++)
+                {
+                    <details open="@(i == 0)">
+                        <summary>@Model.Entry.Faq[i].Question</summary>
+                        <p>@Model.Entry.Faq[i].Answer</p>
+                    </details>
+                }
+            </section>
+        }
+    </div>
+
+    <partial name="Components/_DataNote" model="new DataNoteModel(detail.IsSample, detail.AsOf, detail.Rates, Model.AnyConverted)" />
+</div>

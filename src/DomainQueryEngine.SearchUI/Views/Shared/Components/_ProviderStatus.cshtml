@@ -1,0 +1,13 @@
+@model DomainQueryEngine.Core.Catalog.ProviderStatus
+@switch (Model)
+{
+    case DomainQueryEngine.Core.Catalog.ProviderStatus.Active:
+        <badge kind="Available">Karşılaştırılıyor</badge>
+        break;
+    case DomainQueryEngine.Core.Catalog.ProviderStatus.Failing:
+        <badge kind="Warning">Şu anda yanıt vermiyor</badge>
+        break;
+    default:
+        <badge kind="Neutral">Karşılaştırılmıyor</badge>
+        break;
+}

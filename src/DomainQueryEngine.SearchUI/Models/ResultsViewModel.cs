@@ -2,6 +2,20 @@ using DomainQueryEngine.Core;
 
 namespace DomainQueryEngine.SearchUI.Models
 {
+    public enum ResultSort
+    {
+        Price,
+        Name
+    }
+
+    /// <summary>Filters on the search page. Defaults show every provider, cheapest first, shortest period.</summary>
+    public sealed record SearchFilters(bool OnlyAvailable = false, int? Period = null, ResultSort Sort = ResultSort.Price)
+    {
+        public static readonly int[] Periods = { 1, 2, 5 };
+
+        public bool IsDefault => !OnlyAvailable && Period == null && Sort == ResultSort.Price;
+    }
+
     /// <summary>
     /// What the results view shows, derived from a <see cref="PriceComparison"/> so the view holds no logic.
     /// </summary>
@@ -13,15 +27,20 @@ namespace DomainQueryEngine.SearchUI.Models
         public string DomainName { get; init; } = string.Empty;
         public string Currency { get; init; } = ExchangeRates.BaseCurrency;
         public ExchangeRates? Rates { get; init; }
+        public SearchFilters Filters { get; init; } = new();
         public int AskedCount { get; init; }
+        public int RespondedCount { get; init; }
         public int AvailableCount { get; init; }
         public ResultRowViewModel? Best { get; init; }
+
+        /// <summary>Rows after the filters; <see cref="RespondedCount"/> counts them before.</summary>
         public List<ResultRowViewModel> Rows { get; init; } = new();
         public List<FailedProvider> Failed { get; init; } = new();
         public bool AnyConverted => Rows.Any(r => r.Item.IsConverted);
 
-        public static ResultsViewModel From(PriceComparison comparison)
+        public static ResultsViewModel From(PriceComparison comparison, SearchFilters? filters = null)
         {
+            filters ??= new SearchFilters();
             var succeeded = comparison.Items.Where(i => i.Result.Domain.IsSuccess).ToList();
             var failed = comparison.Items.Where(i => !i.Result.Domain.IsSuccess).ToList();
 
@@ -43,17 +62,25 @@ namespace DomainQueryEngine.SearchUI.Models
                           && item.Result.Domain.IsAvailable && item.DisplayPrice.Amount > median.Value * OutlierFactor
                     ? "Diğer sağlayıcılardan çok yüksek"
                     : null
-            }).ToList();
+            });
 
+            if (filters.OnlyAvailable)
+                rows = rows.Where(r => r.Item.Result.Domain.IsAvailable);
+            if (filters.Sort == ResultSort.Name)
+                rows = rows.OrderBy(r => r.Item.Result.ProviderInfo?.Name, StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), true));
+
+            var rowList = rows.ToList();
             return new ResultsViewModel
             {
                 DomainName = comparison.Items.Select(i => i.Result.Domain.DomainName).FirstOrDefault(n => !string.IsNullOrEmpty(n)) ?? string.Empty,
                 Currency = comparison.Currency,
                 Rates = comparison.Rates,
+                Filters = filters,
                 AskedCount = comparison.Items.Count,
+                RespondedCount = succeeded.Count,
                 AvailableCount = succeeded.Count(i => i.Result.Domain.IsAvailable),
-                Best = rows.FirstOrDefault(r => r.IsBest),
-                Rows = rows,
+                Best = rowList.FirstOrDefault(r => r.IsBest),
+                Rows = rowList,
                 Failed = failed.Select(i => new FailedProvider(i.Result.ProviderInfo?.Name ?? "Sağlayıcı", DescribeError(i.Result.Domain.RawResponse))).ToList()
             };
         }

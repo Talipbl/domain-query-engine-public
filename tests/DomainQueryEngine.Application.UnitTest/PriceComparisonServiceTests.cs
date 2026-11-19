@@ -83,6 +83,41 @@ namespace DomainQueryEngine.Application.Test
             Assert.Equal(100m, item.DisplayPrice!.Amount);
         }
 
+        [Fact]
+        public async Task Converts_Regular_Price_Of_A_Campaign()
+        {
+            var service = new PriceComparisonService(new FixedRates(Rates));
+            var campaign = Result("kampanya", available: true, 3m, "USD");
+            campaign.Domain.Prices[0].RegularRegistrationPrice = new BasePrice { Amount = 9m, Currency = "USD" };
+
+            var item = Assert.Single((await service.CompareAsync(new[] { campaign }, "TRY")).Items);
+
+            Assert.True(item.IsCampaign);
+            Assert.Equal(150m, item.DisplayPrice!.Amount);
+            Assert.Equal(450m, item.RegularPrice!.Amount);
+            Assert.Equal("TRY", item.RegularPrice.Currency);
+        }
+
+        [Fact]
+        public async Task Compares_The_Requested_Period()
+        {
+            var service = new PriceComparisonService(new FixedRates(Rates));
+            var multiYear = Result("cok-yil", available: true, 100m, "TRY");
+            multiYear.Domain.Prices.Add(new DomainPrice { Period = 2, RegistrationPrice = new BasePrice { Amount = 150m, Currency = "TRY" } });
+            var oneYearOnly = Result("tek-yil", available: true, 80m, "TRY");
+
+            var comparison = await service.CompareAsync(new[] { oneYearOnly, multiYear }, "TRY", period: 2);
+
+            var first = comparison.Items[0];
+            Assert.Equal("cok-yil", first.Result.ProviderInfo.Name);
+            Assert.Equal(2, first.Period);
+            Assert.Equal(150m, first.DisplayPrice!.Amount);
+
+            var missing = comparison.Items[1];
+            Assert.Null(missing.DisplayPrice);
+            Assert.Equal(2, missing.Period);
+        }
+
         [Theory]
         [InlineData("usd", "USD")]
         [InlineData(" EUR ", "EUR")]

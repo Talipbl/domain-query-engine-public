@@ -23,6 +23,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
             var price = Assert.Single(result.Prices);
             Assert.Equal(1, price.Period);
             WhmcsParserTests.AssertPrice(8.99m, "USD", price.RegistrationPrice);
+            WhmcsParserTests.AssertPrice(18.99m, "USD", price.RegularRegistrationPrice);
         }
 
         [Fact]

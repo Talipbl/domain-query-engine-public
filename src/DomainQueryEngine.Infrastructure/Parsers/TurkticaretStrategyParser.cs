@@ -66,12 +66,12 @@ namespace DomainQueryEngine.Turkticaret
             {
                 var currency = entry.Value<string>("currency");
                 // "price_raw" is the campaign price (first purchase); "campaign_price" is, despite the name, the regular one.
-                var registration = PreferCampaignPrice(
+                var (registration, regular) = CampaignAndRegular(
                     CreatePrice(entry.Value<decimal?>("price_raw"), currency),
                     CreatePrice(ParseDecimal(entry.Value<string>("campaign_price")), currency));
 
                 if (registration != null)
-                    result.Prices.Add(new DomainPrice { Period = 1, RegistrationPrice = registration });
+                    result.Prices.Add(new DomainPrice { Period = 1, RegistrationPrice = registration, RegularRegistrationPrice = regular });
             }
 
             return result;

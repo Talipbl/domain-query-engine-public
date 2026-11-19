@@ -35,12 +35,12 @@ namespace DomainQueryEngine.AtakDomain
 
             if (isAvailable)
             {
-                var registration = PreferCampaignPrice(
+                var (registration, regular) = CampaignAndRegular(
                     CreatePrice(inquiry.Price, inquiry.Currency),
                     CreatePrice(inquiry.Selling, inquiry.Currency));
 
                 if (registration != null)
-                    result.Prices.Add(new DomainPrice { Period = period, RegistrationPrice = registration });
+                    result.Prices.Add(new DomainPrice { Period = period, RegistrationPrice = registration, RegularRegistrationPrice = regular });
             }
             else if (isRegistered)
             {

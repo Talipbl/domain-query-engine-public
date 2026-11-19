@@ -1,0 +1,17 @@
+@* Where the numbers on a catalog page come from: sample-data label, collection date and the exchange rate used. *@
+@model DataNoteModel
+<p class="rate-note">
+    @if (Model.IsSample)
+    {
+        <badge kind="Mock"></badge>
+        <span>@PriceFormatter.FormatDate(Model.AsOf) tarihli örnek veri; canlı fiyatlar için domain araması yap.</span>
+    }
+    @if (Model.Rates == null)
+    {
+        <span>Kur bilgisi alınamadı; fiyatlar sağlayıcıların kendi para biriminde gösteriliyor.</span>
+    }
+    else if (Model.AnyConverted)
+    {
+        <span>≈ işaretli fiyatlar @Model.Rates.Source @PriceFormatter.FormatDate(Model.Rates.Date) döviz satış kuruyla çevrildi.</span>
+    }
+</p>

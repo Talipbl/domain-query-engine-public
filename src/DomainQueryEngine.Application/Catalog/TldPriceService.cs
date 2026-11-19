@@ -112,6 +112,43 @@ namespace DomainQueryEngine.Application.Catalog
             };
         }
 
+        /// <summary>One provider's prices across the catalog, popular extensions first.</summary>
+        /// <returns>Null when the provider is unknown.</returns>
+        public async Task<ProviderPriceList?> GetProviderPricesAsync(string slug, string? currency, CancellationToken ct = default)
+        {
+            var provider = await _providers.GetAsync(slug, ct);
+            if (provider == null)
+                return null;
+
+            var target = PriceComparisonService.NormalizeCurrency(currency);
+            var rates = await _exchangeRates.GetRatesAsync(ct);
+            var providers = new Dictionary<string, ProviderEntry>(StringComparer.OrdinalIgnoreCase) { [provider.Slug] = provider };
+            var entries = await _tlds.GetAllAsync(ct);
+
+            var rows = entries
+                .Select(e => (Entry: e, Price: e.Prices.FirstOrDefault(p => string.Equals(p.Provider, provider.Slug, StringComparison.OrdinalIgnoreCase))))
+                .Where(x => x.Price != null)
+                .OrderByDescending(x => x.Entry.IsPopular)
+                .Select(x => new ProviderTldRow
+                {
+                    Entry = x.Entry,
+                    Registration = Offer(x.Price!, x.Price!.Registration, target, rates, providers, withRegular: true),
+                    Renewal = Offer(x.Price!, x.Price!.Renewal, target, rates, providers),
+                    Transfer = Offer(x.Price!, x.Price!.Transfer, target, rates, providers)
+                })
+                .ToList();
+
+            return new ProviderPriceList
+            {
+                Provider = provider,
+                Currency = target,
+                Rates = rates,
+                IsSample = _tlds.IsSample || _providers.IsSample,
+                AsOf = _tlds.AsOf,
+                Rows = rows
+            };
+        }
+
         private async Task<Dictionary<string, ProviderEntry>> LoadProvidersAsync(CancellationToken ct)
             => (await _providers.GetAllAsync(ct)).ToDictionary(p => p.Slug, StringComparer.OrdinalIgnoreCase);
 

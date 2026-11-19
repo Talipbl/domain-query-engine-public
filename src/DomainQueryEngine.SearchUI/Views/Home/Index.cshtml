@@ -1,47 +1,89 @@
 ﻿@model HomeViewModel
 @{
     ViewData["Title"] = "Domain fiyatlarını karşılaştır";
-    ViewData["Description"] = $"Alan adının {Model.ProviderNames.Count} Türk sağlayıcıdaki kayıt fiyatını, kampanyalarıyla birlikte tek aramada karşılaştır.";
+    ViewData["Description"] = $"Alan adının {Model.ActiveProviders.Count} Türk sağlayıcıdaki kayıt fiyatını, kampanyalarıyla birlikte tek aramada karşılaştır.";
     ViewData["Nav"] = "search";
-    if (!string.IsNullOrEmpty(Model.Query))
-    {
-        ViewData["NoIndex"] = true;
-    }
 }
 
 <section class="hero">
     <div class="hero__inner">
-        <badge kind="Available" pill="true">@Model.ProviderNames.Count Türk sağlayıcı · kampanya fiyatları dahil</badge>
+        <badge kind="Available" pill="true">@Model.ActiveProviders.Count Türk sağlayıcı · kampanya fiyatları dahil</badge>
         <h1 class="hero__title">Alan adını en ucuz nereden alacağını tek aramada gör</h1>
         <p class="lead" style="max-width: 640px">Domain'i yaz; sağlayıcıların müsaitlik durumunu ve kayıt fiyatlarını kampanyalarıyla birlikte aynı listede karşılaştır.</p>
-        <form class="search-form" role="search" method="get" action="@Url.Action("Index", "Home")" id="search-form" novalidate>
-            <label for="search-q" class="sr-only">Alan adı</label>
-            <input id="search-q" name="q" class="search-form__input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false"
-                   placeholder="ornekyazilimci.com" value="@Model.Query" aria-describedby="search-error" />
-            <btn variant="Primary" size="Lg" type="submit" id="search-button">
-                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20 20"></path></svg>
-                Karşılaştır
-            </btn>
-            <p id="search-error" class="small" role="alert" style="color: var(--color-danger); width: 100%; text-align: left" hidden>Bir alan adı yaz (örnek: ornek.com).</p>
-        </form>
+        <partial name="_SearchForm" model="string.Empty" />
+        <div class="cluster" style="justify-content: center">
+            <span class="muted">Fiyat listeleri:</span>
+            @foreach (var tld in Model.PopularTlds)
+            {
+                <a class="chip" href="@Url.Action("Detail", "Tlds", new { slug = tld.Entry.Slug })">.@tld.Entry.Tld</a>
+            }
+        </div>
     </div>
 </section>
 
-<section class="container section" aria-live="polite" aria-busy="false" id="results" hidden="@(string.IsNullOrEmpty(Model.Query) ? "hidden" : null)"></section>
-
-<template id="results-loading">
-    <div class="stack">
-        <div class="skeleton skeleton--line" style="width: 240px; height: 28px"></div>
-        <div class="result-list">
-            <partial name="Components/_ResultRowSkeleton" model="5" />
+@if (Model.PopularTlds.Count > 0)
+{
+    <section class="container section" aria-labelledby="popular-title">
+        <div class="section-head">
+            <div class="stack" style="gap: 6px">
+                <h2 id="popular-title">Popüler uzantılarda en ucuz kayıt</h2>
+                <p class="muted">1 yıllık kayıt fiyatı, kampanya dahil.</p>
+            </div>
+            <btn variant="Link" href="@Url.Action("Index", "Tlds")">Tüm uzantılar →</btn>
         </div>
-    </div>
-</template>
+        <div class="grid-cards">
+            @foreach (var item in Model.PopularTlds)
+            {
+                var offer = item.CheapestRegistration;
+                <a class="card card-link@(Model.TldList.IsSample ? " card--mock" : "")" href="@Url.Action("Detail", "Tlds", new { slug = item.Entry.Slug })">
+                    <span class="tld-card__name">.@item.Entry.Tld</span>
+                    <span class="small muted">En ucuz kayıt</span>
+                    @if (offer != null)
+                    {
+                        <span class="tld-card__price">@(offer.IsConverted ? "≈ " : "")@PriceFormatter.Format(offer.Display)</span>
+                        <span>@offer.Provider.Name · @item.ProviderCount sağlayıcı</span>
+                    }
+                    else
+                    {
+                        <span class="tld-card__price">—</span>
+                    }
+                </a>
+            }
+        </div>
+        <partial name="Components/_DataNote" model="new DataNoteModel(Model.TldList.IsSample, Model.TldList.AsOf, Model.TldList.Rates, Model.AnyConverted)" />
+    </section>
+}
 
 <section class="container section" id="nasil">
     <div class="split">
         <div class="card">
-            <h2 style="margin-bottom: 18px">Fiyatları nasıl karşılaştırıyoruz</h2>
+            <div class="card__head" style="margin-bottom: 14px">
+                <h2 style="font-size: var(--text-xl)">Son 24 saatte en çok sorgulananlar</h2>
+                @if (Model.MostSearchedIsSample)
+                {
+                    <badge kind="Mock"></badge>
+                }
+            </div>
+            @if (Model.MostSearched.Count == 0)
+            {
+                <p class="muted">Son 24 saatte henüz arama yapılmadı.</p>
+            }
+            else
+            {
+                <ol class="ranked">
+                    @foreach (var query in Model.MostSearched)
+                    {
+                        <li>
+                            <a href="@Url.Action("Index", "Search", new { q = query.DomainName })">@query.DomainName</a>
+                            <span class="small muted num">@query.Count sorgu</span>
+                        </li>
+                    }
+                </ol>
+            }
+        </div>
+
+        <div class="card">
+            <h2 style="font-size: var(--text-xl); margin-bottom: 18px">Fiyatları nasıl karşılaştırıyoruz</h2>
             <ol class="steps">
                 <li>
                     <span class="steps__no">1</span>
@@ -49,7 +91,7 @@
                 </li>
                 <li>
                     <span class="steps__no">2</span>
-                    <div><div class="steps__title">Kampanya varsa kampanya fiyatını gösteriyoruz</div><div class="steps__text">Kampanyalar çoğunlukla yalnızca ilk alımda geçerlidir; satın almadan önce sağlayıcının koşullarına bak.</div></div>
+                    <div><div class="steps__title">Kampanya varsa kampanya fiyatını gösteriyoruz</div><div class="steps__text">Normal fiyat da yanında yazar. Kampanyalar çoğunlukla yalnızca ilk alımda geçerlidir.</div></div>
                 </li>
                 <li>
                     <span class="steps__no">3</span>
@@ -57,84 +99,21 @@
                 </li>
             </ol>
         </div>
-        <div class="card">
-            <h2 style="margin-bottom: 6px">Karşılaştırılan sağlayıcılar</h2>
-            <p class="muted" style="margin-bottom: 16px">Her aramada bu sağlayıcıların sitelerinden güncel fiyat alınır.</p>
-            <ul class="cluster" style="list-style: none; margin: 0; padding: 0; gap: 10px">
-                @foreach (var name in Model.ProviderNames)
-                {
-                    <li class="provider-chip">@name</li>
-                }
-            </ul>
-        </div>
     </div>
 </section>
 
-@section Scripts {
-    <script>
-        (function () {
-            "use strict";
-            const form = document.getElementById("search-form");
-            const input = document.getElementById("search-q");
-            const button = document.getElementById("search-button");
-            const error = document.getElementById("search-error");
-            const results = document.getElementById("results");
-            const loading = document.getElementById("results-loading");
-            const lookupBase = "@Url.Content("~/api/lookup/")";
-            let lastDomain = null;
-            let pending = null;
-
-            // reprice: re-show the last search (currency change, back/forward); not counted as a new search.
-            function search(domain, reprice) {
-                if (pending) pending.abort();
-                pending = new AbortController();
-
-                results.hidden = false;
-                results.setAttribute("aria-busy", "true");
-                results.replaceChildren(loading.content.cloneNode(true));
-                button.disabled = true;
-
-                const url = lookupBase + encodeURIComponent(domain) + (reprice ? "?reprice=true" : "");
-                fetch(url, { signal: pending.signal })
-                    .then(function (r) { return r.text(); })
-                    .then(function (html) {
-                        results.innerHTML = html;
-                        lastDomain = domain;
-                    })
-                    .catch(function (e) {
-                        if (e.name === "AbortError") return;
-                        results.innerHTML = '<div class="empty-state">Sonuçlar alınamadı. Bağlantını kontrol edip tekrar dene.</div>';
-                    })
-                    .finally(function () {
-                        results.setAttribute("aria-busy", "false");
-                        button.disabled = false;
-                    });
-            }
-
-            form.addEventListener("submit", function (e) {
-                e.preventDefault();
-                const domain = input.value.trim();
-                error.hidden = !!domain;
-                form.toggleAttribute("data-invalid", !domain);
-                if (!domain) { input.focus(); return; }
-
-                history.pushState({ q: domain }, "", "?q=" + encodeURIComponent(domain));
-                search(domain, false);
-            });
-
-            window.addEventListener("popstate", function () {
-                const q = new URLSearchParams(location.search).get("q");
-                input.value = q || "";
-                if (q) search(q, true); else { results.hidden = true; results.replaceChildren(); }
-            });
-
-            document.addEventListener("dqe:currency", function (e) {
-                if (!lastDomain) return;
-                e.preventDefault();
-                search(lastDomain, true);
-            });
-
-            if (input.value.trim()) search(input.value.trim(), false);
-        })();
-    </script>
-}
+<section class="container section" aria-labelledby="providers-title" style="padding-bottom: var(--space-12)">
+    <div class="section-head">
+        <div class="stack" style="gap: 6px">
+            <h2 id="providers-title">Karşılaştırılan sağlayıcılar</h2>
+            <p class="muted">Her aramada bu sağlayıcıların sitelerinden güncel fiyat alınır.</p>
+        </div>
+        <btn variant="Link" href="@Url.Action("Index", "Providers")">Tüm sağlayıcılar →</btn>
+    </div>
+    <ul class="cluster" style="list-style: none; margin: 0; padding: 0; gap: 10px">
+        @foreach (var provider in Model.ActiveProviders)
+        {
+            <li><a class="provider-chip" style="display: inline-block; text-decoration: none" href="@Url.Action("Detail", "Providers", new { slug = provider.Slug })">@provider.Name</a></li>
+        }
+    </ul>
+</section>

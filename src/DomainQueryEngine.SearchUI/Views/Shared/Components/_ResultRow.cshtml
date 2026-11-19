@@ -30,10 +30,21 @@
             {
                 <badge kind="Taken">@(domain.IsValidDomain ? "Dolu" : "Geçersiz")</badge>
             }
+            @if (Model.Item.IsCampaign)
+            {
+                <badge kind="Campaign">Kampanya</badge>
+            }
         </div>
     </div>
 
-    <price-tag price="Model.Item.DisplayPrice" original="Model.Item.OriginalPrice" period="Model.Item.Period" warning="@Model.Warning" best="Model.IsBest"></price-tag>
+    @if (Model.Item.DisplayPrice != null)
+    {
+        <price-tag price="Model.Item.DisplayPrice" original="Model.Item.OriginalPrice" regular="Model.Item.RegularPrice" period="Model.Item.Period" warning="@Model.Warning" best="Model.IsBest"></price-tag>
+    }
+    else if (domain.IsAvailable)
+    {
+        <div class="price"><span class="price__note">@(Model.Item.Period is > 0 ? $"{Model.Item.Period} yıllık fiyat sunulmuyor" : "Fiyat alınamadı")</span></div>
+    }
 
     @if (!string.IsNullOrWhiteSpace(visitLink))
     {

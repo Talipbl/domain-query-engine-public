@@ -56,12 +56,12 @@ namespace DomainQueryEngine.Turhost
                     if (!int.TryParse(periodKey, out var period))
                         continue;
 
-                    var registration = PreferCampaignPrice(
+                    var (registration, regularPrice) = CampaignAndRegular(
                         CreatePrice(campaign?.GetValueOrDefault(periodKey), "TRY"),
                         CreatePrice(regular?.GetValueOrDefault(periodKey), "TRY"));
 
                     if (registration != null)
-                        result.Prices.Add(new DomainPrice { Period = period, RegistrationPrice = registration });
+                        result.Prices.Add(new DomainPrice { Period = period, RegistrationPrice = registration, RegularRegistrationPrice = regularPrice });
                 }
 
                 result.Prices.Sort((a, b) => a.Period.CompareTo(b.Period));

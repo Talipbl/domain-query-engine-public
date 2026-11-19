@@ -1,6 +1,7 @@
 ﻿@model ResultsViewModel
+@* Search results for one domain. Rendered into #results on /ara (htmx) and by GET /api/lookup/{domain}. *@
 
-@if (Model.Rows.Count == 0)
+@if (Model.RespondedCount == 0)
 {
     <div class="empty-state">
         @if (Model.Failed.Count > 0)
@@ -19,7 +20,7 @@ else
         <div class="search-summary">
             <div class="stack" style="gap: var(--space-2)">
                 <div class="cluster" style="gap: var(--space-3)">
-                    <h2 style="font-size: var(--text-3xl)">@Model.DomainName</h2>
+                    <h1 class="search-summary__domain">@Model.DomainName</h1>
                     @if (Model.AvailableCount > 0)
                     {
                         <badge kind="Available" pill="true">Müsait · @Model.AvailableCount sağlayıcı</badge>
@@ -29,7 +30,7 @@ else
                         <badge kind="Taken" pill="true">Kayıtlı</badge>
                     }
                 </div>
-                <span class="small muted">@Model.AskedCount sağlayıcıya soruldu, @Model.Rows.Count tanesi yanıt verdi</span>
+                <span class="small muted">@Model.AskedCount sağlayıcıya soruldu, @Model.RespondedCount tanesi yanıt verdi</span>
             </div>
             @if (Model.Best?.Item.DisplayPrice != null)
             {
@@ -44,6 +45,13 @@ else
         </div>
 
         <div class="result-list">
+            @if (Model.Rows.Count == 0)
+            {
+                <div class="empty-state">
+                    Bu filtrelere uyan sonuç yok.
+                    <a href="@Url.Action("Index", "Search", new { q = Model.DomainName })" style="font-weight: 600">Filtreleri temizle</a>
+                </div>
+            }
             @foreach (var row in Model.Rows)
             {
                 <partial name="Components/_ResultRow" model="row" />

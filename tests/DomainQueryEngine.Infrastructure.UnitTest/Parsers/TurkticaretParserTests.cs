@@ -10,9 +10,9 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
         private readonly TurkticaretStrategyParser _parser = new();
 
         [Theory]
-        [InlineData("turkticaret-available.json", "ornekyazilimci.com", "com", 128.99)]
-        [InlineData("turkticaret-tr-available.json", "ornekyazilimci.com.tr", "com.tr", 50.99)]
-        public void Parses_Available_Domain_With_Campaign_Price(string fixture, string domain, string tld, double price)
+        [InlineData("turkticaret-available.json", "ornekyazilimci.com", "com", 128.99, 682.99)]
+        [InlineData("turkticaret-tr-available.json", "ornekyazilimci.com.tr", "com.tr", 50.99, 641.99)]
+        public void Parses_Available_Domain_With_Campaign_Price(string fixture, string domain, string tld, double price, double regular)
         {
             var result = Assert.Single(_parser.ParseDomainResult(RecordedResponse.Read(fixture)));
 
@@ -23,6 +23,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
             // The first-purchase campaign price is lower than the regular one ("campaign_price").
             var only = Assert.Single(result.Prices);
             WhmcsParserTests.AssertPrice((decimal)price, "TRY", only.RegistrationPrice);
+            WhmcsParserTests.AssertPrice((decimal)regular, "TRY", only.RegularRegistrationPrice);
         }
 
         [Theory]

@@ -114,6 +114,25 @@ namespace DomainQueryEngine.Application.Test
         }
 
         [Fact]
+        public async Task Lists_One_Providers_Prices_Popular_First()
+        {
+            var prices = await Service().GetProviderPricesAsync("dolar", "TRY");
+
+            Assert.NotNull(prices);
+            Assert.Equal("Dolar Host", prices!.Provider.Name);
+            Assert.Equal(new[] { "com", "com.tr", "xyz" }, prices.Rows.Select(r => r.Entry.Tld));
+            Assert.Equal(250m, prices.Rows[0].Registration!.Display.Amount);
+            Assert.Equal(400m, prices.Rows[0].Transfer!.Display.Amount);
+            Assert.Null(prices.Rows[1].Renewal);
+        }
+
+        [Fact]
+        public async Task Provider_Prices_Are_Null_For_Unknown_Provider()
+        {
+            Assert.Null(await Service().GetProviderPricesAsync("bilinmeyen", "TRY"));
+        }
+
+        [Fact]
         public async Task Detail_Returns_Null_For_Unknown_Extension()
         {
             Assert.Null(await Service().GetDetailAsync("bilinmeyen", "TRY"));

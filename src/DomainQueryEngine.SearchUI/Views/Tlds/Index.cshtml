@@ -1,0 +1,102 @@
+@model TldListPageViewModel
+@{
+    ViewData["Title"] = "Uzantı fiyatları";
+    ViewData["Description"] = "Domain uzantılarına göre en ucuz kayıt, yenileme ve transfer fiyatları: .com, .com.tr, .tr ve diğerleri.";
+    ViewData["Nav"] = "tlds";
+
+    string GroupUrl(string key) => Url.Action("Index", new { grup = key == "tumu" ? null : key, sirala = Model.Sort.Key == "populerlik" ? null : Model.Sort.Key, ara = string.IsNullOrEmpty(Model.Query) ? null : Model.Query })!;
+}
+
+<div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)" hx-boost="true" hx-target="main" hx-select="main" hx-swap="outerHTML">
+    <div class="page-title">
+        <div class="page-title__text">
+            <h1>Uzantı fiyatları</h1>
+            <p class="lead">Her uzantı için sağlayıcılar arasındaki en ucuz 1 yıllık kayıt, yenileme ve transfer fiyatı.</p>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <nav class="tabs" aria-label="Uzantı grupları">
+            @foreach (var group in TldListPageViewModel.Groups)
+            {
+                <a class="tab" href="@GroupUrl(group.Key)" aria-current="@(group == Model.Group ? "page" : null)">
+                    @group.Label<span class="tab__count">@Model.GroupCounts.GetValueOrDefault(group.Key)</span>
+                </a>
+            }
+        </nav>
+        <form class="toolbar__controls" method="get" action="@Url.Action("Index")" role="search">
+            @if (Model.Group.Key != "tumu")
+            {
+                <input type="hidden" name="grup" value="@Model.Group.Key" />
+            }
+            <label for="tld-q" class="sr-only">Uzantı ara</label>
+            <input id="tld-q" class="input" type="search" name="ara" value="@Model.Query" placeholder="Uzantı ara: .com.tr" style="width: 200px; max-width: 100%" />
+            <label class="small muted" for="tld-sort">Sırala</label>
+            <select id="tld-sort" class="select" name="sirala" data-autosubmit>
+                @foreach (var sort in TldListPageViewModel.Sorts)
+                {
+                    <option value="@sort.Key" selected="@(sort == Model.Sort)">@sort.Label</option>
+                }
+            </select>
+            <noscript><btn variant="Secondary" type="submit">Uygula</btn></noscript>
+        </form>
+    </div>
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="empty-state">
+            Bu filtrelere uyan uzantı yok. <a href="@Url.Action("Index")" style="font-weight: 600">Tüm uzantılar</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="data-table">
+                <caption class="sr-only">Uzantılara göre en ucuz fiyatlar (@Model.List.Currency)</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Uzantı</th>
+                        <th scope="col" class="num">En ucuz kayıt</th>
+                        <th scope="col" class="num">En ucuz yenileme</th>
+                        <th scope="col" class="num">En ucuz transfer</th>
+                        <th scope="col" class="num">Sağlayıcı</th>
+                        <th scope="col">Belge</th>
+                        <th scope="col"><span class="sr-only">Detay</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        var detailUrl = Url.Action("Detail", new { slug = item.Entry.Slug });
+                        <tr>
+                            <th scope="row">
+                                <a class="tld-name" href="@detailUrl">.@item.Entry.Tld</a>
+                            </th>
+                            <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(item.CheapestRegistration, ShowProvider: true, Highlight: true)" /></td>
+                            <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(item.CheapestRenewal)" /></td>
+                            <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(item.CheapestTransfer)" /></td>
+                            <td class="num">@item.ProviderCount</td>
+                            <td>
+                                @if (item.Entry.DocumentRequired == true)
+                                {
+                                    <badge kind="Warning">Gerekir</badge>
+                                }
+                                else if (item.Entry.DocumentRequired == false)
+                                {
+                                    <badge kind="Available">Gerekmez</badge>
+                                }
+                                else
+                                {
+                                    <span class="muted" aria-label="Bilgi yok">—</span>
+                                }
+                            </td>
+                            <td><a href="@detailUrl" style="font-weight: 600; text-decoration: none; white-space: nowrap">Karşılaştır →</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <partial name="Components/_DataNote" model="new DataNoteModel(Model.List.IsSample, Model.List.AsOf, Model.List.Rates, Model.AnyConverted)" />
+</div>

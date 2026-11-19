@@ -1,35 +1,61 @@
-using DomainQueryEngine.Core;
-using DomainQueryEngine.SearchUI.Extensions;
+using System.Diagnostics;
+using DomainQueryEngine.Application.Catalog;
+using DomainQueryEngine.Core.Abstractions;
+using DomainQueryEngine.Core.Catalog;
+using DomainQueryEngine.SearchUI.Helpers;
 using DomainQueryEngine.SearchUI.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace DomainQueryEngine.SearchUI.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IEnumerable<IDomainLookupStrategy> _strategies;
+        private static readonly TimeSpan PopularWindow = TimeSpan.FromHours(24);
 
-        public HomeController(IHttpContextAccessor httpContextAccessor, IEnumerable<IDomainLookupStrategy> strategies)
+        private readonly TldPriceService _prices;
+        private readonly IProviderCatalog _providers;
+        private readonly ISearchStatistics _statistics;
+
+        public HomeController(TldPriceService prices, IProviderCatalog providers, ISearchStatistics statistics)
         {
-            _strategies = strategies;
-            httpContextAccessor.GetOrSetCookie();
+            _prices = prices;
+            _providers = providers;
+            _statistics = statistics;
         }
 
-        /// <param name="q">Optional domain to search right away (the page updates this when searching, so results can be shared and reloaded).</param>
-        public IActionResult Index(string? q)
+        /// <param name="q">Old links searched on the home page (/?q=); they now go to /ara.</param>
+        public async Task<IActionResult> Index(string? q, CancellationToken ct)
         {
-            var model = new HomeViewModel
+            if (!string.IsNullOrWhiteSpace(q))
+                return RedirectToAction("Index", "Search", new { q });
+
+            var tlds = await _prices.GetListAsync(CurrencyPreference.Get(HttpContext), ct: ct);
+            var turkish = StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), true);
+
+            return View(new HomeViewModel
             {
-                Query = q?.Trim() ?? string.Empty,
-                ProviderNames = _strategies.Select(s => s.Provider.Name).OrderBy(n => n, StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), true)).ToList()
-            };
-            return View(model);
+                PopularTlds = tlds.Items.Where(i => i.Entry.IsPopular).Take(4).ToList(),
+                TldList = tlds,
+                MostSearched = (await _statistics.GetMostSearchedAsync(PopularWindow, 5, ct)).ToList(),
+                MostSearchedIsSample = _statistics.IsSample,
+                ActiveProviders = (await _providers.GetAllAsync(ct))
+                    .Where(p => p.Status == ProviderStatus.Active)
+                    .OrderBy(p => p.Name, turkish)
+                    .ToList()
+            });
         }
 
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        /// <summary>Page for error status codes such as 404 (re-executed by UseStatusCodePagesWithReExecute).</summary>
+        [Route("hata/{code:int}")]
+        public IActionResult StatusCodePage(int code)
+        {
+            Response.StatusCode = code;
+            return View("StatusCode", code);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

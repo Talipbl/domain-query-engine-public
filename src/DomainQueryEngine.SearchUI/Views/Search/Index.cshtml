@@ -1,0 +1,83 @@
+@model SearchPageViewModel
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.Domain) ? "Arama" : $"{Model.Domain} fiyatları";
+    ViewData["Nav"] = "search";
+    ViewData["NoIndex"] = true;
+    var f = Model.Filters;
+    var resultsUrl = Url.Action("Results", new { q = Model.Domain, musait = f.OnlyAvailable ? "true" : null, sure = f.Period, sirala = f.Sort == ResultSort.Price ? null : f.Sort.ToString().ToLowerInvariant() });
+}
+
+<section class="page-head">
+    <div class="container stack" style="gap: var(--space-3)">
+        <div style="max-width: 720px">
+            <partial name="_SearchForm" model="Model.Input" view-data='new ViewDataDictionary(ViewData) { ["Compact"] = true }' />
+        </div>
+        @if (Model.Error != null)
+        {
+            <p class="small" role="alert" style="color: var(--color-danger)">@Model.Error</p>
+        }
+    </div>
+</section>
+
+@if (Model.Error == null)
+{
+    <div class="container search-layout">
+        <aside class="card filters" aria-label="Filtreler">
+            <form id="search-filters" method="get" action="@Url.Action("Index")"
+                  hx-get="@Url.Action("Results")" hx-target="#results" hx-trigger="change, refresh" hx-sync="this:replace">
+                <input type="hidden" name="q" value="@Model.Domain" />
+                <input type="hidden" name="reprice" value="true" />
+
+                <fieldset>
+                    <legend>Durum</legend>
+                    <label class="check"><input type="checkbox" name="musait" value="true" checked="@f.OnlyAvailable" /> Yalnızca müsait olanlar</label>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Kayıt süresi</legend>
+                    <label class="check"><input type="radio" name="sure" value="" checked="@(f.Period == null)" /> En kısa süre</label>
+                    @foreach (var period in SearchFilters.Periods)
+                    {
+                        <label class="check"><input type="radio" name="sure" value="@period" checked="@(f.Period == period)" /> @period yıl</label>
+                    }
+                </fieldset>
+
+                <fieldset>
+                    <legend><label for="sirala">Sıralama</label></legend>
+                    <select id="sirala" name="sirala" class="select">
+                        <option value="Price" selected="@(f.Sort == ResultSort.Price)">En ucuz</option>
+                        <option value="Name" selected="@(f.Sort == ResultSort.Name)">Sağlayıcı adı</option>
+                    </select>
+                </fieldset>
+
+                <p class="small muted">Kampanya fiyatları çoğunlukla yalnızca ilk alımda geçerlidir.</p>
+                <noscript><btn variant="Secondary" type="submit">Uygula</btn></noscript>
+            </form>
+        </aside>
+
+        <section id="results" class="search-results" aria-live="polite" hx-get="@resultsUrl" hx-trigger="load" hx-swap="innerHTML">
+            <div class="stack" aria-label="Sonuçlar yükleniyor">
+                <div class="skeleton skeleton--line" style="width: 260px; height: 32px"></div>
+                <p class="small muted">@Model.Domain için sağlayıcılara soruluyor… Bu birkaç saniye sürebilir.</p>
+                <div class="result-list">
+                    <partial name="Components/_ResultRowSkeleton" model="5" />
+                </div>
+            </div>
+            <noscript>
+                <div class="empty-state">Sonuçları görmek için JavaScript'i aç.</div>
+            </noscript>
+        </section>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Currency switch: re-show the results in the new currency (from the cache, not counted as a search).
+        document.addEventListener("dqe:currency", function (e) {
+            const filters = document.getElementById("search-filters");
+            if (!filters || !window.htmx) return;
+            e.preventDefault();
+            htmx.trigger(filters, "refresh");
+        });
+    </script>
+}

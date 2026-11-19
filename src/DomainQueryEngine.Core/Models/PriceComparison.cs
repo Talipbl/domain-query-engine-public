@@ -29,6 +29,11 @@ namespace DomainQueryEngine.Core
         /// <summary><see cref="OriginalPrice"/> in the display currency; equal to it when no conversion was needed or possible.</summary>
         public BasePrice? DisplayPrice { get; init; }
 
+        /// <summary>Regular price in the display currency when <see cref="DisplayPrice"/> is a campaign price.</summary>
+        public BasePrice? RegularPrice { get; init; }
+
+        public bool IsCampaign => RegularPrice != null && DisplayPrice != null && RegularPrice.Amount > DisplayPrice.Amount;
+
         public bool IsConverted => OriginalPrice != null && DisplayPrice != null
             && !string.Equals(OriginalPrice.Currency, DisplayPrice.Currency, StringComparison.OrdinalIgnoreCase);
     }

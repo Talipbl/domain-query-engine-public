@@ -38,6 +38,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<LookupService>();
 builder.Services.AddScoped<ILookupService, CachedLookupService>();
 builder.Services.AddScoped<PriceComparisonService>();
+builder.Services.AddScoped<DomainQueryEngine.SearchUI.Services.DomainSearchService>();
 builder.Services.AddScoped<IDomainService, DomainService>();
 builder.Services.AddScoped<IProviderService, ProviderService>();
 builder.Services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
@@ -69,6 +70,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Error status codes without a body (e.g. 404) show the site's own page.
+app.UseStatusCodePagesWithReExecute("/hata/{0}");
 
 app.UseSession();
 

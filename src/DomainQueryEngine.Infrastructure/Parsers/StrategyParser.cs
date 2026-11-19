@@ -68,5 +68,20 @@ namespace DomainQueryEngine.Infrastructure.Parsers
         /// </summary>
         protected static BasePrice? PreferCampaignPrice(params BasePrice?[] candidates)
             => candidates.Where(p => p is { Amount: > 0 }).OrderBy(p => p!.Amount).FirstOrDefault();
+
+        /// <summary>
+        /// Splits a campaign price and a regular price into the price to compare and, when they differ, the
+        /// regular price to show next to it. Either may be missing.
+        /// </summary>
+        protected static (BasePrice? Price, BasePrice? Regular) CampaignAndRegular(BasePrice? campaign, BasePrice? regular)
+        {
+            var price = PreferCampaignPrice(campaign, regular);
+            var higher = new[] { campaign, regular }
+                .Where(p => p is { Amount: > 0 } && price != null && p.Amount > price.Amount
+                            && string.Equals(p.Currency, price.Currency, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(p => p!.Amount)
+                .FirstOrDefault();
+            return (price, higher);
+        }
     }
 }

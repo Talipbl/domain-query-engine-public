@@ -9,7 +9,13 @@ namespace DomainQueryEngine.SearchUI.TagHelpers
         Transfer,
         Campaign,
         Best,
-        Mock
+        Mock,
+
+        /// <summary>Something needs attention (e.g. a provider that is failing).</summary>
+        Warning,
+
+        /// <summary>Plain, informational (e.g. a disabled provider).</summary>
+        Neutral
     }
 
     /// <summary>

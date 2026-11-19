@@ -21,6 +21,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
             // Regular 1-year TRY price is 503.90, the campaign price 146.36.
             WhmcsParserTests.AssertPrice(146.36m, "TRY", result.Prices[0].RegistrationPrice);
+            WhmcsParserTests.AssertPrice(503.90m, "TRY", result.Prices[0].RegularRegistrationPrice);
             WhmcsParserTests.AssertPrice(1256.20m, "TRY", result.Prices[1].RegistrationPrice);
         }
 
