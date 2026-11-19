@@ -1,0 +1,12 @@
+@{
+    var current = CurrencyPreference.Get(Context);
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+<form asp-controller="Preferences" asp-action="Currency" method="post" class="segmented" data-currency-switch>
+    <input type="hidden" name="returnUrl" value="@returnUrl" />
+    <span class="sr-only">Para birimi</span>
+    @foreach (var (code, label) in CurrencyPreference.Options)
+    {
+        <button type="submit" name="currency" value="@code" class="segmented__option" aria-pressed="@(code == current ? "true" : "false")">@label</button>
+    }
+</form>

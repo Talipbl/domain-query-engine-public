@@ -1,0 +1,42 @@
+@model ResultRowViewModel
+@{
+    var domain = Model.Item.Result.Domain;
+    var provider = Model.Item.Result.ProviderInfo;
+    var visitLink = Model.Item.Result.VisitLink;
+}
+<article class="result-row@(Model.IsBest ? " result-row--best" : "")">
+    <div class="result-row__provider">
+        <div class="result-row__name">
+            @if (!string.IsNullOrEmpty(provider?.LogoUrl))
+            {
+                <img class="result-row__logo" src="@provider.LogoUrl" alt="" loading="lazy" referrerpolicy="no-referrer" />
+            }
+            <span>@provider?.Name</span>
+            @if (Model.IsBest)
+            {
+                <badge kind="Best">En ucuz</badge>
+            }
+        </div>
+        <div class="cluster">
+            @if (domain.IsAvailable)
+            {
+                <badge kind="Available">Müsait</badge>
+            }
+            else if (domain.IsTransferable)
+            {
+                <badge kind="Transfer">Transfer edilebilir</badge>
+            }
+            else
+            {
+                <badge kind="Taken">@(domain.IsValidDomain ? "Dolu" : "Geçersiz")</badge>
+            }
+        </div>
+    </div>
+
+    <price-tag price="Model.Item.DisplayPrice" original="Model.Item.OriginalPrice" period="Model.Item.Period" warning="@Model.Warning" best="Model.IsBest"></price-tag>
+
+    @if (!string.IsNullOrWhiteSpace(visitLink))
+    {
+        <btn variant="@(Model.IsBest ? ButtonVariant.Primary : ButtonVariant.Secondary)" href="@visitLink" external="true">@(domain.IsAvailable ? "Satın al" : "Sağlayıcıya git")</btn>
+    }
+</article>

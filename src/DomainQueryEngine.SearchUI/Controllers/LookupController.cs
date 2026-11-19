@@ -44,7 +44,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
         }
 
         /// <param name="domain">Domain or pasted URL.</param>
-        /// <param name="currency">Display currency (TRY, USD or EUR); anything else falls back to TRY.</param>
+        /// <param name="currency">Display currency (TRY, USD or EUR). When omitted, the visitor's saved choice (cookie) is used; anything unsupported falls back to TRY.</param>
         /// <param name="reprice">
         /// True when the page only re-shows the last search in another currency. Such requests are not
         /// saved to the history, so query counts per domain stay accurate.
@@ -61,7 +61,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
             {
                 // The page inserts this response as HTML, so answer with a readable message, not a stack trace.
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return Content("<div class=\"result-placeholder\">Geçerli bir alan adı girin (örnek: ornek.com).</div>", "text/html");
+                return Content("<div class=\"empty-state\">Geçerli bir alan adı girin (örnek: ornek.com).</div>", "text/html");
             }
 
             var results = await _lookupService.LookupDomainAsync(validatedDomain);
@@ -73,9 +73,9 @@ namespace DomainQueryEngine.SearchUI.Controllers
             }
 
             // History keeps the providers' original prices; conversion only affects what is shown.
-            var comparison = await _priceComparison.CompareAsync(results, currency);
+            var comparison = await _priceComparison.CompareAsync(results, currency ?? CurrencyPreference.Get(HttpContext));
 
-            var html = await RenderViewToStringAsync("/Views/Lookup/_Results.cshtml", comparison);
+            var html = await RenderViewToStringAsync("/Views/Lookup/_Results.cshtml", ResultsViewModel.From(comparison));
             return Content(html, "text/html");
         }
 

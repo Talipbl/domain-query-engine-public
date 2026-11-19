@@ -1,3 +1,4 @@
+using DomainQueryEngine.Core;
 using DomainQueryEngine.SearchUI.Extensions;
 using DomainQueryEngine.SearchUI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -7,17 +8,23 @@ namespace DomainQueryEngine.SearchUI.Controllers
 {
     public class HomeController : Controller
     {
-        IHttpContextAccessor _httpContextAccessor;
+        private readonly IEnumerable<IDomainLookupStrategy> _strategies;
 
-        public HomeController(IHttpContextAccessor httpContextAccessor)
+        public HomeController(IHttpContextAccessor httpContextAccessor, IEnumerable<IDomainLookupStrategy> strategies)
         {
-            _httpContextAccessor = httpContextAccessor;
-            _httpContextAccessor.GetOrSetCookie();
+            _strategies = strategies;
+            httpContextAccessor.GetOrSetCookie();
         }
 
-        public IActionResult Index()
+        /// <param name="q">Optional domain to search right away (the page updates this when searching, so results can be shared and reloaded).</param>
+        public IActionResult Index(string? q)
         {
-            return View();
+            var model = new HomeViewModel
+            {
+                Query = q?.Trim() ?? string.Empty,
+                ProviderNames = _strategies.Select(s => s.Provider.Name).OrderBy(n => n, StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), true)).ToList()
+            };
+            return View(model);
         }
 
         public IActionResult Privacy()

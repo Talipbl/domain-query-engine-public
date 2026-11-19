@@ -1,0 +1,26 @@
+@{
+    // Pages set ViewData["Nav"] to the key of their menu item to mark it as current.
+    var currentNav = ViewData["Nav"] as string;
+    var items = new[]
+    {
+        (Key: "search", Label: "Domain Ara", Href: Url.Action("Index", "Home")!),
+        (Key: "how", Label: "Nasıl Çalışır", Href: Url.Action("Index", "Home") + "#nasil")
+    };
+}
+<header class="site-header">
+    <div class="container site-header__inner">
+        <a class="brand" href="@Url.Action("Index", "Home")">
+            <span class="brand__mark" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20 20"></path></svg>
+            </span>
+            <span class="brand__name">En <span class="brand__accent">Ucuz</span> Domain</span>
+        </a>
+        <nav class="main-nav" aria-label="Ana menü">
+            @foreach (var item in items)
+            {
+                <a class="main-nav__link" href="@item.Href" aria-current="@(item.Key == currentNav ? "page" : null)">@item.Label</a>
+            }
+        </nav>
+        <partial name="_CurrencySwitch" />
+    </div>
+</header>

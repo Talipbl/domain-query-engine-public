@@ -1,34 +1,37 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - DomainQueryEngine.SearchUI</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/DomainQueryEngine.SearchUI.styles.css" asp-append-version="true" />
+    <title>@(ViewData["Title"] is string title ? $"{title} · En Ucuz Domain" : "En Ucuz Domain")</title>
+    @if (ViewData["Description"] is string description)
+    {
+        <meta name="description" content="@description" />
+    }
+    @if (ViewData["NoIndex"] is true)
+    {
+        <meta name="robots" content="noindex" />
+    }
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="~/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" />
+    <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    @await RenderSectionAsync("Head", required: false)
 </head>
 <body>
-    <div class="page-bg"></div>
-    <div class="main-container">
+    <a class="skip-link" href="#main">İçeriğe geç</a>
+    <partial name="_Header" />
 
-        <header class="top-header">
-            <div class="logo">
-                <img src="~/source/query_engine_horizontal_logo.png" alt="En Ucuz Domain"/>
-            </div>
-
-            <div class="lang-select">
-                <a href="#">TR</a> | <a href="#">EN</a>
-            </div>
-        </header>
-
+    <main id="main" class="page-main">
         @RenderBody()
+    </main>
 
-        <footer class="footer">
-            ©2025 En Ucuz Domain Tüm Hakları Saklıdır
-        </footer>
-    </div>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_Footer" />
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

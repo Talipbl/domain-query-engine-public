@@ -1,89 +1,75 @@
-﻿@model DomainQueryEngine.Core.PriceComparison
-@using System.Globalization
-@using System.Linq
-@using DomainQueryEngine.Core.Utilities
+﻿@model ResultsViewModel
 
-@{
-    var culture = CultureInfo.GetCultureInfo("tr-TR");
-    string Format(DomainQueryEngine.Core.BasePrice price) =>
-        $"{PriceHelper.GetCurrencySymbol(price.Currency)} {price.Amount.ToString("N2", culture)}";
-    var visibleItems = Model?.Items.Where(i => i.Result.Domain.IsSuccess).ToList() ?? new();
-}
-
-@if (Model == null || !visibleItems.Any())
+@if (Model.Rows.Count == 0)
 {
-    <div class="result-placeholder">Henüz bir arama yapılmadı.</div>
+    <div class="empty-state">
+        @if (Model.Failed.Count > 0)
+        {
+            <span>Şu anda hiçbir sağlayıcıdan yanıt alınamadı. Birkaç dakika sonra tekrar dene.</span>
+        }
+        else
+        {
+            <span>Bu alan adı için sonuç bulunamadı.</span>
+        }
+    </div>
 }
 else
 {
-    <div class="result-list" data-currency="@Model.Currency">
-        <div class="result-title">@visibleItems.First().Result.Domain.DomainName arama sonuçları</div>
-
-        @foreach (var item in visibleItems)
-        {
-            var domain = item.Result.Domain;
-            var provider = item.Result.ProviderInfo;
-            var visitLink = item.Result.VisitLink;
-
-            <div class="result-card">
-                <div class="result-left">
-                    <img src="@provider?.LogoUrl" class="provider-logo" alt="@provider?.Name" />
-
-                    <div class="provider-info">
-                        <div class="provider-name">@provider?.Name</div>
-
-                        @if (domain.IsAvailable)
-                        {
-                            <div class="status-ok">Müsait</div>
-                        }
-                        else if (domain.IsTransferable)
-                        {
-                            <div class="status-transfer">Transfer Edilebilir</div>
-                        }
-                        else if (!domain.IsValidDomain)
-                        {
-                            <div class="status-bad">Geçersiz Domain</div>
-                        }
-                        else
-                        {
-                            <div class="status-bad">Müsait Değil</div>
-                        }
-
-                        @if (item.DisplayPrice != null)
-                        {
-                            <div class="price">
-                                @(item.IsConverted ? "≈ " : "")@Format(item.DisplayPrice) / @(item.Period ?? 1) yıl
-                                @if (!domain.IsAvailable)
-                                {
-                                    <span class="price-kind">(transfer)</span>
-                                }
-                            </div>
-                            @if (item.IsConverted && item.OriginalPrice != null)
-                            {
-                                <div class="price-original">Sağlayıcı fiyatı: @Format(item.OriginalPrice)</div>
-                            }
-                        }
-                    </div>
+    <div class="stack" data-currency="@Model.Currency">
+        <div class="search-summary">
+            <div class="stack" style="gap: var(--space-2)">
+                <div class="cluster" style="gap: var(--space-3)">
+                    <h2 style="font-size: var(--text-3xl)">@Model.DomainName</h2>
+                    @if (Model.AvailableCount > 0)
+                    {
+                        <badge kind="Available" pill="true">Müsait · @Model.AvailableCount sağlayıcı</badge>
+                    }
+                    else
+                    {
+                        <badge kind="Taken" pill="true">Kayıtlı</badge>
+                    }
                 </div>
-
-                @if (!string.IsNullOrWhiteSpace(visitLink))
-                {
-                    var btnLabel = domain.IsAvailable ? "Satın Al" : "Ziyaret Et";
-
-                    <div class="result-right">
-                        <a href="@visitLink" target="_blank" rel="noopener" class="action-btn">@btnLabel</a>
-                    </div>
-                }
+                <span class="small muted">@Model.AskedCount sağlayıcıya soruldu, @Model.Rows.Count tanesi yanıt verdi</span>
             </div>
-        }
+            @if (Model.Best?.Item.DisplayPrice != null)
+            {
+                <div class="best-offer">
+                    <div class="stack" style="gap: 0">
+                        <span class="best-offer__label">En ucuz</span>
+                        <span style="font-weight: 600">@Model.Best.Item.Result.ProviderInfo?.Name</span>
+                    </div>
+                    <span class="best-offer__amount">@(Model.Best.Item.IsConverted ? "≈ " : "")@PriceFormatter.Format(Model.Best.Item.DisplayPrice)</span>
+                </div>
+            }
+        </div>
+
+        <div class="result-list">
+            @foreach (var row in Model.Rows)
+            {
+                <partial name="Components/_ResultRow" model="row" />
+            }
+
+            @if (Model.Failed.Count > 0)
+            {
+                <details class="failed-list">
+                    <summary>@Model.Failed.Count sağlayıcıdan yanıt alınamadı</summary>
+                    <ul>
+                        @foreach (var failed in Model.Failed)
+                        {
+                            <li><span style="font-weight: 600">@failed.Name</span><span class="muted">@failed.Reason</span></li>
+                        }
+                    </ul>
+                </details>
+            }
+        </div>
 
         @if (Model.Rates == null)
         {
-            <div class="rate-note">Kur bilgisi alınamadı; fiyatlar sağlayıcıların kendi para biriminde gösteriliyor.</div>
+            <p class="rate-note">Kur bilgisi alınamadı; fiyatlar sağlayıcıların kendi para biriminde gösteriliyor.</p>
         }
-        else if (visibleItems.Any(i => i.IsConverted))
+        else if (Model.AnyConverted)
         {
-            <div class="rate-note">≈ işaretli fiyatlar @Model.Rates.Source @Model.Rates.Date.ToString("dd.MM.yyyy", culture) döviz satış kuruyla çevrildi.</div>
+            <p class="rate-note">≈ işaretli fiyatlar @Model.Rates.Source @PriceFormatter.FormatDate(Model.Rates.Date) döviz satış kuruyla çevrildi.</p>
         }
     </div>
 }
