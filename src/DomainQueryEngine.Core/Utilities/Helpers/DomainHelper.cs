@@ -41,6 +41,10 @@ namespace DomainQueryEngine.Core.Utilities
             if (string.IsNullOrWhiteSpace(domain))
                 throw new ArgumentException("Domain name cannot be null or empty.", nameof(domain));
 
+            // The UI sends the input with encodeURIComponent, and ASP.NET Core leaves "%2F" encoded
+            // in route values, so "https://x.com/a" arrives as "https:%2F%2Fx.com%2Fa".
+            domain = Uri.UnescapeDataString(domain);
+
             domain = SecurityHelper.SanitizeSqlInput(domain);
             domain = SecurityHelper.SanitizeXssInput(domain);
 
@@ -63,15 +67,24 @@ namespace DomainQueryEngine.Core.Utilities
                            .Replace("'", "")
                            .Replace("\"", "");
 
-            try
-            {
-                Parser.Value.TryParse(domain, out DomainInfo? parsedDomain);
-                return parsedDomain?.RegistrableDomain ?? $"{domain.Replace(".", "")}.com";
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException("Invalid domain name format.", nameof(domain), ex);
-            }
+            if (TryGetRegistrableDomain(domain, out var registrable))
+                return registrable;
+
+            // Input without a known suffix ("ornek") is searched as ".com".
+            if (TryGetRegistrableDomain($"{domain.Replace(".", "")}.com", out registrable))
+                return registrable;
+
+            throw new ArgumentException("Invalid domain name format.", nameof(domain));
+        }
+
+        private static bool TryGetRegistrableDomain(string domain, out string registrableDomain)
+        {
+            registrableDomain = string.Empty;
+            if (!Parser.Value.TryParse(domain, out DomainInfo? parsed) || string.IsNullOrEmpty(parsed?.RegistrableDomain))
+                return false;
+
+            registrableDomain = parsed.RegistrableDomain;
+            return true;
         }
     }
 }

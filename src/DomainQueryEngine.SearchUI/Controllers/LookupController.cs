@@ -44,7 +44,17 @@ namespace DomainQueryEngine.SearchUI.Controllers
         [HttpGet("{domain}")]
         public async Task<IActionResult> DomainLookup(string domain)
         {
-            string validatedDomain = DomainHelper.ValidateAndNormalizeDomain(domain);
+            string validatedDomain;
+            try
+            {
+                validatedDomain = DomainHelper.ValidateAndNormalizeDomain(domain);
+            }
+            catch (ArgumentException)
+            {
+                // The page inserts this response as HTML, so answer with a readable message, not a stack trace.
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                return Content("<div class=\"result-placeholder\">Geçerli bir alan adı girin (örnek: ornek.com).</div>", "text/html");
+            }
 
             Domain domainDto = await SaveLookupRequest(validatedDomain);
 

@@ -61,6 +61,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Core
         [InlineData("http://shop.example.com.tr/path", "example.com.tr")]
         [InlineData("www.ornek.co.uk", "ornek.co.uk")]
         [InlineData("example.com?ref=x#top", "example.com")]
+        [InlineData("https:%2F%2Fwww.example.com.tr%2Fhakkimizda", "example.com.tr")]
         public void Normalizes_To_Registrable_Domain(string input, string expected)
         {
             Assert.Equal(expected, DomainHelper.ValidateAndNormalizeDomain(input));
@@ -75,7 +76,8 @@ namespace DomainQueryEngine.Infrastructure.Test.Core
         [Theory]
         [InlineData("")]
         [InlineData("   ")]
-        public void Rejects_Empty_Input(string input)
+        [InlineData("a:b")]
+        public void Rejects_Empty_Or_Invalid_Input(string input)
         {
             Assert.Throws<ArgumentException>(() => DomainHelper.ValidateAndNormalizeDomain(input));
         }

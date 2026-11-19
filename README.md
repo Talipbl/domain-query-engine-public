@@ -52,18 +52,19 @@ For containers / hosting (e.g. Render), set the environment variable instead:
 
 ### Apply EF Core migrations
 
-The design-time `AppDbContextFactory` reads the connection string from the `ConnectionStrings__DefaultConnection` environment variable (User Secrets are not used by `dotnet ef` here). From the repository root, run:
+The web app applies pending migrations on startup, so this step is optional.
+
+To run them by hand, use the PostgreSQL project as both the migrations and the startup project: it holds the design-time `AppDbContextFactory` and the `Microsoft.EntityFrameworkCore.Design` package. The factory reads the connection string from the `ConnectionStrings__DefaultConnection` environment variable (User Secrets are not used by `dotnet ef` here).
 
 ```powershell
 # from repo root
-cd .\src\DomainQueryEngine.SearchUI
+cd .\src\DomainQueryEngine.PostgreSQL
 
 # point EF Core at your database for this shell session
 $env:ConnectionStrings__DefaultConnection = "Host=localhost;Port=5432;Database=dqe_db;Username=postgres;Password=<your-password>"
 
 # create the database + apply migrations
-# (adjust paths if you run from a different working directory)
-dotnet ef database update --project ..\DomainQueryEngine.PostgreSQL --startup-project .
+dotnet ef database update
 ```
 
 ### Run the web app
