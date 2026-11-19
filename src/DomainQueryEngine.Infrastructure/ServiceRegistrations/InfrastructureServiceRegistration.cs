@@ -27,10 +27,14 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<IDomainLookupStrategy, AlanAdiKayitLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, NatroLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, IhsLookupStrategy>();
-            services.AddScoped<IDomainLookupStrategy, IsimKayitLookupStrategy>();
+
+            // Disabled: the site moved off WHMCS; index.php?rp=/domain/check returns 403 and there is no
+            // server-side availability API any more (the site checks rdap.org in the browser, prices at /api/tlds).
+            //services.AddScoped<IDomainLookupStrategy, IsimKayitLookupStrategy>();
             //services.AddScoped<IDomainLookupStrategy, IsimTescilLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, AtakDomainLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, TurhostLookupStrategy>();
+
             // Disabled: Cloudflare answers server-side requests with a bot challenge (cf-mitigated: challenge).
             // We do not work around bot protection; enable this again only if the provider allows it.
             //services.AddScoped<IDomainLookupStrategy, GuzelHostingLookupStrategy>();
@@ -43,7 +47,7 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<AlanAdiKayitStrategyParser>();
             services.AddScoped<NatroStrategyParser>();
             services.AddScoped<IhsStrategyParser>();
-            services.AddScoped<IsimKayitStrategyParser>();
+            //services.AddScoped<IsimKayitStrategyParser>();
             services.AddScoped<IsimTescilStrategyParser>();
             services.AddScoped<AtakDomainStrategyParser>();
             services.AddScoped<TurhostStrategyParser>();

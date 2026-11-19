@@ -155,7 +155,7 @@ Strategies are registered in `src/DomainQueryEngine.Infrastructure/ServiceRegist
 | Turkticaret.net | `TurkticaretLookupStrategy` | `POST smartquery_v2.php` (`trquery` for .tr) | Active |
 | Hosting.com.tr | `HostingComTrLookupStrategy` | `POST /web/domain/querynew/lookup` (session + CSRF token) | Active |
 | Yöncü Bilişim | `YoncuBilisimLookupStrategy` | JSON API (`/API/Domain/Check`, cftoken) | Registered |
-| İsim Kayıt | `IsimKayitLookupStrategy` | WHMCS domain check | Registered, currently returns 403 |
+| İsim Kayıt | `IsimKayitLookupStrategy` | WHMCS domain check | Not registered: the site left WHMCS, the check endpoint returns 403 and there is no server-side availability API |
 | İsim Tescil | `IsimTescilLookupStrategy` | HTML form post | Not registered |
 | Güzel Hosting | `GuzelHostingLookupStrategy` | WHMCS `checkAvailabilityOne` | Not registered: Cloudflare answers server-side requests with a bot challenge |
 
