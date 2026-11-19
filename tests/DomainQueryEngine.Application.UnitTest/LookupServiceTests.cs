@@ -100,6 +100,24 @@ namespace DomainQueryEngine.Application.Test
             Assert.InRange(result.ResponseTimeMs, 90, 5000);
         }
 
+        [Fact]
+        public async Task Reports_Slow_Provider_As_Timed_Out_Without_Waiting_For_It()
+        {
+            // The slow strategy ignores the cancellation token, like a strategy calling HttpClient without one.
+            var slow = new FakeStrategy("slow", () => Result(available: true, 1, "TRY"), delay: TimeSpan.FromSeconds(10), ignoreToken: true);
+            var fast = Strategy("fast", Result(available: true, 2, "TRY"));
+            var service = new LookupService(new IDomainLookupStrategy[] { slow, fast }, new NoOpLookupResultRepository(), TimeSpan.FromMilliseconds(200));
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var results = await service.LookupDomainAsync(Domain);
+
+            Assert.True(stopwatch.Elapsed < TimeSpan.FromSeconds(3), $"Lookup took {stopwatch.Elapsed}");
+            var timedOut = results.Single(r => r.ProviderInfo.Name == "slow");
+            Assert.False(timedOut.Domain.IsSuccess);
+            Assert.Contains("Timed out", timedOut.Domain.RawResponse);
+            Assert.True(results.Single(r => r.ProviderInfo.Name == "fast").Domain.IsSuccess);
+        }
+
         private static LookupService CreateService(params IDomainLookupStrategy[] strategies)
             => new(strategies, new NoOpLookupResultRepository());
 
@@ -121,11 +139,13 @@ namespace DomainQueryEngine.Application.Test
         {
             private readonly Func<DomainResult?> _lookup;
             private readonly TimeSpan _delay;
+            private readonly bool _ignoreToken;
 
-            public FakeStrategy(string name, Func<DomainResult?> lookup, string visitLink = "https://provider.test/{0}", TimeSpan delay = default)
+            public FakeStrategy(string name, Func<DomainResult?> lookup, string visitLink = "https://provider.test/{0}", TimeSpan delay = default, bool ignoreToken = false)
             {
                 _lookup = lookup;
                 _delay = delay;
+                _ignoreToken = ignoreToken;
                 Provider = new ProviderInfo { Name = name, VisitLink = visitLink };
             }
 
@@ -137,7 +157,7 @@ namespace DomainQueryEngine.Application.Test
             public async Task<DomainResult> LookupAsync(string domainName, CancellationToken ct = default)
             {
                 if (_delay > TimeSpan.Zero)
-                    await Task.Delay(_delay, ct);
+                    await Task.Delay(_delay, _ignoreToken ? CancellationToken.None : ct);
                 return _lookup()!;
             }
         }

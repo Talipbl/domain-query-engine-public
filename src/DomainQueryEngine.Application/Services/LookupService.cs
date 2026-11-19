@@ -14,13 +14,24 @@ namespace DomainQueryEngine.Application.Lookup
         /// </summary>
         private const string PreferredCurrency = "TRY";
 
+        /// <summary>
+        /// How long one provider may take before its result is reported as failed, so a single slow
+        /// provider does not hold up the whole results page.
+        /// </summary>
+        public static readonly TimeSpan DefaultProviderTimeout = TimeSpan.FromSeconds(8);
+
         private readonly IEnumerable<IDomainLookupStrategy> _strategies;
         private readonly IDomainLookupResultRepository _lookupResultRepository;
+        private readonly TimeSpan _providerTimeout;
 
-        public LookupService(IEnumerable<IDomainLookupStrategy> strategies, IDomainLookupResultRepository lookupResultRepository)
+        public LookupService(
+            IEnumerable<IDomainLookupStrategy> strategies,
+            IDomainLookupResultRepository lookupResultRepository,
+            TimeSpan? providerTimeout = null)
         {
             _strategies = strategies;
             _lookupResultRepository = lookupResultRepository;
+            _providerTimeout = providerTimeout ?? DefaultProviderTimeout;
         }
 
         public async Task AddDomainLookupResult(DomainLookupResult lookupResult)
@@ -34,9 +45,12 @@ namespace DomainQueryEngine.Application.Lookup
             {
                 var visitLink = BuildVisitLink(strategy.Provider.VisitLink, domain);
                 var stopwatch = Stopwatch.StartNew();
+                using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                timeout.CancelAfter(_providerTimeout);
                 try
                 {
-                    var result = await strategy.LookupAsync(domain, ct);
+                    // WaitAsync also stops waiting on calls inside a strategy that ignore the token.
+                    var result = await strategy.LookupAsync(domain, timeout.Token).WaitAsync(_providerTimeout, ct);
                     return new SearchResult
                     {
                         ProviderInfo = strategy.Provider,
@@ -47,6 +61,9 @@ namespace DomainQueryEngine.Application.Lookup
                 }
                 catch (Exception ex)
                 {
+                    var timedOut = ex is TimeoutException || (ex is OperationCanceledException && !ct.IsCancellationRequested);
+                    var error = timedOut ? $"Timed out after {_providerTimeout.TotalSeconds:0.#}s" : ex.Message;
+
                     return new SearchResult
                     {
                         ProviderInfo = strategy.Provider,
@@ -58,7 +75,7 @@ namespace DomainQueryEngine.Application.Lookup
                             Tld = DomainHelper.GetTldFromDomainName(domain),
                             IsSuccess = false,
                             IsValidDomain = false,
-                            RawResponse = $"Error: {ex.Message}",
+                            RawResponse = $"Error: {error}",
                             CheckedAt = DateTime.UtcNow
                         }
                     };

@@ -22,6 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Real provider responses captured for the parser tests. -->
+    <None Update="Fixtures\Responses\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
     <Using Include="DomainQueryEngine.Infrastructure.Test" />
   </ItemGroup>
