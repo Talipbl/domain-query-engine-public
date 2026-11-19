@@ -1,7 +1,7 @@
 @model TldListPageViewModel
 @{
-    ViewData["Title"] = "Uzantı fiyatları";
-    ViewData["Description"] = "Domain uzantılarına göre en ucuz kayıt, yenileme ve transfer fiyatları: .com, .com.tr, .tr ve diğerleri.";
+    ViewData["Title"] = T["Tlds.Title"].Value;
+    ViewData["Description"] = T["Tlds.Description"].Value;
     ViewData["Nav"] = "tlds";
 
     string GroupUrl(string key) => Url.Action("Index", new { grup = key == "tumu" ? null : key, sirala = Model.Sort.Key == "populerlik" ? null : Model.Sort.Key, ara = string.IsNullOrEmpty(Model.Query) ? null : Model.Query })!;
@@ -10,17 +10,17 @@
 <div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)" hx-boost="true" hx-target="main" hx-select="main" hx-swap="outerHTML">
     <div class="page-title">
         <div class="page-title__text">
-            <h1>Uzantı fiyatları</h1>
-            <p class="lead">Her uzantı için sağlayıcılar arasındaki en ucuz 1 yıllık kayıt, yenileme ve transfer fiyatı.</p>
+            <h1>@T["Tlds.Title"]</h1>
+            <p class="lead">@T["Tlds.Lead"]</p>
         </div>
     </div>
 
     <div class="toolbar">
-        <nav class="tabs" aria-label="Uzantı grupları">
+        <nav class="tabs" aria-label="@T["Tlds.Groups"]">
             @foreach (var group in TldListPageViewModel.Groups)
             {
                 <a class="tab" href="@GroupUrl(group.Key)" aria-current="@(group == Model.Group ? "page" : null)">
-                    @group.Label<span class="tab__count">@Model.GroupCounts.GetValueOrDefault(group.Key)</span>
+                    @T[group.LabelKey]<span class="tab__count">@Model.GroupCounts.GetValueOrDefault(group.Key)</span>
                 </a>
             }
         </nav>
@@ -29,39 +29,39 @@
             {
                 <input type="hidden" name="grup" value="@Model.Group.Key" />
             }
-            <label for="tld-q" class="sr-only">Uzantı ara</label>
-            <input id="tld-q" class="input" type="search" name="ara" value="@Model.Query" placeholder="Uzantı ara: .com.tr" style="width: 200px; max-width: 100%" />
-            <label class="small muted" for="tld-sort">Sırala</label>
+            <label for="tld-q" class="sr-only">@T["Tlds.SearchLabel"]</label>
+            <input id="tld-q" class="input" type="search" name="ara" value="@Model.Query" placeholder="@T["Tlds.SearchPlaceholder"]" style="width: 200px; max-width: 100%" />
+            <label class="small muted" for="tld-sort">@T["Filters.Sort"]</label>
             <select id="tld-sort" class="select" name="sirala" data-autosubmit>
                 @foreach (var sort in TldListPageViewModel.Sorts)
                 {
-                    <option value="@sort.Key" selected="@(sort == Model.Sort)">@sort.Label</option>
+                    <option value="@sort.Key" selected="@(sort == Model.Sort)">@T[sort.LabelKey]</option>
                 }
             </select>
-            <noscript><btn variant="Secondary" type="submit">Uygula</btn></noscript>
+            <noscript><btn variant="Secondary" type="submit">@T["Common.Apply"]</btn></noscript>
         </form>
     </div>
 
     @if (Model.Items.Count == 0)
     {
         <div class="empty-state">
-            Bu filtrelere uyan uzantı yok. <a href="@Url.Action("Index")" style="font-weight: 600">Tüm uzantılar</a>
+            @T["Tlds.NoMatch"] <a href="@Url.Action("Index")" style="font-weight: 600">@T["Tlds.AllTlds"]</a>
         </div>
     }
     else
     {
         <div class="table-wrap">
             <table class="data-table">
-                <caption class="sr-only">Uzantılara göre en ucuz fiyatlar (@Model.List.Currency)</caption>
+                <caption class="sr-only">@T["Tlds.Caption", Model.List.Currency]</caption>
                 <thead>
                     <tr>
-                        <th scope="col">Uzantı</th>
-                        <th scope="col" class="num">En ucuz kayıt</th>
-                        <th scope="col" class="num">En ucuz yenileme</th>
-                        <th scope="col" class="num">En ucuz transfer</th>
-                        <th scope="col" class="num">Sağlayıcı</th>
-                        <th scope="col">Belge</th>
-                        <th scope="col"><span class="sr-only">Detay</span></th>
+                        <th scope="col">@T["Tlds.Col.Tld"]</th>
+                        <th scope="col" class="num">@T["Tlds.Col.Registration"]</th>
+                        <th scope="col" class="num">@T["Tlds.Col.Renewal"]</th>
+                        <th scope="col" class="num">@T["Tlds.Col.Transfer"]</th>
+                        <th scope="col" class="num">@T["Tlds.Col.Providers"]</th>
+                        <th scope="col">@T["Tlds.Col.Document"]</th>
+                        <th scope="col"><span class="sr-only">@T["Tlds.Col.Detail"]</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,18 +79,18 @@
                             <td>
                                 @if (item.Entry.DocumentRequired == true)
                                 {
-                                    <badge kind="Warning">Gerekir</badge>
+                                    <badge kind="Warning">@T["Document.Required"]</badge>
                                 }
                                 else if (item.Entry.DocumentRequired == false)
                                 {
-                                    <badge kind="Available">Gerekmez</badge>
+                                    <badge kind="Available">@T["Document.NotRequired"]</badge>
                                 }
                                 else
                                 {
-                                    <span class="muted" aria-label="Bilgi yok">—</span>
+                                    <span class="muted" aria-label="@T["Common.NoInfo"]">—</span>
                                 }
                             </td>
-                            <td><a href="@detailUrl" style="font-weight: 600; text-decoration: none; white-space: nowrap">Karşılaştır →</a></td>
+                            <td><a href="@detailUrl" style="font-weight: 600; text-decoration: none; white-space: nowrap">@T["Tlds.Compare"] →</a></td>
                         </tr>
                     }
                 </tbody>

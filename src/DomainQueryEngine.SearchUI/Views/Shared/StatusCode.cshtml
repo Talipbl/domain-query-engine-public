@@ -1,22 +1,18 @@
 @model int
 @{
     var notFound = Model == 404;
-    ViewData["Title"] = notFound ? "Sayfa bulunamadı" : "Bir hata oluştu";
+    ViewData["Title"] = notFound ? T["NotFound.Title"].Value : T["Error.Title"].Value;
     ViewData["NoIndex"] = true;
 }
 
 <div class="container section" style="max-width: 720px; padding-bottom: var(--space-12)">
     <div class="card stack">
-        <h1 style="font-size: var(--text-3xl)">@(notFound ? "Aradığın sayfa bulunamadı" : "Bir şeyler ters gitti")</h1>
-        <p class="lead">
-            @(notFound
-                ? "Adres yanlış yazılmış ya da sayfa kaldırılmış olabilir. Bir alan adı arayabilir veya uzantı fiyatlarına göz atabilirsin."
-                : "İsteğin işlenemedi. Birkaç saniye sonra tekrar dene.")
-        </p>
+        <h1 style="font-size: var(--text-3xl)">@(notFound ? T["NotFound.Heading"] : T["Error.Heading"])</h1>
+        <p class="lead">@(notFound ? T["NotFound.Text"] : T["Error.Text"])</p>
         <partial name="_SearchForm" model="string.Empty" view-data='new ViewDataDictionary(ViewData) { ["Compact"] = true }' />
         <div class="cluster">
-            <btn variant="Link" href="@Url.Action("Index", "Tlds")">Uzantı fiyatları →</btn>
-            <btn variant="Link" href="@Url.Action("Index", "Providers")">Sağlayıcılar →</btn>
+            <btn variant="Link" href="@Url.Action("Index", "Tlds")">@T["Home.AllTlds"]</btn>
+            <btn variant="Link" href="@Url.Action("Index", "Providers")">@T["Home.AllProviders"]</btn>
         </div>
     </div>
 </div>

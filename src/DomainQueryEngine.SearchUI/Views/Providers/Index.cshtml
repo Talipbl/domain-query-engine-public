@@ -1,7 +1,7 @@
 @model ProviderListPageViewModel
 @{
-    ViewData["Title"] = "Sağlayıcılar";
-    ViewData["Description"] = "Fiyatlarını karşılaştırdığımız Türk domain sağlayıcıları ve durumları.";
+    ViewData["Title"] = T["Providers.Title"].Value;
+    ViewData["Description"] = T["Providers.Description"].Value;
     ViewData["Nav"] = "providers";
     var active = Model.Providers.Count(p => p.Status == DomainQueryEngine.Core.Catalog.ProviderStatus.Active);
 }
@@ -9,8 +9,8 @@
 <div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)">
     <div class="page-title">
         <div class="page-title__text">
-            <h1>Sağlayıcılar</h1>
-            <p class="lead">Her aramada @active sağlayıcının sitesinden güncel fiyat alınır. Yanıt vermeyen veya otomatik sorguları engelleyen sağlayıcılar da burada durumlarıyla listelenir.</p>
+            <h1>@T["Providers.Title"]</h1>
+            <p class="lead">@T["Providers.Lead", active]</p>
         </div>
     </div>
 
@@ -31,9 +31,9 @@
                 <div class="cluster" style="justify-content: space-between">
                     @if (provider.TldCount is > 0)
                     {
-                        <span class="small muted">@provider.TldCount uzantı</span>
+                        <span class="small muted">@T["Providers.TldCount", provider.TldCount]</span>
                     }
-                    <btn variant="Link" href="@provider.Website" external="true">Siteye git</btn>
+                    <btn variant="Link" href="@provider.Website" external="true">@T["Providers.GoToSite"]</btn>
                 </div>
             </article>
         }
@@ -41,6 +41,6 @@
 
     @if (Model.IsSample)
     {
-        <p class="rate-note"><badge kind="Mock"></badge> Uzantı sayıları örnek veridir.</p>
+        <p class="rate-note"><badge kind="Mock"></badge> @T["Providers.SampleNote"]</p>
     }
 </div>

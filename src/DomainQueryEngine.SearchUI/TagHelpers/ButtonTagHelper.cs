@@ -24,6 +24,13 @@ namespace DomainQueryEngine.SearchUI.TagHelpers
     [HtmlTargetElement("btn")]
     public class ButtonTagHelper : TagHelper
     {
+        private readonly Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> _text;
+
+        public ButtonTagHelper(Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> text)
+        {
+            _text = text;
+        }
+
         public ButtonVariant Variant { get; set; } = ButtonVariant.Primary;
         public ButtonSize Size { get; set; } = ButtonSize.Sm;
         public string? Href { get; set; }
@@ -60,7 +67,9 @@ namespace DomainQueryEngine.SearchUI.TagHelpers
             {
                 var content = await output.GetChildContentAsync();
                 output.Content.SetHtmlContent(content);
-                output.Content.AppendHtml(" <span aria-hidden=\"true\">↗</span><span class=\"sr-only\">(yeni sekmede açılır)</span>");
+                output.Content.AppendHtml(" <span aria-hidden=\"true\">↗</span><span class=\"sr-only\">");
+                output.Content.Append(_text["A11y.OpensInNewTab"]);
+                output.Content.AppendHtml("</span>");
             }
         }
     }

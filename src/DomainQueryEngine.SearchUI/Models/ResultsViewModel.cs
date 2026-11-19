@@ -58,10 +58,8 @@ namespace DomainQueryEngine.SearchUI.Models
             {
                 Item = item,
                 IsBest = ReferenceEquals(item, bestItem),
-                Warning = availablePrices.Count >= 3 && median is > 0 && item.DisplayPrice != null
-                          && item.Result.Domain.IsAvailable && item.DisplayPrice.Amount > median.Value * OutlierFactor
-                    ? "Diğer sağlayıcılardan çok yüksek"
-                    : null
+                IsOutlier = availablePrices.Count >= 3 && median is > 0 && item.DisplayPrice != null
+                            && item.Result.Domain.IsAvailable && item.DisplayPrice.Amount > median.Value * OutlierFactor
             });
 
             if (filters.OnlyAvailable)
@@ -81,20 +79,23 @@ namespace DomainQueryEngine.SearchUI.Models
                 AvailableCount = succeeded.Count(i => i.Result.Domain.IsAvailable),
                 Best = rowList.FirstOrDefault(r => r.IsBest),
                 Rows = rowList,
-                Failed = failed.Select(i => new FailedProvider(i.Result.ProviderInfo?.Name ?? "Sağlayıcı", DescribeError(i.Result.Domain.RawResponse))).ToList()
+                Failed = failed.Select(i => new FailedProvider(i.Result.ProviderInfo?.Name ?? string.Empty, ErrorKey(i.Result.Domain.RawResponse))).ToList()
             };
         }
 
-        /// <summary>Turns the stored error ("Error: …") into a short, readable reason.</summary>
-        public static string DescribeError(string? raw)
+        /// <summary>
+        /// Turns the stored error ("Error: …") into the key of a short, readable reason
+        /// (Resources/Locales: "Error.*").
+        /// </summary>
+        public static string ErrorKey(string? raw)
         {
             raw ??= string.Empty;
-            if (raw.Contains("Timed out", StringComparison.OrdinalIgnoreCase)) return "Zamanında yanıt vermedi";
-            if (raw.Contains("404")) return "Sorgu adresi bulunamadı (404)";
-            if (raw.Contains("403")) return "Sağlayıcı erişimi engelledi (403)";
-            if (raw.Contains("E_KEY_ERROR")) return "Sağlayıcı doğrulama istedi";
-            if (System.Text.RegularExpressions.Regex.IsMatch(raw, @"\b5\d\d\b")) return "Sağlayıcıda sunucu hatası";
-            return "Yanıt alınamadı";
+            if (raw.Contains("Timed out", StringComparison.OrdinalIgnoreCase)) return "Error.Timeout";
+            if (raw.Contains("404")) return "Error.NotFound";
+            if (raw.Contains("403")) return "Error.Forbidden";
+            if (raw.Contains("E_KEY_ERROR")) return "Error.Challenge";
+            if (System.Text.RegularExpressions.Regex.IsMatch(raw, @"\b5\d\d\b")) return "Error.Server";
+            return "Error.Unknown";
         }
     }
 
@@ -102,8 +103,11 @@ namespace DomainQueryEngine.SearchUI.Models
     {
         public ComparedResult Item { get; init; } = new();
         public bool IsBest { get; init; }
-        public string? Warning { get; init; }
+
+        /// <summary>The price is far above the other providers' (more than <see cref="ResultsViewModel.OutlierFactor"/> × median).</summary>
+        public bool IsOutlier { get; init; }
     }
 
-    public sealed record FailedProvider(string Name, string Reason);
+    /// <param name="ReasonKey">Localization key of the reason, e.g. "Error.NotFound".</param>
+    public sealed record FailedProvider(string Name, string ReasonKey);
 }

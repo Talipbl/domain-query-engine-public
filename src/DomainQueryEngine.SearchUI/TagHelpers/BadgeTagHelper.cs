@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Localization;
 
 namespace DomainQueryEngine.SearchUI.TagHelpers
 {
@@ -20,11 +21,18 @@ namespace DomainQueryEngine.SearchUI.TagHelpers
 
     /// <summary>
     /// <c>&lt;badge kind="available"&gt;Müsait&lt;/badge&gt;</c> → <c>&lt;span class="badge badge--available"&gt;</c>.
-    /// <c>kind="mock"</c> marks sample data; without content it reads "Örnek veri".
+    /// <c>kind="mock"</c> marks sample data; without content it reads "Örnek veri" / "Sample data".
     /// </summary>
     [HtmlTargetElement("badge")]
     public class BadgeTagHelper : TagHelper
     {
+        private readonly IStringLocalizer<SharedResource> _text;
+
+        public BadgeTagHelper(IStringLocalizer<SharedResource> text)
+        {
+            _text = text;
+        }
+
         public BadgeKind Kind { get; set; } = BadgeKind.Available;
 
         /// <summary>Rounded "pill" shape, used for larger status labels.</summary>
@@ -41,7 +49,7 @@ namespace DomainQueryEngine.SearchUI.TagHelpers
 
             var content = await output.GetChildContentAsync();
             if (content.IsEmptyOrWhiteSpace && Kind == BadgeKind.Mock)
-                output.Content.SetContent("Örnek veri");
+                output.Content.SetContent(_text["Badge.Mock"]);
         }
     }
 }

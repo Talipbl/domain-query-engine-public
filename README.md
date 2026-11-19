@@ -96,7 +96,7 @@ Environment variables use `__` instead of `:` (e.g. `Site__BaseUrl`).
 
 ### Container
 
-The `Dockerfile` builds and runs the web app. At runtime it needs at least `ConnectionStrings__DefaultConnection`; set `Site__BaseUrl` to the public address so canonical links and the sitemap use `https`. Texts and number formats are fixed to Turkish (`tr-TR`) by the app, so the image needs ICU (the Debian-based `aspnet` images include it; Alpine images do not).
+The `Dockerfile` builds and runs the web app. At runtime it needs at least `ConnectionStrings__DefaultConnection`; set `Site__BaseUrl` to the public address so canonical links and the sitemap use `https`. Texts and number formats follow the chosen language (`tr-TR` or `en-US`), so the image needs ICU (the Debian-based `aspnet` images include it; Alpine images do not).
 
 ## UI
 
@@ -104,7 +104,7 @@ Pages are rendered on the server; htmx loads search results and makes filters, t
 
 | Address | Page | Data |
 |---|---|---|
-| `/` | Search box, cheapest offers for popular extensions, most searched domains, providers | Catalog (sample), statistics |
+| `/` | Search box, cheapest offers for popular extensions, most searched extensions in the last 24 hours, providers | Catalog (sample), statistics |
 | `/ara?q=…` | Search results: page renders at once, results load from `/ara/sonuclar`. Filters: only available, period (1/2/5 years), sort | Live lookups |
 | `/uzantilar` | Extension list: group tabs, text filter, sort by popularity, cheapest registration, cheapest renewal or name | Catalog (sample) |
 | `/uzantilar/{slug}` | One extension (`/uzantilar/com-tr`): summary, per-provider prices, price history, FAQ | Catalog (sample) |
@@ -114,10 +114,12 @@ Pages are rendered on the server; htmx loads search results and makes filters, t
 
 Sample data is labelled "Örnek veri" on the pages. Filter, sort and currency changes on `/ara` re-show the cached results and are not counted as new searches.
 
-- **Design system:** `wwwroot/css/tokens.css` (colors, type, spacing; dark theme follows the system setting), `base.css`, `components.css`.
+- **Design system:** `wwwroot/css/tokens.css` (colors, type, spacing; light and dark themes), `base.css`, `components.css`.
+- **Theme:** the sun/moon button in the header switches light/dark at once and saves the choice in the `dqe_theme` cookie; the server renders `data-theme` from it, so the page does not flash. Without a choice the page follows the system setting.
 - **Components:** tag helpers `<badge>`, `<btn>`, `<price-tag>` (`TagHelpers/`) and partials under `Views/Shared` and `Views/Shared/Components` (`_ResultRow`, `_SearchResults`, `_Offer`, `_DataNote`, …).
 - **Currency:** chosen in the header, stored in the `dqe_currency` cookie; the form works without JavaScript.
-- **Texts:** shared texts live in `Resources/SharedResource.tr.resx` and are used through `IStringLocalizer<SharedResource>` (`@T["Nav.Search"]`). Only Turkish exists; to add a language, add `SharedResource.{culture}.resx` and the culture in `Program.cs`. Page-specific texts are still written in the views.
+- **Languages:** Turkish (default) and English, chosen with TR/EN in the header and kept in the ASP.NET culture cookie (`?culture=en-US` also works). All texts are key/value pairs in `Resources/Locales/tr.json` and `en.json`, embedded in the assembly and read by `Localization/JsonStringLocalizer.cs`; views use them through `IStringLocalizer<SharedResource>` (`@T["Nav.Search"]`, with arguments `@T["Results.Failed", count]`). A key ending in `.One` is used instead when the first argument is 1 (`"1 search"`). A key missing in English falls back to Turkish and is logged. Extension descriptions and FAQs in the catalog have English fields (`descriptionEn`, `questionEn`, `answerEn`). Tests check that both files have the same keys and that every key used in the code exists.
+- **To add a language:** add `Resources/Locales/{code}.json` with the same keys and the culture to `LanguagePreference.Languages`.
 - **SEO:** canonical and Open Graph tags on catalog pages, `noindex` on search pages, `/sitemap.xml` and `/robots.txt`.
 
 ## API

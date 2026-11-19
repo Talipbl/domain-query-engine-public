@@ -10,28 +10,30 @@ namespace DomainQueryEngine.SearchUI.Models
     /// <summary>Model for Components/_Offer: a price cell.</summary>
     public sealed record OfferCellModel(PricedOffer? Offer, bool ShowProvider = false, bool ShowDetails = false, bool Highlight = false);
 
-    public sealed record TldGroup(string Key, string Label, TldCategory? Category, bool PopularOnly = false);
+    /// <param name="LabelKey">Localization key of the tab label.</param>
+    public sealed record TldGroup(string Key, string LabelKey, TldCategory? Category, bool PopularOnly = false);
 
-    public sealed record TldSortOption(string Key, string Label, TldSort Sort);
+    /// <param name="LabelKey">Localization key of the option label.</param>
+    public sealed record TldSortOption(string Key, string LabelKey, TldSort Sort);
 
     public sealed class TldListPageViewModel
     {
         public static readonly IReadOnlyList<TldGroup> Groups = new TldGroup[]
         {
-            new("tumu", "Tümü", null),
-            new("populer", "Popüler", null, PopularOnly: true),
-            new("tr", ".tr uzantıları", TldCategory.Turkish),
-            new("genel", "Genel", TldCategory.Generic),
-            new("yeni", "Yeni uzantılar", TldCategory.New),
-            new("ulke", "Ülke kodlu", TldCategory.Country)
+            new("tumu", "Tlds.Group.All", null),
+            new("populer", "Tlds.Group.Popular", null, PopularOnly: true),
+            new("tr", "Tlds.Group.Turkish", TldCategory.Turkish),
+            new("genel", "Tlds.Group.Generic", TldCategory.Generic),
+            new("yeni", "Tlds.Group.New", TldCategory.New),
+            new("ulke", "Tlds.Group.Country", TldCategory.Country)
         };
 
         public static readonly IReadOnlyList<TldSortOption> Sorts = new TldSortOption[]
         {
-            new("populerlik", "Popülerlik", TldSort.Popularity),
-            new("kayit", "En ucuz kayıt", TldSort.CheapestRegistration),
-            new("yenileme", "En ucuz yenileme", TldSort.CheapestRenewal),
-            new("alfabe", "Alfabetik", TldSort.Alphabetical)
+            new("populerlik", "Tlds.Sort.Popularity", TldSort.Popularity),
+            new("kayit", "Tlds.Sort.Registration", TldSort.CheapestRegistration),
+            new("yenileme", "Tlds.Sort.Renewal", TldSort.CheapestRenewal),
+            new("alfabe", "Tlds.Sort.Alphabetical", TldSort.Alphabetical)
         };
 
         public TldPriceList List { get; init; } = new();
@@ -71,16 +73,15 @@ namespace DomainQueryEngine.SearchUI.Models
     /// <summary>One month in the price history chart; <see cref="HeightPercent"/> is relative to the highest month.</summary>
     public sealed record HistoryBar(PricePoint Point, int HeightPercent, bool IsLatest)
     {
-        private static readonly string[] MonthNames = { "Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara" };
-
         /// <summary>
         /// CSS height of the bar: 80% of the column at most (room for the value label), at least 4%.
         /// An integer, so it never renders with a culture-specific decimal separator ("73,6%").
         /// </summary>
         public int BarHeightPercent => Math.Max(HeightPercent * 4 / 5, 4);
 
+        /// <summary>Short month name in the request's language ("Kas", "Nov").</summary>
         public string Label => Point.Month.Length >= 7 && int.TryParse(Point.Month[5..7], out var m) && m is >= 1 and <= 12
-            ? MonthNames[m - 1]
+            ? System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(m)
             : Point.Month;
     }
 

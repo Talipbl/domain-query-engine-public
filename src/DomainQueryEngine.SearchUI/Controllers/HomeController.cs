@@ -32,11 +32,15 @@ namespace DomainQueryEngine.SearchUI.Controllers
             var tlds = await _prices.GetListAsync(CurrencyPreference.Get(HttpContext), ct: ct);
             var turkish = StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), true);
 
+            var catalogTlds = tlds.Items.Select(i => i.Entry.Tld).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
             return View(new HomeViewModel
             {
                 PopularTlds = tlds.Items.Where(i => i.Entry.IsPopular).Take(4).ToList(),
                 TldList = tlds,
-                MostSearched = (await _statistics.GetMostSearchedAsync(PopularWindow, 5, ct)).ToList(),
+                MostSearchedTlds = (await _statistics.GetMostSearchedTldsAsync(PopularWindow, 5, ct))
+                    .Select(t => new MostSearchedTld(t, catalogTlds.Contains(t.Tld)))
+                    .ToList(),
                 MostSearchedIsSample = _statistics.IsSample,
                 ActiveProviders = (await _providers.GetAllAsync(ct))
                     .Where(p => p.Status == ProviderStatus.Active)

@@ -75,5 +75,16 @@ namespace DomainQueryEngine.Infrastructure.Catalog
 
         public Task<IReadOnlyList<PopularQuery>> GetMostSearchedAsync(TimeSpan window, int take, CancellationToken ct = default)
             => Task.FromResult<IReadOnlyList<PopularQuery>>(_data.Value.Queries.OrderByDescending(q => q.Count).Take(take).ToList());
+
+        /// <summary>Adds up the sample queries by extension (everything after the first dot).</summary>
+        public Task<IReadOnlyList<PopularTld>> GetMostSearchedTldsAsync(TimeSpan window, int take, CancellationToken ct = default)
+            => Task.FromResult<IReadOnlyList<PopularTld>>(_data.Value.Queries
+                .Where(q => q.DomainName.Contains('.'))
+                .GroupBy(q => q.DomainName[(q.DomainName.IndexOf('.') + 1)..])
+                .Select(g => new PopularTld(g.Key, g.Sum(q => q.Count)))
+                .OrderByDescending(t => t.Count)
+                .ThenBy(t => t.Tld, StringComparer.Ordinal)
+                .Take(take)
+                .ToList());
     }
 }

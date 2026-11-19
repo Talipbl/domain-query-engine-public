@@ -1,14 +1,14 @@
 @model ProviderDetailPageViewModel
 @{
     var provider = Model.Provider;
-    ViewData["Title"] = $"{provider.Name} domain fiyatları";
-    ViewData["Description"] = $"{provider.Name} alan adı kayıt, yenileme ve transfer fiyatları, uzantılara göre.";
+    ViewData["Title"] = T["ProviderDetail.Title", provider.Name].Value;
+    ViewData["Description"] = T["ProviderDetail.Description", provider.Name].Value;
     ViewData["Nav"] = "providers";
 }
 
 <div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)">
-    <nav class="breadcrumb" aria-label="Konum">
-        <a href="@Url.Action("Index")">Sağlayıcılar</a><span aria-hidden="true">/</span><span aria-current="page">@provider.Name</span>
+    <nav class="breadcrumb" aria-label="@T["Common.Breadcrumb"]">
+        <a href="@Url.Action("Index")">@T["Providers.Title"]</a><span aria-hidden="true">/</span><span aria-current="page">@provider.Name</span>
     </nav>
 
     <div class="page-title">
@@ -24,27 +24,27 @@
                 <partial name="Components/_ProviderStatus" model="provider.Status" />
             </div>
         </div>
-        <btn variant="Secondary" size="Md" href="@provider.Website" external="true">Sağlayıcının sitesi</btn>
+        <btn variant="Secondary" size="Md" href="@provider.Website" external="true">@T["ProviderDetail.Website"]</btn>
     </div>
 
     @if (Model.Prices.Rows.Count == 0)
     {
-        <div class="empty-state">Bu sağlayıcı için kayıtlı uzantı fiyatı yok.</div>
+        <div class="empty-state">@T["ProviderDetail.NoPrices"]</div>
     }
     else
     {
         <section class="stack" style="gap: var(--space-3)" aria-labelledby="prices-title">
-            <h2 id="prices-title">Uzantılara göre fiyat</h2>
+            <h2 id="prices-title">@T["ProviderDetail.ByTld"]</h2>
             <div class="table-wrap">
                 <table class="data-table">
-                    <caption class="sr-only">@provider.Name uzantı fiyatları (@Model.Prices.Currency)</caption>
+                    <caption class="sr-only">@T["ProviderDetail.Caption", provider.Name, Model.Prices.Currency]</caption>
                     <thead>
                         <tr>
-                            <th scope="col">Uzantı</th>
-                            <th scope="col" class="num">1 yıl kayıt</th>
-                            <th scope="col" class="num">Yenileme</th>
-                            <th scope="col" class="num">Transfer</th>
-                            <th scope="col"><span class="sr-only">Karşılaştır</span></th>
+                            <th scope="col">@T["Tlds.Col.Tld"]</th>
+                            <th scope="col" class="num">@T["TldDetail.Col.Registration"]</th>
+                            <th scope="col" class="num">@T["TldDetail.Col.Renewal"]</th>
+                            <th scope="col" class="num">@T["TldDetail.Col.Transfer"]</th>
+                            <th scope="col"><span class="sr-only">@T["Tlds.Compare"]</span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,14 +57,14 @@
                                         <a class="tld-name" href="@tldUrl">.@row.Entry.Tld</a>
                                         @if (row.Registration?.IsCampaign == true)
                                         {
-                                            <badge kind="Campaign">Kampanya</badge>
+                                            <badge kind="Campaign">@T["Badge.Campaign"]</badge>
                                         }
                                     </div>
                                 </th>
                                 <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Registration, ShowDetails: true)" /></td>
                                 <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Renewal)" /></td>
                                 <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Transfer)" /></td>
-                                <td><a href="@tldUrl" style="font-weight: 600; text-decoration: none; white-space: nowrap">Diğer sağlayıcılar →</a></td>
+                                <td><a href="@tldUrl" style="font-weight: 600; text-decoration: none; white-space: nowrap">@T["ProviderDetail.OtherProviders"] →</a></td>
                             </tr>
                         }
                     </tbody>

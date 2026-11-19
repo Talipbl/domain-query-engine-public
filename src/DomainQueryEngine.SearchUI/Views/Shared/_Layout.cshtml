@@ -1,11 +1,14 @@
 ﻿@inject SiteUrl SiteUrl
 @{
-    var pageTitle = ViewData["Title"] is string title ? $"{title} · En Ucuz Domain" : "En Ucuz Domain";
+    var brand = T["Brand.Name"].Value;
+    var pageTitle = ViewData["Title"] is string title ? $"{title} · {brand}" : brand;
     var noIndex = ViewData["NoIndex"] is true;
     var canonical = SiteUrl.Canonical(Context.Request);
+    var language = LanguagePreference.Current;
+    var theme = ThemePreference.Get(Context); // null: follow the system setting
 }
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="@language" data-theme="@theme">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,8 +29,8 @@
     }
     <meta property="og:title" content="@pageTitle" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="En Ucuz Domain" />
-    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="@brand" />
+    <meta property="og:locale" content="@System.Globalization.CultureInfo.CurrentUICulture.Name.Replace('-', '_')" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="~/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

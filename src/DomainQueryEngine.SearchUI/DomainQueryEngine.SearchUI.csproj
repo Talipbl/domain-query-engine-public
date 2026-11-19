@@ -26,6 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- UI texts: flat key/value JSON per language, read by Localization/JsonStringLocalizer. -->
+    <Content Remove="Resources\Locales\*.json" />
+    <EmbeddedResource Include="Resources\Locales\*.json" LogicalName="Locales.%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\source\query_engine_horizontal_logo.png" />
     <None Include="wwwroot\source\query_engine_logo.png" />
   </ItemGroup>

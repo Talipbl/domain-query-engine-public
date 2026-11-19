@@ -57,7 +57,7 @@ namespace DomainQueryEngine.SearchUI.Test
         }
 
         [Fact]
-        public async Task Shared_Texts_Come_From_The_Turkish_Resources()
+        public async Task Texts_Come_From_The_Turkish_Locale_By_Default()
         {
             var html = await _client.GetStringAsync("/");
 

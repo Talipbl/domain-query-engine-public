@@ -2,12 +2,12 @@
 @switch (Model)
 {
     case DomainQueryEngine.Core.Catalog.ProviderStatus.Active:
-        <badge kind="Available">Karşılaştırılıyor</badge>
+        <badge kind="Available">@T["ProviderStatus.Active"]</badge>
         break;
     case DomainQueryEngine.Core.Catalog.ProviderStatus.Failing:
-        <badge kind="Warning">Şu anda yanıt vermiyor</badge>
+        <badge kind="Warning">@T["ProviderStatus.Failing"]</badge>
         break;
     default:
-        <badge kind="Neutral">Karşılaştırılmıyor</badge>
+        <badge kind="Neutral">@T["ProviderStatus.Disabled"]</badge>
         break;
 }

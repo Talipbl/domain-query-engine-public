@@ -31,7 +31,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
                 return RedirectToAction("Index", "Home");
 
             if (!DomainSearchService.TryNormalize(input, out var domain))
-                return View(new SearchPageViewModel { Input = input, Error = "Geçerli bir alan adı yaz (örnek: ornek.com).", Filters = filters });
+                return View(new SearchPageViewModel { Input = input, ErrorKey = "Search.InvalidDomain", Filters = filters });
 
             return View(new SearchPageViewModel { Input = input, Domain = domain, Filters = filters });
         }
@@ -43,7 +43,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
         public async Task<IActionResult> Results(string? q, bool musait = false, int? sure = null, ResultSort sirala = ResultSort.Price, bool reprice = false, CancellationToken ct = default)
         {
             if (!DomainSearchService.TryNormalize(q, out var domain))
-                return PartialView("Components/_EmptyState", "Geçerli bir alan adı yaz (örnek: ornek.com).");
+                return PartialView("Components/_EmptyState", "Search.InvalidDomain");
 
             var filters = Filters(musait, sure, sirala);
             var comparison = await _search.SearchAsync(domain, record: !reprice, currency: null, period: filters.Period, ct: ct);

@@ -31,7 +31,7 @@ namespace DomainQueryEngine.SearchUI.Test
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains(expectedText, html);
-            Assert.Contains("<html lang=\"tr\">", html);
+            Assert.Contains("<html lang=\"tr\"", html);
         }
 
         [Theory]

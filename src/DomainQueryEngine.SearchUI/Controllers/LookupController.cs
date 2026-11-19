@@ -31,7 +31,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
             {
                 // The caller inserts this response as HTML, so answer with a readable message, not a stack trace.
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return Content("<div class=\"empty-state\">Geçerli bir alan adı girin (örnek: ornek.com).</div>", "text/html");
+                return PartialView("Components/_EmptyState", "Search.InvalidDomain");
             }
 
             var comparison = await _search.SearchAsync(normalized, record: !reprice, currency, ct: ct);

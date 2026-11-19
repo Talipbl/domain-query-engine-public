@@ -112,5 +112,19 @@ namespace DomainQueryEngine.Infrastructure.Test.Catalog
             Assert.Equal("kahveci.com.tr", top[0].DomainName);
             Assert.True(top[0].Count >= top[1].Count && top[1].Count >= top[2].Count);
         }
+
+        [Fact]
+        public async Task Groups_Searches_By_Extension()
+        {
+            var stats = new MockSearchStatistics();
+
+            var top = await stats.GetMostSearchedTldsAsync(TimeSpan.FromDays(1), 5);
+
+            Assert.NotEmpty(top);
+            Assert.All(top, t => Assert.False(t.Tld.StartsWith('.')));
+            Assert.Equal(top.Count, top.Select(t => t.Tld).Distinct().Count());
+            Assert.True(top.Zip(top.Skip(1)).All(p => p.First.Count >= p.Second.Count));
+            Assert.Contains(top, t => t.Tld == "com.tr" && t.Slug == "com-tr");
+        }
     }
 }

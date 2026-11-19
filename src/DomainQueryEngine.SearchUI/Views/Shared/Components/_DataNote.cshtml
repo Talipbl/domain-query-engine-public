@@ -4,14 +4,14 @@
     @if (Model.IsSample)
     {
         <badge kind="Mock"></badge>
-        <span>@PriceFormatter.FormatDate(Model.AsOf) tarihli örnek veri; canlı fiyatlar için domain araması yap.</span>
+        <span>@T["DataNote.Sample", PriceFormatter.FormatDate(Model.AsOf)]</span>
     }
     @if (Model.Rates == null)
     {
-        <span>Kur bilgisi alınamadı; fiyatlar sağlayıcıların kendi para biriminde gösteriliyor.</span>
+        <span>@T["DataNote.NoRates"]</span>
     }
     else if (Model.AnyConverted)
     {
-        <span>≈ işaretli fiyatlar @Model.Rates.Source @PriceFormatter.FormatDate(Model.Rates.Date) döviz satış kuruyla çevrildi.</span>
+        <span>@T["DataNote.Converted", Model.Rates.Source, PriceFormatter.FormatDate(Model.Rates.Date)]</span>
     }
 </p>

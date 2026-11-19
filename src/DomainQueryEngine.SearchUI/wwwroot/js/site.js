@@ -35,6 +35,43 @@
             .catch(function () { form.submit(); });
     });
 
+    // Theme switch: flips between light and dark from the theme currently on screen (an explicit choice
+    // or the system setting), applies it at once and saves it. Without JavaScript the form posts instead.
+    const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+    function effectiveTheme() {
+        return document.documentElement.dataset.theme || (systemDark.matches ? "dark" : "light");
+    }
+
+    // The server only knows an explicit choice, so the button label is set here for the theme on screen.
+    function syncThemeButtons() {
+        const theme = effectiveTheme();
+        document.querySelectorAll("form[data-theme-switch]").forEach(function (form) {
+            const button = form.querySelector("button[name=theme]");
+            if (!button) return;
+            const label = theme === "dark" ? form.dataset.labelLight : form.dataset.labelDark;
+            button.value = theme === "dark" ? "light" : "dark";
+            button.setAttribute("aria-label", label);
+            button.title = label;
+        });
+    }
+    syncThemeButtons();
+    systemDark.addEventListener("change", syncThemeButtons);
+
+    document.addEventListener("submit", function (event) {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement) || !form.matches("[data-theme-switch]")) return;
+        event.preventDefault();
+
+        const next = effectiveTheme() === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        syncThemeButtons();
+
+        const data = new FormData(form);
+        data.set("theme", next);
+        fetch(form.action, { method: "POST", body: data, headers: { "X-Requested-With": "fetch" } })
+            .catch(function () { /* the theme still applies for this page */ });
+    });
+
     // Selects marked data-autosubmit submit their form when changed (sorting on list pages).
     document.addEventListener("change", function (event) {
         const select = event.target;

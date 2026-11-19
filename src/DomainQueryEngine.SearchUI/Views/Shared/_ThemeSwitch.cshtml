@@ -1,0 +1,18 @@
+@* Light/dark toggle. The server knows only an explicit choice; site.js works out the effective theme
+   (including the system setting) and flips it without a reload. *@
+@{
+    var chosen = ThemePreference.Get(Context);
+    var next = chosen == ThemePreference.Dark ? ThemePreference.Light : ThemePreference.Dark;
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+<form asp-controller="Preferences" asp-action="Theme" method="post" data-theme-switch
+      data-label-light="@T["Theme.SwitchToLight"]" data-label-dark="@T["Theme.SwitchToDark"]">
+    <input type="hidden" name="returnUrl" value="@returnUrl" />
+    <button type="submit" name="theme" value="@next" class="icon-button"
+            aria-label="@(next == ThemePreference.Light ? T["Theme.SwitchToLight"] : T["Theme.SwitchToDark"])"
+            title="@(next == ThemePreference.Light ? T["Theme.SwitchToLight"] : T["Theme.SwitchToDark"])">
+        @* Moon: shown in the light theme (switches to dark). Sun: shown in the dark theme. *@
+        <svg class="theme-icon theme-icon--moon" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <svg class="theme-icon theme-icon--sun" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+    </button>
+</form>

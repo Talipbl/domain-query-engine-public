@@ -5,18 +5,25 @@ using DomainQueryEngine.Core.Utilities;
 namespace DomainQueryEngine.SearchUI.Helpers
 {
     /// <summary>
-    /// Formats prices the same way everywhere: Turkish number format with the symbol after the amount
-    /// ("1.540,00 ₺", "2,99 $").
+    /// Formats prices and dates for the request's language: Turkish puts the symbol after the amount
+    /// ("1.540,00 ₺"), English before it ("₺1,540.00").
     /// </summary>
     public static class PriceFormatter
     {
-        private static readonly CultureInfo Turkish = CultureInfo.GetCultureInfo("tr-TR");
-
         public static string Format(decimal amount, string currency)
-            => $"{amount.ToString("N2", Turkish)} {PriceHelper.GetCurrencySymbol(currency)}";
+        {
+            var culture = CultureInfo.CurrentCulture;
+            var number = amount.ToString("N2", culture);
+            var symbol = PriceHelper.GetCurrencySymbol(currency);
+            return culture.TwoLetterISOLanguageName == "tr" ? $"{number} {symbol}" : $"{symbol}{number}";
+        }
 
         public static string Format(BasePrice price) => Format(price.Amount, price.Currency);
 
-        public static string FormatDate(DateTime date) => date.ToString("dd.MM.yyyy", Turkish);
+        /// <summary>A plain amount without symbol, e.g. for chart labels.</summary>
+        public static string Number(decimal amount) => amount.ToString("N2", CultureInfo.CurrentCulture);
+
+        /// <summary>Short date: 19.11.2026 in Turkish, 11/19/2026 in English.</summary>
+        public static string FormatDate(DateTime date) => date.ToString("d", CultureInfo.CurrentCulture);
     }
 }

@@ -35,5 +35,8 @@ namespace DomainQueryEngine.Core.Abstractions
 
         /// <summary>The most searched domains within <paramref name="window"/>, most searched first.</summary>
         Task<IReadOnlyList<PopularQuery>> GetMostSearchedAsync(TimeSpan window, int take, CancellationToken ct = default);
+
+        /// <summary>The most searched extensions within <paramref name="window"/>, most searched first.</summary>
+        Task<IReadOnlyList<PopularTld>> GetMostSearchedTldsAsync(TimeSpan window, int take, CancellationToken ct = default);
     }
 }

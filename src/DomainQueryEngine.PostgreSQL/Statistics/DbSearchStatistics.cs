@@ -34,5 +34,22 @@ namespace DomainQueryEngine.PostgreSQL
 
             return rows.Select(r => new PopularQuery(r.DomainName, r.Count)).ToList();
         }
+
+        public async Task<IReadOnlyList<PopularTld>> GetMostSearchedTldsAsync(TimeSpan window, int take, CancellationToken ct = default)
+        {
+            var since = DateTime.UtcNow - window;
+
+            var rows = await _context.Domains
+                .AsNoTracking()
+                .Where(d => d.CreatedAt >= since && d.Tld != "")
+                .GroupBy(d => d.Tld)
+                .Select(g => new { Tld = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .ThenBy(x => x.Tld)
+                .Take(take)
+                .ToListAsync(ct);
+
+            return rows.Select(r => new PopularTld(r.Tld.TrimStart('.'), r.Count)).ToList();
+        }
     }
 }

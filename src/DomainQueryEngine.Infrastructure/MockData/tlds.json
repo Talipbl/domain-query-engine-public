@@ -9,6 +9,7 @@
       "documentRequired": null,
       "registry": "Verisign",
       "description": "Dünyada en çok kullanılan genel uzantı.",
+      "descriptionEn": "The most widely used generic extension in the world.",
       "prices": [
         {
           "provider": "alan-adi-kayit",
@@ -112,7 +113,9 @@
       "faq": [
         {
           "question": "Kampanya fiyatı kimler için geçerli?",
-          "answer": "Çoğu sağlayıcıda kampanya yalnızca ilk alımda veya yeni üyeler için geçerlidir; koşulları sağlayıcının sitesinde kontrol et."
+          "answer": "Çoğu sağlayıcıda kampanya yalnızca ilk alımda veya yeni üyeler için geçerlidir; koşulları sağlayıcının sitesinde kontrol et.",
+          "questionEn": "Who gets the campaign price?",
+          "answerEn": "At most providers the campaign applies only to the first purchase or to new customers; check the conditions on the provider's site."
         }
       ]
     },
@@ -123,6 +126,7 @@
       "documentRequired": false,
       "registry": "TRABİS",
       "description": "Türkiye'nin en yaygın ticari uzantısı.",
+      "descriptionEn": "Türkiye's most common commercial extension.",
       "prices": [
         {
           "provider": "alan-adi-kayit",
@@ -226,15 +230,21 @@
       "faq": [
         {
           "question": ".com.tr için belge gerekiyor mu?",
-          "answer": "Hayır. .com.tr 2022'den beri belgesiz kaydedilebiliyor; kayıt sırasında kimlik veya vergi bilgisi isteniyor."
+          "answer": "Hayır. .com.tr 2022'den beri belgesiz kaydedilebiliyor; kayıt sırasında kimlik veya vergi bilgisi isteniyor.",
+          "questionEn": "Do I need documents for .com.tr?",
+          "answerEn": "No. Since 2022 .com.tr can be registered without documents; an ID or tax number is asked for during registration."
         },
         {
           "question": ".com.tr ile .tr arasındaki fark ne?",
-          "answer": ".tr doğrudan ülke uzantısıdır; .com.tr ise ticari kullanım için ikinci düzey uzantıdır. İkisi de TRABİS üzerinden kaydedilir."
+          "answer": ".tr doğrudan ülke uzantısıdır; .com.tr ise ticari kullanım için ikinci düzey uzantıdır. İkisi de TRABİS üzerinden kaydedilir.",
+          "questionEn": "What is the difference between .com.tr and .tr?",
+          "answerEn": ".tr is the country extension itself; .com.tr is a second-level extension for commercial use. Both are registered through TRABİS."
         },
         {
           "question": "Yenileme fiyatı neden daha yüksek?",
-          "answer": "Kampanya fiyatları genellikle yalnızca ilk yıl geçerlidir; sonraki yıllarda sağlayıcının normal fiyatı ödenir."
+          "answer": "Kampanya fiyatları genellikle yalnızca ilk yıl geçerlidir; sonraki yıllarda sağlayıcının normal fiyatı ödenir.",
+          "questionEn": "Why is the renewal price higher?",
+          "answerEn": "Campaign prices usually apply to the first year only; after that the provider's regular price is charged."
         }
       ]
     },
@@ -245,6 +255,7 @@
       "documentRequired": false,
       "registry": "TRABİS",
       "description": "Türkiye'nin doğrudan ülke uzantısı.",
+      "descriptionEn": "Türkiye's country code extension.",
       "prices": [
         {
           "provider": "alan-adi-kayit",
@@ -340,7 +351,9 @@
       "faq": [
         {
           "question": ".tr ile .com.tr aynı anda alınabilir mi?",
-          "answer": "Evet, ikisi ayrı alan adlarıdır ve ayrı ayrı kaydedilir."
+          "answer": "Evet, ikisi ayrı alan adlarıdır ve ayrı ayrı kaydedilir.",
+          "questionEn": "Can I register both .tr and .com.tr?",
+          "answerEn": "Yes. They are separate domains and are registered separately."
         }
       ]
     },
@@ -351,6 +364,7 @@
       "documentRequired": null,
       "registry": "Verisign",
       "description": "Ağ ve teknoloji projelerinde yaygın genel uzantı.",
+      "descriptionEn": "A generic extension common in network and technology projects.",
       "prices": [
         {
           "provider": "alan-adi-kayit",
@@ -460,6 +474,7 @@
       "documentRequired": null,
       "registry": "Public Interest Registry",
       "description": "Kuruluşlar ve topluluklar için genel uzantı.",
+      "descriptionEn": "A generic extension for organizations and communities.",
       "prices": [
         {
           "provider": "alan-adi-kayit",
@@ -569,6 +584,7 @@
       "documentRequired": null,
       "registry": "TRABİS",
       "description": "Türkiye'de ağ ve altyapı hizmetleri için ikinci düzey uzantı.",
+      "descriptionEn": "A second-level extension in Türkiye for network and infrastructure services.",
       "prices": [
         {
           "provider": "alan-adi-kayit",
@@ -662,6 +678,7 @@
       "documentRequired": true,
       "registry": "TRABİS",
       "description": "Türkiye'deki dernek ve vakıflar için ikinci düzey uzantı.",
+      "descriptionEn": "A second-level extension for associations and foundations in Türkiye.",
       "prices": [
         {
           "provider": "atak-domain",
@@ -747,6 +764,7 @@
       "documentRequired": null,
       "registry": "TRABİS",
       "description": "Türkiye'de genel kullanım için ikinci düzey uzantı.",
+      "descriptionEn": "A second-level extension in Türkiye for general use.",
       "prices": [
         {
           "provider": "atak-domain",
@@ -832,6 +850,7 @@
       "documentRequired": null,
       "registry": "TRABİS",
       "description": "Türkiye'de web siteleri için ikinci düzey uzantı.",
+      "descriptionEn": "A second-level extension in Türkiye for websites.",
       "prices": [
         {
           "provider": "atak-domain",
@@ -909,6 +928,7 @@
       "documentRequired": null,
       "registry": null,
       "description": "Bilgi siteleri için genel uzantı.",
+      "descriptionEn": "A generic extension for information sites.",
       "prices": [
         {
           "provider": "alan-adi-kayit",
@@ -1010,6 +1030,7 @@
       "documentRequired": null,
       "registry": null,
       "description": "Teknoloji girişimlerinde sık kullanılan ülke uzantısı.",
+      "descriptionEn": "A country code extension popular with technology start-ups.",
       "prices": [
         {
           "provider": "grinet",
@@ -1103,6 +1124,7 @@
       "documentRequired": null,
       "registry": null,
       "description": "Şirketlerde .com alternatifi olarak kullanılan ülke uzantısı.",
+      "descriptionEn": "A country code extension used by companies as an alternative to .com.",
       "prices": [
         {
           "provider": "atak-domain",
@@ -1196,6 +1218,7 @@
       "documentRequired": null,
       "registry": null,
       "description": "Düşük ilk yıl fiyatıyla bilinen yeni genel uzantı.",
+      "descriptionEn": "A new generic extension known for its low first-year price.",
       "prices": [
         {
           "provider": "alan-adi-kayit",
@@ -1297,6 +1320,7 @@
       "documentRequired": null,
       "registry": null,
       "description": "Çevrimiçi projeler için yeni genel uzantı.",
+      "descriptionEn": "A new generic extension for online projects.",
       "prices": [
         {
           "provider": "alan-adi-kayit",
@@ -1390,6 +1414,7 @@
       "documentRequired": null,
       "registry": null,
       "description": "Uygulamalar için yeni genel uzantı; HTTPS zorunludur.",
+      "descriptionEn": "A new generic extension for apps; HTTPS is required.",
       "prices": [
         {
           "provider": "alan-adi-kayit",

@@ -30,7 +30,10 @@ namespace DomainQueryEngine.Core.Catalog
 
         /// <summary>Registry or authority, e.g. "TRABİS".</summary>
         public string? Registry { get; init; }
+
+        /// <summary>Turkish description; <see cref="DescriptionEn"/> is the English one.</summary>
         public string? Description { get; init; }
+        public string? DescriptionEn { get; init; }
         public List<TldProviderPrice> Prices { get; init; } = new();
 
         /// <summary>Lowest 1-year registration price per month, in TRY, oldest first.</summary>
@@ -61,7 +64,8 @@ namespace DomainQueryEngine.Core.Catalog
 
     public sealed record PricePoint(string Month, decimal Amount);
 
-    public sealed record FaqEntry(string Question, string Answer);
+    /// <summary>A question and answer in Turkish, with optional English versions.</summary>
+    public sealed record FaqEntry(string Question, string Answer, string? QuestionEn = null, string? AnswerEn = null);
 
     public enum ProviderStatus
     {
@@ -87,4 +91,10 @@ namespace DomainQueryEngine.Core.Catalog
     }
 
     public sealed record PopularQuery(string DomainName, int Count);
+
+    /// <param name="Tld">Without the leading dot: "com.tr".</param>
+    public sealed record PopularTld(string Tld, int Count)
+    {
+        public string Slug => Tld.Replace('.', '-');
+    }
 }

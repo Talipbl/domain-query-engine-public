@@ -1,17 +1,17 @@
 ﻿@model ErrorViewModel
 @{
-    ViewData["Title"] = "Bir hata oluştu";
+    ViewData["Title"] = T["Error.Title"].Value;
     ViewData["NoIndex"] = true;
 }
 
 <div class="container section" style="max-width: 720px">
     <div class="card stack">
-        <h1 style="font-size: var(--text-3xl)">Bir şeyler ters gitti</h1>
-        <p class="lead">İsteğin işlenirken bir hata oluştu. Birkaç saniye sonra tekrar dene.</p>
+        <h1 style="font-size: var(--text-3xl)">@T["Error.Heading"]</h1>
+        <p class="lead">@T["Error.Text"]</p>
         @if (Model.ShowRequestId)
         {
-            <p class="small muted">Hata kodu: <code>@Model.RequestId</code></p>
+            <p class="small muted">@T["Error.RequestId"] <code>@Model.RequestId</code></p>
         }
-        <div><btn variant="Primary" size="Md" href="@Url.Action("Index", "Home")">Ana sayfaya dön</btn></div>
+        <div><btn variant="Primary" size="Md" href="@Url.Action("Index", "Home")">@T["Error.BackHome"]</btn></div>
     </div>
 </div>

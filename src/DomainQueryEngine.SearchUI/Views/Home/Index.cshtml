@@ -1,18 +1,18 @@
 ﻿@model HomeViewModel
 @{
-    ViewData["Title"] = "Domain fiyatlarını karşılaştır";
-    ViewData["Description"] = $"Alan adının {Model.ActiveProviders.Count} Türk sağlayıcıdaki kayıt fiyatını, kampanyalarıyla birlikte tek aramada karşılaştır.";
+    ViewData["Title"] = T["Home.Title"].Value;
+    ViewData["Description"] = T["Home.Description", Model.ActiveProviders.Count].Value;
     ViewData["Nav"] = "search";
 }
 
 <section class="hero">
     <div class="hero__inner">
-        <badge kind="Available" pill="true">@Model.ActiveProviders.Count Türk sağlayıcı · kampanya fiyatları dahil</badge>
-        <h1 class="hero__title">Alan adını en ucuz nereden alacağını tek aramada gör</h1>
-        <p class="lead" style="max-width: 640px">Domain'i yaz; sağlayıcıların müsaitlik durumunu ve kayıt fiyatlarını kampanyalarıyla birlikte aynı listede karşılaştır.</p>
+        <badge kind="Available" pill="true">@T["Home.Badge", Model.ActiveProviders.Count]</badge>
+        <h1 class="hero__title">@T["Home.Heading"]</h1>
+        <p class="lead" style="max-width: 640px">@T["Home.Lead"]</p>
         <partial name="_SearchForm" model="string.Empty" />
         <div class="cluster" style="justify-content: center">
-            <span class="muted">Fiyat listeleri:</span>
+            <span class="muted">@T["Home.PriceLists"]</span>
             @foreach (var tld in Model.PopularTlds)
             {
                 <a class="chip" href="@Url.Action("Detail", "Tlds", new { slug = tld.Entry.Slug })">.@tld.Entry.Tld</a>
@@ -26,10 +26,10 @@
     <section class="container section" aria-labelledby="popular-title">
         <div class="section-head">
             <div class="stack" style="gap: 6px">
-                <h2 id="popular-title">Popüler uzantılarda en ucuz kayıt</h2>
-                <p class="muted">1 yıllık kayıt fiyatı, kampanya dahil.</p>
+                <h2 id="popular-title">@T["Home.Popular.Title"]</h2>
+                <p class="muted">@T["Home.Popular.Subtitle"]</p>
             </div>
-            <btn variant="Link" href="@Url.Action("Index", "Tlds")">Tüm uzantılar →</btn>
+            <btn variant="Link" href="@Url.Action("Index", "Tlds")">@T["Home.AllTlds"]</btn>
         </div>
         <div class="grid-cards">
             @foreach (var item in Model.PopularTlds)
@@ -37,11 +37,11 @@
                 var offer = item.CheapestRegistration;
                 <a class="card card-link@(Model.TldList.IsSample ? " card--mock" : "")" href="@Url.Action("Detail", "Tlds", new { slug = item.Entry.Slug })">
                     <span class="tld-card__name">.@item.Entry.Tld</span>
-                    <span class="small muted">En ucuz kayıt</span>
+                    <span class="small muted">@T["Common.CheapestRegistration"]</span>
                     @if (offer != null)
                     {
                         <span class="tld-card__price">@(offer.IsConverted ? "≈ " : "")@PriceFormatter.Format(offer.Display)</span>
-                        <span>@offer.Provider.Name · @item.ProviderCount sağlayıcı</span>
+                        <span>@T["Home.Popular.Provider", offer.Provider.Name, item.ProviderCount]</span>
                     }
                     else
                     {
@@ -58,24 +58,27 @@
     <div class="split">
         <div class="card">
             <div class="card__head" style="margin-bottom: 14px">
-                <h2 style="font-size: var(--text-xl)">Son 24 saatte en çok sorgulananlar</h2>
+                <h2 style="font-size: var(--text-xl)">@T["Home.MostSearched.Title"]</h2>
                 @if (Model.MostSearchedIsSample)
                 {
                     <badge kind="Mock"></badge>
                 }
             </div>
-            @if (Model.MostSearched.Count == 0)
+            @if (Model.MostSearchedTlds.Count == 0)
             {
-                <p class="muted">Son 24 saatte henüz arama yapılmadı.</p>
+                <p class="muted">@T["Home.MostSearched.Empty"]</p>
             }
             else
             {
                 <ol class="ranked">
-                    @foreach (var query in Model.MostSearched)
+                    @foreach (var item in Model.MostSearchedTlds)
                     {
+                        var href = item.HasPricePage
+                            ? Url.Action("Detail", "Tlds", new { slug = item.Tld.Slug })
+                            : Url.Action("Index", "Tlds", new { ara = item.Tld.Tld });
                         <li>
-                            <a href="@Url.Action("Index", "Search", new { q = query.DomainName })">@query.DomainName</a>
-                            <span class="small muted num">@query.Count sorgu</span>
+                            <a class="tld-name" href="@href">.@item.Tld.Tld</a>
+                            <span class="small muted num">@T["Home.MostSearched.Count", item.Tld.Count]</span>
                         </li>
                     }
                 </ol>
@@ -83,19 +86,19 @@
         </div>
 
         <div class="card">
-            <h2 style="font-size: var(--text-xl); margin-bottom: 18px">Fiyatları nasıl karşılaştırıyoruz</h2>
+            <h2 style="font-size: var(--text-xl); margin-bottom: 18px">@T["Home.How.Title"]</h2>
             <ol class="steps">
                 <li>
                     <span class="steps__no">1</span>
-                    <div><div class="steps__title">Her sağlayıcıya aynı anda soruyoruz</div><div class="steps__text">8 saniyede yanıt vermeyen sağlayıcı listede "yanıt alınamadı" olarak görünür, sayfayı bekletmez.</div></div>
+                    <div><div class="steps__title">@T["Home.How.Step1.Title"]</div><div class="steps__text">@T["Home.How.Step1.Text"]</div></div>
                 </li>
                 <li>
                     <span class="steps__no">2</span>
-                    <div><div class="steps__title">Kampanya varsa kampanya fiyatını gösteriyoruz</div><div class="steps__text">Normal fiyat da yanında yazar. Kampanyalar çoğunlukla yalnızca ilk alımda geçerlidir.</div></div>
+                    <div><div class="steps__title">@T["Home.How.Step2.Title"]</div><div class="steps__text">@T["Home.How.Step2.Text"]</div></div>
                 </li>
                 <li>
                     <span class="steps__no">3</span>
-                    <div><div class="steps__title">Döviz fiyatlarını TCMB kuruyla çeviriyoruz</div><div class="steps__text">Dolar veya euro ile fiyat veren sağlayıcılar seçtiğin para biriminde sıralanır; orijinal fiyat da görünür.</div></div>
+                    <div><div class="steps__title">@T["Home.How.Step3.Title"]</div><div class="steps__text">@T["Home.How.Step3.Text"]</div></div>
                 </li>
             </ol>
         </div>
@@ -105,10 +108,10 @@
 <section class="container section" aria-labelledby="providers-title" style="padding-bottom: var(--space-12)">
     <div class="section-head">
         <div class="stack" style="gap: 6px">
-            <h2 id="providers-title">Karşılaştırılan sağlayıcılar</h2>
-            <p class="muted">Her aramada bu sağlayıcıların sitelerinden güncel fiyat alınır.</p>
+            <h2 id="providers-title">@T["Home.Providers.Title"]</h2>
+            <p class="muted">@T["Home.Providers.Subtitle"]</p>
         </div>
-        <btn variant="Link" href="@Url.Action("Index", "Providers")">Tüm sağlayıcılar →</btn>
+        <btn variant="Link" href="@Url.Action("Index", "Providers")">@T["Home.AllProviders"]</btn>
     </div>
     <ul class="cluster" style="list-style: none; margin: 0; padding: 0; gap: 10px">
         @foreach (var provider in Model.ActiveProviders)

@@ -23,6 +23,10 @@
                 <a class="main-nav__link" href="@item.Href" aria-current="@(item.Key == currentNav ? "page" : null)">@item.Label</a>
             }
         </nav>
-        <partial name="_CurrencySwitch" />
+        <div class="header-controls">
+            <partial name="_CurrencySwitch" />
+            <partial name="_LanguageSwitch" />
+            <partial name="_ThemeSwitch" />
+        </div>
     </div>
 </header>

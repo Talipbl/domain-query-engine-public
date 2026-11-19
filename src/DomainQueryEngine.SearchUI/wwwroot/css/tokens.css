@@ -1,6 +1,7 @@
 /*
  * Design tokens. Every color, size and font used by base.css and components.css comes from here.
- * Light theme is the default; the dark theme follows the visitor's system setting.
+ * Light theme is the default. The dark theme applies when the visitor picks it (data-theme="dark" on
+ * <html>) or, until they pick one, when their system prefers dark.
  */
 :root {
     color-scheme: light;
@@ -12,6 +13,10 @@
     --color-border: #E3E6EB;
     --color-border-strong: #C9CFD8;
     --color-divider: #EEF0F3;
+
+    /* Provider logos are made for light backgrounds, so their box stays light in both themes. */
+    --color-logo-bg: #FFFFFF;
+    --color-logo-border: #E3E6EB;
 
     /* Text */
     --color-ink: #0E1726;
@@ -77,8 +82,43 @@
     --control-h-sm: 44px;
 }
 
+/* Dark theme, chosen by the visitor. */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --color-bg: #0B1220;
+    --color-surface: #121A2B;
+    --color-surface-alt: #172136;
+    --color-border: #26314A;
+    --color-border-strong: #3A4763;
+    --color-divider: #1E2840;
+    --color-logo-border: #3A4763;
+
+    --color-ink: #E8ECF4;
+    --color-ink-2: #C3CBDA;
+    --color-muted: #96A1B5;
+
+    --color-accent: #8AA8FF;
+    --color-accent-hover: #B0C4FF;
+    --color-accent-soft: #1B2A4D;
+    --color-on-accent: #0B1220;
+
+    --color-success: #5CD3A3;
+    --color-success-soft: #12322A;
+    --color-success-border: #1F5A47;
+    --color-campaign: #F5A673;
+    --color-campaign-soft: #3A2414;
+    --color-danger: #F59A90;
+    --color-danger-soft: #3B1A18;
+    --color-mock-border: #5A6680;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* Dark theme from the system setting, until the visitor picks a theme. Same values as above. */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
         color-scheme: dark;
 
         --color-bg: #0B1220;
@@ -87,6 +127,7 @@
         --color-border: #26314A;
         --color-border-strong: #3A4763;
         --color-divider: #1E2840;
+        --color-logo-border: #3A4763;
 
         --color-ink: #E8ECF4;
         --color-ink-2: #C3CBDA;

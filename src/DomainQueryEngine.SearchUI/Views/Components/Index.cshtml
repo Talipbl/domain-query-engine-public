@@ -5,10 +5,10 @@
     BasePrice Try(decimal amount) => new() { Amount = amount, Currency = "TRY" };
     BasePrice Usd(decimal amount) => new() { Amount = amount, Currency = "USD" };
 
-    ResultRowViewModel Row(string name, bool available, BasePrice display, BasePrice? original = null, bool best = false, string? warning = null) => new()
+    ResultRowViewModel Row(string name, bool available, BasePrice display, BasePrice? original = null, bool best = false, bool outlier = false) => new()
     {
         IsBest = best,
-        Warning = warning,
+        IsOutlier = outlier,
         Item = new ComparedResult
         {
             Period = 1,
@@ -104,7 +104,7 @@
         <div class="result-list">
             <partial name="Components/_ResultRow" model='Row("Turkticaret.net", true, Try(128.99m), best: true)' />
             <partial name="Components/_ResultRow" model='Row("Natro", true, Try(150.90m), Usd(2.99m))' />
-            <partial name="Components/_ResultRow" model='Row("Yıldız Bilişim", true, Try(20000m), warning: "Diğer sağlayıcılardan çok yüksek")' />
+            <partial name="Components/_ResultRow" model='Row("Yıldız Bilişim", true, Try(20000m), outlier: true)' />
             <partial name="Components/_ResultRow" model='Row("Atak Domain", false, Try(100.43m), Usd(1.99m))' />
             <partial name="Components/_ResultRowSkeleton" model="1" />
             <details class="failed-list" open>
