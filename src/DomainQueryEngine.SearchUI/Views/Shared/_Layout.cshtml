@@ -1,17 +1,33 @@
-﻿<!DOCTYPE html>
+﻿@inject SiteUrl SiteUrl
+@{
+    var pageTitle = ViewData["Title"] is string title ? $"{title} · En Ucuz Domain" : "En Ucuz Domain";
+    var noIndex = ViewData["NoIndex"] is true;
+    var canonical = SiteUrl.Canonical(Context.Request);
+}
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(ViewData["Title"] is string title ? $"{title} · En Ucuz Domain" : "En Ucuz Domain")</title>
+    <title>@pageTitle</title>
     @if (ViewData["Description"] is string description)
     {
         <meta name="description" content="@description" />
+        <meta property="og:description" content="@description" />
     }
-    @if (ViewData["NoIndex"] is true)
+    @if (noIndex)
     {
         <meta name="robots" content="noindex" />
     }
+    else
+    {
+        <link rel="canonical" href="@canonical" />
+        <meta property="og:url" content="@canonical" />
+    }
+    <meta property="og:title" content="@pageTitle" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="En Ucuz Domain" />
+    <meta property="og:locale" content="tr_TR" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="~/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,7 +39,7 @@
     @await RenderSectionAsync("Head", required: false)
 </head>
 <body>
-    <a class="skip-link" href="#main">İçeriğe geç</a>
+    <a class="skip-link" href="#main">@T["Layout.SkipToContent"]</a>
     <partial name="_Header" />
 
     <main id="main" class="page-main">

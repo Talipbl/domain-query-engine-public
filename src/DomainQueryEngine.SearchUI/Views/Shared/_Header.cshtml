@@ -3,21 +3,21 @@
     var currentNav = ViewData["Nav"] as string;
     var items = new[]
     {
-        (Key: "search", Label: "Domain Ara", Href: Url.Action("Index", "Home")!),
-        (Key: "tlds", Label: "Uzantı Fiyatları", Href: Url.Action("Index", "Tlds")!),
-        (Key: "providers", Label: "Sağlayıcılar", Href: Url.Action("Index", "Providers")!),
-        (Key: "how", Label: "Nasıl Çalışır", Href: Url.Action("Index", "Home") + "#nasil")
+        (Key: "search", Label: T["Nav.Search"].Value, Href: Url.Action("Index", "Home")!),
+        (Key: "tlds", Label: T["Nav.Tlds"].Value, Href: Url.Action("Index", "Tlds")!),
+        (Key: "providers", Label: T["Nav.Providers"].Value, Href: Url.Action("Index", "Providers")!),
+        (Key: "how", Label: T["Nav.How"].Value, Href: Url.Action("Index", "Home") + "#nasil")
     };
 }
 <header class="site-header">
     <div class="container site-header__inner">
-        <a class="brand" href="@Url.Action("Index", "Home")">
+        <a class="brand" href="@Url.Action("Index", "Home")" aria-label="@T["Brand.Name"]">
             <span class="brand__mark" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20 20"></path></svg>
             </span>
-            <span class="brand__name">En <span class="brand__accent">Ucuz</span> Domain</span>
+            <span class="brand__name" aria-hidden="true">En <span class="brand__accent">Ucuz</span> Domain</span>
         </a>
-        <nav class="main-nav" aria-label="Ana menü">
+        <nav class="main-nav" aria-label="@T["Nav.Label"]">
             @foreach (var item in items)
             {
                 <a class="main-nav__link" href="@item.Href" aria-current="@(item.Key == currentNav ? "page" : null)">@item.Label</a>

@@ -12,8 +12,16 @@ using IHttpClientFactory = DomainQueryEngine.Http.IHttpClientFactory;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddMvc().AddRazorRuntimeCompilation();
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization()
+    .AddRazorRuntimeCompilation();
+builder.Services.AddSingleton<DomainQueryEngine.SearchUI.Helpers.SiteUrl>();
+
+// Razor encodes everything outside Basic Latin by default ("ı" → "&#x131;"). Turkish text and symbols
+// such as "≈" and "₺" are safe to emit as they are; HTML-special characters are still encoded.
+builder.Services.Configure<Microsoft.Extensions.WebEncoders.WebEncoderOptions>(options =>
+    options.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(System.Text.Unicode.UnicodeRanges.All));
 
 builder.Services.AddSession(options =>
 {
@@ -57,8 +65,10 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+// Apply pending migrations on startup (default). Tests turn this off with Database:MigrateOnStartup=false.
+if (app.Configuration.GetValue("Database:MigrateOnStartup", true))
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
@@ -74,6 +84,14 @@ if (!app.Environment.IsDevelopment())
 // Error status codes without a body (e.g. 404) show the site's own page.
 app.UseStatusCodePagesWithReExecute("/hata/{0}");
 
+// Turkish only for now: text comes from Resources/*.tr.resx and numbers and dates are formatted the
+// same way on every server, whatever its own culture is. Add "en-US" here once English texts exist.
+var supportedCultures = new[] { "tr-TR" };
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures));
+
 app.UseSession();
 
 app.UseHttpsRedirection();
@@ -88,3 +106,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+// Lets the page tests start the app with WebApplicationFactory<Program>.
+public partial class Program { }

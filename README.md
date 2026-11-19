@@ -6,8 +6,8 @@ Domain Query Engine is a .NET 8 web application and supporting libraries for que
 
 ## Solution structure
 
-- `src/DomainQueryEngine.SearchUI` – ASP.NET Core web host (currently uses controllers + views). Provides the UI and an HTTP API endpoint for lookups.
-- `src/DomainQueryEngine.Application` – Application services (lookup orchestration, domain search persistence).
+- `src/DomainQueryEngine.SearchUI` – ASP.NET Core web host: server-rendered Razor pages enhanced with htmx (see [UI](#ui)), plus the lookup API.
+- `src/DomainQueryEngine.Application` – Application services (lookup orchestration, price comparison and currency conversion, extension price pages, domain search persistence).
 - `src/DomainQueryEngine.Core` – Domain entities, models, abstractions (repositories/strategies), utilities.
 - `src/DomainQueryEngine.Infrastructure` – Provider-specific lookup strategies and parsers.
 - `src/DomainQueryEngine.PostgreSQL` – EF Core PostgreSQL `DbContext`, migrations, repository implementations.
@@ -28,7 +28,8 @@ Domain Query Engine is a .NET 8 web application and supporting libraries for que
 ## Tech stack
 
 - .NET 8
-- ASP.NET Core (controllers/views UI host)
+- ASP.NET Core MVC (Razor views, tag helpers) with [htmx](https://htmx.org) 2.0.4 (`wwwroot/lib/htmx`, 0BSD)
+- Plain CSS design system (no CSS framework, no frontend build step)
 - Entity Framework Core + Npgsql
 - Polly for HTTP resiliency (retry)
 - Newtonsoft.Json
@@ -81,6 +82,44 @@ dotnet run
 
 Then open the printed URL (for example `https://localhost:xxxx`).
 
+### Configuration
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `ConnectionStrings:DefaultConnection` | empty (required) | PostgreSQL connection string |
+| `Site:BaseUrl` | empty | Public address used for canonical links, Open Graph and the sitemap (e.g. `https://example.com`). Empty: taken from the request; set it behind a proxy that terminates HTTPS |
+| `DataSource:Tlds` / `DataSource:Providers` | `Mock` | Extension and provider catalog. Only `Mock` (embedded sample data) exists so far |
+| `DataSource:Statistics` | `Database` | "Most searched" list: `Database` (lookup history) or `Mock` |
+| `Database:MigrateOnStartup` | `true` | Apply pending migrations when the app starts |
+
+Environment variables use `__` instead of `:` (e.g. `Site__BaseUrl`).
+
+### Container
+
+The `Dockerfile` builds and runs the web app. At runtime it needs at least `ConnectionStrings__DefaultConnection`; set `Site__BaseUrl` to the public address so canonical links and the sitemap use `https`. Texts and number formats are fixed to Turkish (`tr-TR`) by the app, so the image needs ICU (the Debian-based `aspnet` images include it; Alpine images do not).
+
+## UI
+
+Pages are rendered on the server; htmx loads search results and makes filters, tabs and sorting update without full page loads. Everything also works as plain links and forms.
+
+| Address | Page | Data |
+|---|---|---|
+| `/` | Search box, cheapest offers for popular extensions, most searched domains, providers | Catalog (sample), statistics |
+| `/ara?q=…` | Search results: page renders at once, results load from `/ara/sonuclar`. Filters: only available, period (1/2/5 years), sort | Live lookups |
+| `/uzantilar` | Extension list: group tabs, text filter, sort by popularity, cheapest registration, cheapest renewal or name | Catalog (sample) |
+| `/uzantilar/{slug}` | One extension (`/uzantilar/com-tr`): summary, per-provider prices, price history, FAQ | Catalog (sample) |
+| `/saglayicilar`, `/saglayicilar/{slug}` | Providers with their status; one provider's prices | Catalog (sample) |
+| `/gizlilik` | Privacy | Static |
+| `/_bilesenler` | Component gallery (Development only) | Sample |
+
+Sample data is labelled "Örnek veri" on the pages. Filter, sort and currency changes on `/ara` re-show the cached results and are not counted as new searches.
+
+- **Design system:** `wwwroot/css/tokens.css` (colors, type, spacing; dark theme follows the system setting), `base.css`, `components.css`.
+- **Components:** tag helpers `<badge>`, `<btn>`, `<price-tag>` (`TagHelpers/`) and partials under `Views/Shared` and `Views/Shared/Components` (`_ResultRow`, `_SearchResults`, `_Offer`, `_DataNote`, …).
+- **Currency:** chosen in the header, stored in the `dqe_currency` cookie; the form works without JavaScript.
+- **Texts:** shared texts live in `Resources/SharedResource.tr.resx` and are used through `IStringLocalizer<SharedResource>` (`@T["Nav.Search"]`). Only Turkish exists; to add a language, add `SharedResource.{culture}.resx` and the culture in `Program.cs`. Page-specific texts are still written in the views.
+- **SEO:** canonical and Open Graph tags on catalog pages, `noindex` on search pages, `/sitemap.xml` and `/robots.txt`.
+
 ## API
 
 ### Domain lookup
@@ -90,7 +129,8 @@ Then open the printed URL (for example `https://localhost:xxxx`).
 - Example: `GET /api/lookup/example.com?currency=USD`
 - `currency` (optional): `TRY` (default), `USD` or `EUR`
 - `reprice=true` (optional): re-show a search in another currency without saving it to the history
-- Returns: HTML fragment rendered from `Views/Lookup/_Results.cshtml` (content type `text/html`)
+- Returns: HTML fragment rendered from `Views/Shared/Components/_SearchResults.cshtml` (content type `text/html`)
+- The site's own pages use `/ara` and `/ara/sonuclar`; this endpoint stays for existing clients.
 
 Notes:
 - The input is normalized/validated before lookup.
@@ -125,6 +165,7 @@ Unit tests run offline against provider responses and fake strategies. The only 
 
 - `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/Responses/`: real responses captured from Atak Domain, Turhost, Turkticaret.net, Hosting.com.tr and Güzel Hosting
 - `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/SampleResponses.cs`: responses for the older providers (Yıldız and Yöncü are real captures; the others were written to match the parsers)
+- `tests/DomainQueryEngine.SearchUI.Test`: page tests that start the whole app with `WebApplicationFactory`. The database, provider sites and TCMB are replaced by fakes, so they need neither PostgreSQL nor network access
 
 ```powershell
 # unit tests (default)

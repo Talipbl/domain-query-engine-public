@@ -45,6 +45,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
             });
         }
 
+        [Route("gizlilik")]
         public IActionResult Privacy()
         {
             return View();

@@ -2,14 +2,14 @@
     <div class="container site-footer__inner">
         <div class="site-footer__about">
             <span class="brand__name">En <span class="brand__accent">Ucuz</span> Domain</span>
-            <span>Fiyatlar sağlayıcıların sitelerinden alınır ve bilgi amaçlıdır. Satın almadan önce sağlayıcının sitesindeki fiyatı kontrol et.</span>
+            <span>@T["Footer.Disclaimer"]</span>
         </div>
-        <nav aria-label="Alt menü">
-            <a href="@Url.Action("Index", "Home")">Domain Ara</a>
-            <a href="@Url.Action("Index", "Tlds")">Uzantı Fiyatları</a>
-            <a href="@Url.Action("Index", "Providers")">Sağlayıcılar</a>
-            <a href="@(Url.Action("Index", "Home") + "#nasil")">Nasıl Çalışır</a>
-            <a href="@Url.Action("Privacy", "Home")">Gizlilik</a>
+        <nav aria-label="@T["Footer.Label"]">
+            <a href="@Url.Action("Index", "Home")">@T["Nav.Search"]</a>
+            <a href="@Url.Action("Index", "Tlds")">@T["Nav.Tlds"]</a>
+            <a href="@Url.Action("Index", "Providers")">@T["Nav.Providers"]</a>
+            <a href="@(Url.Action("Index", "Home") + "#nasil")">@T["Nav.How"]</a>
+            <a href="@Url.Action("Privacy", "Home")">@T["Nav.Privacy"]</a>
         </nav>
     </div>
 </footer>
