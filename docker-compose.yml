@@ -1,0 +1,35 @@
+services:
+
+  # PostgreSQL veritabanı
+  db:
+    image: postgres:16
+    container_name: dqe-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dqe_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}   # .env dosyasından gelir
+    volumes:
+      - dqe-data:/var/lib/postgresql/data       # veriler kalıcı olsun
+    healthcheck:                                # "veritabanı hazır mı?" kontrolü
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dqe_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Bizim web uygulamamız
+  web:
+    build: .                                    # Dockerfile'dan imaj üret
+    container_name: dqe-web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy              # veritabanı hazır olmadan başlama
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=dqe_db;Username=postgres;Password=${POSTGRES_PASSWORD}"
+      Site__BaseUrl: "http://localhost:8080"
+    ports:
+      - "8080:8080"                             # bilgisayar:konteyner
+
+volumes:
+  dqe-data:
