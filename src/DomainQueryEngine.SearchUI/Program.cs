@@ -33,7 +33,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<ILookupService, LookupService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<LookupService>();
+builder.Services.AddScoped<ILookupService, CachedLookupService>();
 builder.Services.AddScoped<IDomainService, DomainService>();
 builder.Services.AddScoped<IProviderService, ProviderService>();
 builder.Services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
