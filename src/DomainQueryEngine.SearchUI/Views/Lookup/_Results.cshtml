@@ -35,7 +35,7 @@ else
             {
                 var prices = item.Domain?.Prices ?? new List<DomainQueryEngine.Core.DomainPrice>();
                 var minPriceEntry = prices.OrderBy(p => p.Period).FirstOrDefault();
-                var visitLink = item.ProviderInfo?.VisitLink;
+                var visitLink = item.VisitLink;
 
                 <div class="result-card">
                     <div class="result-left">

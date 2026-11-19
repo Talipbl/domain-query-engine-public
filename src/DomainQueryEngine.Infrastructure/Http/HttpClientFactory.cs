@@ -33,8 +33,39 @@ namespace DomainQueryEngine.Http
 
         public HttpClient CreateClient() => _httpClient;
 
-        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct = default)
-       => _policy.ExecuteAsync(() => _httpClient.SendAsync(request, ct));
+        /// <summary>
+        /// Sends the request through the retry policy. An <see cref="HttpRequestMessage"/> can only be
+        /// sent once, so every attempt sends a fresh copy built from the original (body buffered once).
+        /// </summary>
+        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct = default)
+        {
+            var body = request.Content is null ? null : await request.Content.ReadAsByteArrayAsync(ct);
+
+            return await _policy.ExecuteAsync(
+                token => _httpClient.SendAsync(CloneRequest(request, body), token),
+                ct);
+        }
+
+        private static HttpRequestMessage CloneRequest(HttpRequestMessage original, byte[]? body)
+        {
+            var clone = new HttpRequestMessage(original.Method, original.RequestUri)
+            {
+                Version = original.Version,
+                VersionPolicy = original.VersionPolicy
+            };
+
+            foreach (var header in original.Headers)
+                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
+            if (body != null && original.Content != null)
+            {
+                clone.Content = new ByteArrayContent(body);
+                foreach (var header in original.Content.Headers)
+                    clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+
+            return clone;
+        }
 
         public HttpRequestMessage CreateHttpRequestMessage(HttpMethod method, Uri uri)
         {

@@ -2,17 +2,17 @@
 using DomainQueryEngine.Core.Abstractions;
 using DomainQueryEngine.Core.Entities;
 using DomainQueryEngine.Core.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace DomainQueryEngine.Application.Lookup
 {
     public class LookupService : ILookupService
     {
+        /// <summary>
+        /// Prices in the local currency are listed before prices in other currencies, because
+        /// amounts in different currencies cannot be compared without exchange rates.
+        /// </summary>
+        private const string PreferredCurrency = "TRY";
+
         private readonly IEnumerable<IDomainLookupStrategy> _strategies;
         private readonly IDomainLookupResultRepository _lookupResultRepository;
 
@@ -31,15 +31,15 @@ namespace DomainQueryEngine.Application.Lookup
         {
             var tasks = _strategies.Select(async strategy =>
             {
+                var visitLink = BuildVisitLink(strategy.Provider.VisitLink, domain);
                 try
                 {
                     var result = await strategy.LookupAsync(domain, ct);
-                    var providerInfo = strategy.Provider;
-                    providerInfo.VisitLink = string.Format(providerInfo.VisitLink, domain);
                     return new SearchResult
                     {
                         ProviderInfo = strategy.Provider,
-                        Domain = result
+                        Domain = result,
+                        VisitLink = visitLink
                     };
                 }
                 catch (Exception ex)
@@ -47,6 +47,7 @@ namespace DomainQueryEngine.Application.Lookup
                     return new SearchResult
                     {
                         ProviderInfo = strategy.Provider,
+                        VisitLink = visitLink,
                         Domain = new DomainResult
                         {
                             DomainName = domain,
@@ -61,30 +62,49 @@ namespace DomainQueryEngine.Application.Lookup
             });
 
             var results = await Task.WhenAll(tasks);
-            return ShortResultsByPrice(results.ToList());
+            return SortResults(results);
         }
 
-        private List<SearchResult> ShortResultsByPrice(List<SearchResult> results)
+        /// <summary>
+        /// Fills the domain into the provider's link template without changing the template itself.
+        /// </summary>
+        private static string BuildVisitLink(string? template, string domain)
+        {
+            if (string.IsNullOrWhiteSpace(template))
+                return string.Empty;
+
+            return template.Contains("{0}")
+                ? string.Format(template, Uri.EscapeDataString(domain))
+                : template;
+        }
+
+        /// <summary>
+        /// Sort order: available first, then results that have a price, then the preferred currency,
+        /// then by currency, then by the shortest-period registration price (cheapest first).
+        /// </summary>
+        internal static List<SearchResult> SortResults(IEnumerable<SearchResult> results)
         {
             return results
-                    .Where(p => p.Domain != null)
-                    .OrderByDescending(p => p.Domain.IsAvailable)
-                    .ThenBy(p =>
-                    {
-                        var lowest = p.Domain.Prices
-                            .OrderBy(x => x.Period)
-                            .FirstOrDefault();
+                .Where(r => r.Domain != null)
+                .Select(r => new { Result = r, Price = GetShortestPeriodPrice(r.Domain) })
+                .OrderByDescending(x => x.Result.Domain.IsAvailable)
+                .ThenBy(x => x.Price == null)
+                .ThenBy(x => string.Equals(x.Price?.Currency, PreferredCurrency, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(x => x.Price?.Currency ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(x => x.Price?.Amount ?? decimal.MaxValue)
+                .Select(x => x.Result)
+                .ToList();
+        }
 
-                        return lowest?.RegistrationPrice?.Currency ?? "";
-                    })
-                    .ThenBy(p =>
-                    {
-                        var lowest = p.Domain.Prices
-                            .OrderBy(x => x.Period)
-                            .FirstOrDefault();
+        private static BasePrice? GetShortestPeriodPrice(DomainResult domain)
+        {
+            var price = domain.Prices?
+                .OrderBy(p => p.Period)
+                .FirstOrDefault()?
+                .RegistrationPrice;
 
-                        return lowest?.RegistrationPrice?.Amount ?? 0;
-                    }).ToList();
+            // Parsers use an empty BasePrice (Amount = 0) when a price could not be read.
+            return price != null && price.Amount > 0 ? price : null;
         }
     }
 }

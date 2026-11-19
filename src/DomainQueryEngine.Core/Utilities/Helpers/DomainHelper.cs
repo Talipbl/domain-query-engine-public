@@ -1,9 +1,5 @@
-﻿
-using Nager.PublicSuffix;
+﻿using Nager.PublicSuffix;
 using Nager.PublicSuffix.RuleProviders;
-using System.Net.Http.Headers;
-using System.Reflection.Metadata.Ecma335;
-using System.Text.RegularExpressions;
 
 namespace DomainQueryEngine.Core.Utilities
 {
@@ -13,51 +9,32 @@ namespace DomainQueryEngine.Core.Utilities
     public static class DomainHelper
     {
         /// <summary>
-        /// Gets the top-level domain (TLD) for the specified domain or host name.
+        /// The public suffix list is downloaded once, on first use, and the parser is reused for
+        /// every call afterwards. <see cref="LazyThreadSafetyMode.PublicationOnly"/> means a failed
+        /// download is not cached, so the next call retries instead of failing forever.
         /// </summary>
-        /// <param name="domainName">The domain or host name to analyze (for example, "www.example.co.uk" or "example.com").</param>
-        /// <returns>
-        /// The top-level domain portion of <paramref name="domainName"/> (for example, "co.uk" or "com").
-        /// The exact value is determined by the public suffix list used by <c>Nager.PublicSuffix</c>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses <see cref="SimpleHttpRuleProvider"/> to obtain the public suffix list and
-        /// constructs a <see cref="DomainParser"/> to parse the supplied domain name. The rule provider
-        /// is built synchronously by calling <c>BuildAsync().Wait()</c>, so this method blocks while the
-        /// rules are downloaded/initialized.
-        ///
-        /// Consider caching the created <see cref="DomainParser"/> or the rule provider if this method is
-        /// called frequently to avoid repeated network access and parser construction.
-        /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="domainName"/> is null.</exception>
-        /// <exception cref="System.Exception">
-        /// May throw exceptions from the underlying <c>Nager.PublicSuffix</c> library or network errors
-        /// when fetching the public suffix list. Exceptions thrown by <c>BuildAsync().Wait()</c> may be
-        /// wrapped in an <see cref="System.AggregateException"/>.
-        /// </exception>
-        public static string GetTldFromDomainName(string domainName)
+        private static readonly Lazy<DomainParser> Parser = new(CreateParser, LazyThreadSafetyMode.PublicationOnly);
+
+        private static DomainParser CreateParser()
         {
             var ruleProvider = new SimpleHttpRuleProvider();
-            ruleProvider.BuildAsync().Wait();
-
-            var domainParser = new DomainParser(ruleProvider);
-
-            return domainParser.Parse(domainName).TopLevelDomain;
+            ruleProvider.BuildAsync().GetAwaiter().GetResult();
+            return new DomainParser(ruleProvider);
         }
 
         /// <summary>
-        /// Gets the registered domain for the specified domain or host name.
+        /// Gets the top-level domain (TLD) for the specified domain or host name,
+        /// for example "co.uk" or "com", using the public suffix list.
         /// </summary>
-        /// <param name="domainName">The domain or host name to analyze (for example, "www.example.co.uk" or "example.com").</param>
-        /// <returns>
-        /// The registered domain portion of <paramref name="domainName"/> (for example, "example.co.uk" or "example.com").
+        public static string GetTldFromDomainName(string domainName)
+            => Parser.Value.Parse(domainName)?.TopLevelDomain ?? string.Empty;
+
+        /// <summary>
+        /// Gets the registered domain label for the specified domain or host name
+        /// (for example "example" for "www.example.co.uk").
+        /// </summary>
         public static string GetDomainFromDomainName(string domainName)
-        {
-            var ruleProvider = new SimpleHttpRuleProvider();
-            ruleProvider.BuildAsync().Wait();
-            var domainParser = new DomainParser(ruleProvider);
-            return domainParser.Parse(domainName).Domain;
-        }
+            => Parser.Value.Parse(domainName)?.Domain ?? string.Empty;
 
         public static string ValidateAndNormalizeDomain(string domain)
         {
@@ -81,14 +58,10 @@ namespace DomainQueryEngine.Core.Utilities
                            .Replace("'", "")
                            .Replace("\"", "");
 
-            var ruleProvider = new SimpleHttpRuleProvider();
-            ruleProvider.BuildAsync().Wait();
-            var domainParser = new DomainParser(ruleProvider);
             try
             {
-                DomainInfo parsedDomain;
-                domainParser.TryParse(domain, out parsedDomain);
-                return parsedDomain?.RegistrableDomain ?? $"{domain.Replace(".","")}.com";
+                Parser.Value.TryParse(domain, out DomainInfo? parsedDomain);
+                return parsedDomain?.RegistrableDomain ?? $"{domain.Replace(".", "")}.com";
             }
             catch (Exception ex)
             {

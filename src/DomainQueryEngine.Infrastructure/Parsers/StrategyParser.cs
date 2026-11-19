@@ -13,7 +13,11 @@ namespace DomainQueryEngine.Infrastructure.Parsers
         {
             var doc = new HtmlDocument();
             doc.LoadHtml(htmlResponse);
+            // SelectNodes returns null (not an empty list) when the page has no <script> tags.
             var htmlNodes = doc.DocumentNode.SelectNodes("//script");
+            if (htmlNodes == null)
+                return string.Empty;
+
             foreach (var script in htmlNodes)
             {
                 var scriptText = script.InnerText;

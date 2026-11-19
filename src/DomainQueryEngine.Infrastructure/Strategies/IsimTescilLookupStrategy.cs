@@ -35,7 +35,8 @@ namespace DomainQueryEngine.IsimTescil
 
         public Task HandshakeAsync()
         {
-            throw new NotImplementedException();
+            // This provider needs no session or CSRF token.
+            return Task.CompletedTask;
         }
 
         public async Task<DomainResult> LookupAsync(string domainName, CancellationToken ct = default)
