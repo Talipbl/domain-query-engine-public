@@ -75,7 +75,7 @@
                     {
                         var href = item.HasPricePage
                             ? Url.Action("Detail", "Tlds", new { slug = item.Tld.Slug })
-                            : Url.Action("Index", "Tlds", new { ara = item.Tld.Tld });
+                            : Url.Action("Index", "Tlds", new { search = item.Tld.Tld });
                         <li>
                             <a class="tld-name" href="@href">.@item.Tld.Tld</a>
                             <span class="small muted num">@T["Home.MostSearched.Count", item.Tld.Count]</span>

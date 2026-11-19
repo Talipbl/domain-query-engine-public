@@ -40,7 +40,7 @@ namespace DomainQueryEngine.SearchUI.Test
         [Fact]
         public async Task Catalog_Pages_Have_A_Canonical_Url_Without_Query()
         {
-            var html = await _client.GetStringAsync("/uzantilar?grup=tr");
+            var html = await _client.GetStringAsync("/uzantilar?groupKey=tr");
 
             Assert.Contains("<link rel=\"canonical\" href=\"https://test.example/uzantilar\" />", html);
             Assert.Contains("<meta property=\"og:url\" content=\"https://test.example/uzantilar\" />", html);

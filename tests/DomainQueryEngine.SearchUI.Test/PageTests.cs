@@ -17,7 +17,7 @@ namespace DomainQueryEngine.SearchUI.Test
         [Theory]
         [InlineData("/", "Alan adını en ucuz nereden alacağını tek aramada gör")]
         [InlineData("/uzantilar", "Uzantı fiyatları")]
-        [InlineData("/uzantilar?grup=tr&sirala=kayit", ".com.tr")]
+        [InlineData("/uzantilar?groupKey=tr&order=kayit", ".com.tr")]
         [InlineData("/uzantilar/com-tr", ".com.tr fiyatları")]
         [InlineData("/saglayicilar", "Sağlayıcılar")]
         [InlineData("/saglayicilar/turhost", "Turhost")]
@@ -74,8 +74,8 @@ namespace DomainQueryEngine.SearchUI.Test
             var domain = $"sayim-{Guid.NewGuid():N}.com"[..20] + ".com";
 
             var html = await _client.GetStringAsync($"/ara/sonuclar?q={domain}");
-            await _client.GetStringAsync($"/ara/sonuclar?q={domain}&reprice=true&sure=1");
-            await _client.GetStringAsync($"/ara/sonuclar?q={domain}&reprice=true&musait=true");
+            await _client.GetStringAsync($"/ara/sonuclar?q={domain}&reprice=true&period=1");
+            await _client.GetStringAsync($"/ara/sonuclar?q={domain}&reprice=true&onlyAvailable=true");
 
             Assert.Contains("Lira Host", html);
             Assert.Contains("Dolar Host", html);
@@ -99,12 +99,12 @@ namespace DomainQueryEngine.SearchUI.Test
         [Fact]
         public async Task Htmx_Results_Request_Updates_The_Address_Bar()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/ara/sonuclar?q=ornek.com&reprice=true&sure=2&musait=true");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/ara/sonuclar?q=ornek.com&reprice=true&period=2&onlyAvailable=true");
             request.Headers.Add("HX-Request", "true");
 
             var response = await _client.SendAsync(request);
 
-            Assert.Equal("/ara?q=ornek.com&musait=true&sure=2", Assert.Single(response.Headers.GetValues("HX-Replace-Url")));
+            Assert.Equal("/ara?q=ornek.com&onlyAvailable=true&period=2", Assert.Single(response.Headers.GetValues("HX-Replace-Url")));
         }
 
         [Fact]

@@ -23,10 +23,10 @@
             }
         </div>
         <form class="search-form search-form--compact" role="search" method="get" action="@Url.Action("Index", "Search")" style="flex: 0 1 440px">
-            <input type="hidden" name="uzanti" value="@tld" />
+            <input type="hidden" name="extension" value="@tld" />
             <label for="tld-name" class="sr-only">@T["TldDetail.SearchLabel", tld]</label>
             <div class="suffix-input">
-                <input id="tld-name" name="ad" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@T["TldDetail.SearchPlaceholder"]" required />
+                <input id="tld-name" name="name" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@T["TldDetail.SearchPlaceholder"]" required />
                 <span aria-hidden="true">.@tld</span>
             </div>
             <btn variant="Primary" type="submit">@T["TldDetail.Check"]</btn>

@@ -4,7 +4,7 @@
     ViewData["Description"] = T["Tlds.Description"].Value;
     ViewData["Nav"] = "tlds";
 
-    string GroupUrl(string key) => Url.Action("Index", new { grup = key == "tumu" ? null : key, sirala = Model.Sort.Key == "populerlik" ? null : Model.Sort.Key, ara = string.IsNullOrEmpty(Model.Query) ? null : Model.Query })!;
+    string GroupUrl(string key) => Url.Action("Index", new { groupKey = key == "tumu" ? null : key, order = Model.Sort.Key == "populerlik" ? null : Model.Sort.Key, search = string.IsNullOrEmpty(Model.Query) ? null : Model.Query })!;
 }
 
 <div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)" hx-boost="true" hx-target="main" hx-select="main" hx-swap="outerHTML">
@@ -27,12 +27,12 @@
         <form class="toolbar__controls" method="get" action="@Url.Action("Index")" role="search">
             @if (Model.Group.Key != "tumu")
             {
-                <input type="hidden" name="grup" value="@Model.Group.Key" />
+                <input type="hidden" name="groupKey" value="@Model.Group.Key" />
             }
             <label for="tld-q" class="sr-only">@T["Tlds.SearchLabel"]</label>
-            <input id="tld-q" class="input" type="search" name="ara" value="@Model.Query" placeholder="@T["Tlds.SearchPlaceholder"]" style="width: 200px; max-width: 100%" />
+            <input id="tld-q" class="input" type="search" name="search" value="@Model.Query" placeholder="@T["Tlds.SearchPlaceholder"]" style="width: 200px; max-width: 100%" />
             <label class="small muted" for="tld-sort">@T["Filters.Sort"]</label>
-            <select id="tld-sort" class="select" name="sirala" data-autosubmit>
+            <select id="tld-sort" class="select" name="order" data-autosubmit>
                 @foreach (var sort in TldListPageViewModel.Sorts)
                 {
                     <option value="@sort.Key" selected="@(sort == Model.Sort)">@T[sort.LabelKey]</option>
