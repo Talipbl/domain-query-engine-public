@@ -1,4 +1,5 @@
 ﻿using DomainQueryEngine.AAK;
+using DomainQueryEngine.AtakDomain;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.GriNet;
 using DomainQueryEngine.Ihs;
@@ -13,7 +14,7 @@ namespace DomainQueryEngine.Infrastructure
 {
     //bkz: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-6.0
     public static class InfrastructureServiceRegistration
-    {
+    {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
             services.AddScoped<IDomainLookupStrategy, YildizBilisimLookupStrategy>();
@@ -24,6 +25,7 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<IDomainLookupStrategy, IhsLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, IsimKayitLookupStrategy>();
             //services.AddScoped<IDomainLookupStrategy, IsimTescilLookupStrategy>();
+            services.AddScoped<IDomainLookupStrategy, AtakDomainLookupStrategy>();
 
             services.AddScoped<YildizBilisimStrategyParser>();
             services.AddScoped<YoncuBilisimStrategyParser>();
@@ -33,6 +35,7 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<IhsStrategyParser>();
             services.AddScoped<IsimKayitStrategyParser>();
             services.AddScoped<IsimTescilStrategyParser>();
+            services.AddScoped<AtakDomainStrategyParser>();
             return services;
         }
     }
