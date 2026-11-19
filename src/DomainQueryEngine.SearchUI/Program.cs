@@ -4,6 +4,7 @@ using DomainQueryEngine.Application.Services;
 using DomainQueryEngine.Http;
 using DomainQueryEngine.Infrastructure;
 using DomainQueryEngine.PostgreSQL;
+using DomainQueryEngine.SearchUI.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using IHttpClientFactory = DomainQueryEngine.Http.IHttpClientFactory;
@@ -50,6 +51,7 @@ builder.Services.AddSingleton<IAsyncPolicy<HttpResponseMessage>>(sp =>
 
 builder.Services.AddInfrastructureServices();
 builder.Services.AddPostgreSQLServices();
+builder.Services.AddDataSources(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

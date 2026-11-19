@@ -16,4 +16,9 @@
     <ProjectReference Include="..\DomainQueryEngine.Core\DomainQueryEngine.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Sample catalog data, read by the Mock* catalogs. -->
+    <EmbeddedResource Include="MockData\*.json" LogicalName="MockData.%(Filename)%(Extension)" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,1480 @@
+{
+  "asOf": "2026-11-19",
+  "note": "Sample data. .com and .com.tr registration prices come from live lookups on 2026-11-19; everything else is generated.",
+  "tlds": [
+    {
+      "tld": "com",
+      "category": "Generic",
+      "isPopular": true,
+      "documentRequired": null,
+      "registry": "Verisign",
+      "description": "Dünyada en çok kullanılan genel uzantı.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 12.11,
+          "regularRegistration": null,
+          "renewal": 12.32,
+          "transfer": 10.42
+        },
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 8.99,
+          "regularRegistration": 18.99,
+          "renewal": 11.31,
+          "transfer": 10.88
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 605.25,
+          "regularRegistration": null,
+          "renewal": 568.57,
+          "transfer": 437.01
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 449.5,
+          "regularRegistration": null,
+          "renewal": 611.43,
+          "transfer": 505.72
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 401.87,
+          "regularRegistration": null,
+          "renewal": 466.86,
+          "transfer": 406.65
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 2.99,
+          "regularRegistration": null,
+          "renewal": 9.05,
+          "transfer": 9.4
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 146.36,
+          "regularRegistration": 503.9,
+          "renewal": 576.24,
+          "transfer": 433.65
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 128.99,
+          "regularRegistration": 682.99,
+          "renewal": 459.26,
+          "transfer": 465.13
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 20000.0,
+          "regularRegistration": null,
+          "renewal": 513.93,
+          "transfer": 430.84
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 159.95
+        },
+        {
+          "month": "2026-07",
+          "amount": 149.63
+        },
+        {
+          "month": "2026-08",
+          "amount": 149.63
+        },
+        {
+          "month": "2026-09",
+          "amount": 141.89
+        },
+        {
+          "month": "2026-10",
+          "amount": 134.15
+        },
+        {
+          "month": "2026-11",
+          "amount": 128.99
+        }
+      ],
+      "faq": [
+        {
+          "question": "Kampanya fiyatı kimler için geçerli?",
+          "answer": "Çoğu sağlayıcıda kampanya yalnızca ilk alımda veya yeni üyeler için geçerlidir; koşulları sağlayıcının sitesinde kontrol et."
+        }
+      ]
+    },
+    {
+      "tld": "com.tr",
+      "category": "Turkish",
+      "isPopular": true,
+      "documentRequired": false,
+      "registry": "TRABİS",
+      "description": "Türkiye'nin en yaygın ticari uzantısı.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 2.0,
+          "regularRegistration": null,
+          "renewal": 11.77,
+          "transfer": null
+        },
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 1.69,
+          "regularRegistration": null,
+          "renewal": 12.73,
+          "transfer": null
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 249.0,
+          "regularRegistration": null,
+          "renewal": 739.97,
+          "transfer": null
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 99.5,
+          "regularRegistration": null,
+          "renewal": 731.51,
+          "transfer": null
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 48.02,
+          "regularRegistration": null,
+          "renewal": 606.52,
+          "transfer": null
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 1.49,
+          "regularRegistration": null,
+          "renewal": 14.1,
+          "transfer": null
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 75.2,
+          "regularRegistration": null,
+          "renewal": 732.46,
+          "transfer": null
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 50.99,
+          "regularRegistration": 641.99,
+          "renewal": 788.21,
+          "transfer": null
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 20000.0,
+          "regularRegistration": null,
+          "renewal": 753.13,
+          "transfer": null
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 59.9
+        },
+        {
+          "month": "2026-07",
+          "amount": 54.9
+        },
+        {
+          "month": "2026-08",
+          "amount": 54.9
+        },
+        {
+          "month": "2026-09",
+          "amount": 52.9
+        },
+        {
+          "month": "2026-10",
+          "amount": 49.9
+        },
+        {
+          "month": "2026-11",
+          "amount": 48.02
+        }
+      ],
+      "faq": [
+        {
+          "question": ".com.tr için belge gerekiyor mu?",
+          "answer": "Hayır. .com.tr 2022'den beri belgesiz kaydedilebiliyor; kayıt sırasında kimlik veya vergi bilgisi isteniyor."
+        },
+        {
+          "question": ".com.tr ile .tr arasındaki fark ne?",
+          "answer": ".tr doğrudan ülke uzantısıdır; .com.tr ise ticari kullanım için ikinci düzey uzantıdır. İkisi de TRABİS üzerinden kaydedilir."
+        },
+        {
+          "question": "Yenileme fiyatı neden daha yüksek?",
+          "answer": "Kampanya fiyatları genellikle yalnızca ilk yıl geçerlidir; sonraki yıllarda sağlayıcının normal fiyatı ödenir."
+        }
+      ]
+    },
+    {
+      "tld": "tr",
+      "category": "Turkish",
+      "isPopular": true,
+      "documentRequired": false,
+      "registry": "TRABİS",
+      "description": "Türkiye'nin doğrudan ülke uzantısı.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 1.75,
+          "regularRegistration": null,
+          "renewal": 13.16,
+          "transfer": null
+        },
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 2.9,
+          "regularRegistration": null,
+          "renewal": 14.46,
+          "transfer": null
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 98.02,
+          "regularRegistration": null,
+          "renewal": 713.04,
+          "transfer": null
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 127.17,
+          "regularRegistration": 299.45,
+          "renewal": 760.82,
+          "transfer": null
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 128.52,
+          "regularRegistration": null,
+          "renewal": 706.12,
+          "transfer": null
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 95.09,
+          "regularRegistration": 212.15,
+          "renewal": 825.47,
+          "transfer": null
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 131.02,
+          "regularRegistration": 419.45,
+          "renewal": 634.48,
+          "transfer": null
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 89.25,
+          "regularRegistration": 230.1,
+          "renewal": 763.72,
+          "transfer": null
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 109.52
+        },
+        {
+          "month": "2026-07",
+          "amount": 102.45
+        },
+        {
+          "month": "2026-08",
+          "amount": 102.45
+        },
+        {
+          "month": "2026-09",
+          "amount": 97.15
+        },
+        {
+          "month": "2026-10",
+          "amount": 91.85
+        },
+        {
+          "month": "2026-11",
+          "amount": 88.32
+        }
+      ],
+      "faq": [
+        {
+          "question": ".tr ile .com.tr aynı anda alınabilir mi?",
+          "answer": "Evet, ikisi ayrı alan adlarıdır ve ayrı ayrı kaydedilir."
+        }
+      ]
+    },
+    {
+      "tld": "net",
+      "category": "Generic",
+      "isPopular": true,
+      "documentRequired": null,
+      "registry": "Verisign",
+      "description": "Ağ ve teknoloji projelerinde yaygın genel uzantı.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 6.0,
+          "regularRegistration": 14.88,
+          "renewal": 12.72,
+          "transfer": 10.02
+        },
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 9.74,
+          "regularRegistration": null,
+          "renewal": 14.77,
+          "transfer": 12.25
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 444.4,
+          "regularRegistration": null,
+          "renewal": 701.17,
+          "transfer": 545.57
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 246.4,
+          "regularRegistration": null,
+          "renewal": 723.75,
+          "transfer": 566.45
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 378.85,
+          "regularRegistration": 1073.26,
+          "renewal": 629.95,
+          "transfer": 593.69
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 10.24,
+          "regularRegistration": null,
+          "renewal": 13.66,
+          "transfer": 12.43
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 403.88,
+          "regularRegistration": 926.63,
+          "renewal": 800.51,
+          "transfer": 511.3
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 521.1,
+          "regularRegistration": null,
+          "renewal": 623.22,
+          "transfer": 512.61
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 250.83,
+          "regularRegistration": null,
+          "renewal": 705.91,
+          "transfer": 587.11
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 305.54
+        },
+        {
+          "month": "2026-07",
+          "amount": 285.82
+        },
+        {
+          "month": "2026-08",
+          "amount": 285.82
+        },
+        {
+          "month": "2026-09",
+          "amount": 271.04
+        },
+        {
+          "month": "2026-10",
+          "amount": 256.26
+        },
+        {
+          "month": "2026-11",
+          "amount": 246.4
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "org",
+      "category": "Generic",
+      "isPopular": true,
+      "documentRequired": null,
+      "registry": "Public Interest Registry",
+      "description": "Kuruluşlar ve topluluklar için genel uzantı.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 10.02,
+          "regularRegistration": null,
+          "renewal": 15.9,
+          "transfer": 12.85
+        },
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 8.1,
+          "regularRegistration": null,
+          "renewal": 16.79,
+          "transfer": 13.98
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 395.76,
+          "regularRegistration": null,
+          "renewal": 793.03,
+          "transfer": 674.63
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 332.99,
+          "regularRegistration": 820.84,
+          "renewal": 880.75,
+          "transfer": 736.32
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 554.83,
+          "regularRegistration": null,
+          "renewal": 873.68,
+          "transfer": 760.53
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 9.6,
+          "regularRegistration": null,
+          "renewal": 16.12,
+          "transfer": 13.68
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 439.23,
+          "regularRegistration": null,
+          "renewal": 842.02,
+          "transfer": 745.34
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 443.06,
+          "regularRegistration": null,
+          "renewal": 766.76,
+          "transfer": 726.38
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 591.32,
+          "regularRegistration": 1229.02,
+          "renewal": 887.96,
+          "transfer": 681.78
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 412.91
+        },
+        {
+          "month": "2026-07",
+          "amount": 386.27
+        },
+        {
+          "month": "2026-08",
+          "amount": 386.27
+        },
+        {
+          "month": "2026-09",
+          "amount": 366.29
+        },
+        {
+          "month": "2026-10",
+          "amount": 346.31
+        },
+        {
+          "month": "2026-11",
+          "amount": 332.99
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "net.tr",
+      "category": "Turkish",
+      "isPopular": false,
+      "documentRequired": null,
+      "registry": "TRABİS",
+      "description": "Türkiye'de ağ ve altyapı hizmetleri için ikinci düzey uzantı.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 1.05,
+          "regularRegistration": null,
+          "renewal": 11.47,
+          "transfer": null
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 113.39,
+          "regularRegistration": null,
+          "renewal": 591.69,
+          "transfer": null
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 99.56,
+          "regularRegistration": 203.63,
+          "renewal": 505.46,
+          "transfer": null
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 1.94,
+          "regularRegistration": null,
+          "renewal": 11.55,
+          "transfer": null
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 83.86,
+          "regularRegistration": null,
+          "renewal": 582.32,
+          "transfer": null
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 53.55,
+          "regularRegistration": 160.54,
+          "renewal": 617.62,
+          "transfer": null
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 76.89,
+          "regularRegistration": null,
+          "renewal": 586.93,
+          "transfer": null
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 65.71
+        },
+        {
+          "month": "2026-07",
+          "amount": 61.47
+        },
+        {
+          "month": "2026-08",
+          "amount": 61.47
+        },
+        {
+          "month": "2026-09",
+          "amount": 58.29
+        },
+        {
+          "month": "2026-10",
+          "amount": 55.11
+        },
+        {
+          "month": "2026-11",
+          "amount": 52.99
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "org.tr",
+      "category": "Turkish",
+      "isPopular": false,
+      "documentRequired": true,
+      "registry": "TRABİS",
+      "description": "Türkiye'deki dernek ve vakıflar için ikinci düzey uzantı.",
+      "prices": [
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 2.42,
+          "regularRegistration": 9.09,
+          "renewal": 12.53,
+          "transfer": null
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 91.23,
+          "regularRegistration": null,
+          "renewal": 632.4,
+          "transfer": null
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 128.52,
+          "regularRegistration": null,
+          "renewal": 660.66,
+          "transfer": null
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 115.88,
+          "regularRegistration": null,
+          "renewal": 635.53,
+          "transfer": null
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 130.52,
+          "regularRegistration": null,
+          "renewal": 602.98,
+          "transfer": null
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 160.68,
+          "regularRegistration": null,
+          "renewal": 659.73,
+          "transfer": null
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 113.13
+        },
+        {
+          "month": "2026-07",
+          "amount": 105.83
+        },
+        {
+          "month": "2026-08",
+          "amount": 105.83
+        },
+        {
+          "month": "2026-09",
+          "amount": 100.35
+        },
+        {
+          "month": "2026-10",
+          "amount": 94.88
+        },
+        {
+          "month": "2026-11",
+          "amount": 91.23
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "gen.tr",
+      "category": "Turkish",
+      "isPopular": false,
+      "documentRequired": null,
+      "registry": "TRABİS",
+      "description": "Türkiye'de genel kullanım için ikinci düzey uzantı.",
+      "prices": [
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 1.61,
+          "regularRegistration": null,
+          "renewal": 6.29,
+          "transfer": null
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 70.29,
+          "regularRegistration": null,
+          "renewal": 361.0,
+          "transfer": null
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 69.97,
+          "regularRegistration": null,
+          "renewal": 297.55,
+          "transfer": null
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 41.31,
+          "regularRegistration": null,
+          "renewal": 321.22,
+          "transfer": null
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 41.0,
+          "regularRegistration": null,
+          "renewal": 364.79,
+          "transfer": null
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 40.01,
+          "regularRegistration": null,
+          "renewal": 286.27,
+          "transfer": null
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 49.61
+        },
+        {
+          "month": "2026-07",
+          "amount": 46.41
+        },
+        {
+          "month": "2026-08",
+          "amount": 46.41
+        },
+        {
+          "month": "2026-09",
+          "amount": 44.01
+        },
+        {
+          "month": "2026-10",
+          "amount": 41.61
+        },
+        {
+          "month": "2026-11",
+          "amount": 40.01
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "web.tr",
+      "category": "Turkish",
+      "isPopular": false,
+      "documentRequired": null,
+      "registry": "TRABİS",
+      "description": "Türkiye'de web siteleri için ikinci düzey uzantı.",
+      "prices": [
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 0.77,
+          "regularRegistration": 2.37,
+          "renewal": 5.78,
+          "transfer": null
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 63.41,
+          "regularRegistration": 207.9,
+          "renewal": 323.59,
+          "transfer": null
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 1.44,
+          "regularRegistration": null,
+          "renewal": 5.67,
+          "transfer": null
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 78.44,
+          "regularRegistration": null,
+          "renewal": 289.2,
+          "transfer": null
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 51.03,
+          "regularRegistration": 188.38,
+          "renewal": 343.48,
+          "transfer": null
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 48.19
+        },
+        {
+          "month": "2026-07",
+          "amount": 45.08
+        },
+        {
+          "month": "2026-08",
+          "amount": 45.08
+        },
+        {
+          "month": "2026-09",
+          "amount": 42.75
+        },
+        {
+          "month": "2026-10",
+          "amount": 40.42
+        },
+        {
+          "month": "2026-11",
+          "amount": 38.86
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "info",
+      "category": "Generic",
+      "isPopular": false,
+      "documentRequired": null,
+      "registry": null,
+      "description": "Bilgi siteleri için genel uzantı.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 3.36,
+          "regularRegistration": null,
+          "renewal": 28.18,
+          "transfer": 24.31
+        },
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 2.77,
+          "regularRegistration": null,
+          "renewal": 28.49,
+          "transfer": 28.36
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 207.46,
+          "regularRegistration": 707.64,
+          "renewal": 1434.11,
+          "transfer": 1252.64
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 204.45,
+          "regularRegistration": null,
+          "renewal": 1302.54,
+          "transfer": 1236.1
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 3.38,
+          "regularRegistration": null,
+          "renewal": 25.04,
+          "transfer": 22.38
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 207.45,
+          "regularRegistration": 575.45,
+          "renewal": 1214.96,
+          "transfer": 1383.43
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 149.97,
+          "regularRegistration": null,
+          "renewal": 1322.78,
+          "transfer": 1231.24
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 104.04,
+          "regularRegistration": 367.75,
+          "renewal": 1118.32,
+          "transfer": 1136.86
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 129.01
+        },
+        {
+          "month": "2026-07",
+          "amount": 120.69
+        },
+        {
+          "month": "2026-08",
+          "amount": 120.69
+        },
+        {
+          "month": "2026-09",
+          "amount": 114.44
+        },
+        {
+          "month": "2026-10",
+          "amount": 108.2
+        },
+        {
+          "month": "2026-11",
+          "amount": 104.04
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "io",
+      "category": "Country",
+      "isPopular": false,
+      "documentRequired": null,
+      "registry": null,
+      "description": "Teknoloji girişimlerinde sık kullanılan ülke uzantısı.",
+      "prices": [
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 2329.62,
+          "regularRegistration": null,
+          "renewal": 2475.64,
+          "transfer": 2441.93
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 3189.56,
+          "regularRegistration": null,
+          "renewal": 2761.72,
+          "transfer": 2763.59
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 1934.82,
+          "regularRegistration": 5562.02,
+          "renewal": 2965.5,
+          "transfer": 2457.09
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 42.95,
+          "regularRegistration": 152.24,
+          "renewal": 51.56,
+          "transfer": 57.36
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 2758.49,
+          "regularRegistration": 5026.38,
+          "renewal": 2345.24,
+          "transfer": 2892.2
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 1816.37,
+          "regularRegistration": 3554.86,
+          "renewal": 2608.31,
+          "transfer": 2321.8
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 2084.73,
+          "regularRegistration": 6278.81,
+          "renewal": 2418.58,
+          "transfer": 2154.9
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 2252.3
+        },
+        {
+          "month": "2026-07",
+          "amount": 2106.99
+        },
+        {
+          "month": "2026-08",
+          "amount": 2106.99
+        },
+        {
+          "month": "2026-09",
+          "amount": 1998.01
+        },
+        {
+          "month": "2026-10",
+          "amount": 1889.02
+        },
+        {
+          "month": "2026-11",
+          "amount": 1816.37
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "co",
+      "category": "Country",
+      "isPopular": false,
+      "documentRequired": null,
+      "registry": null,
+      "description": "Şirketlerde .com alternatifi olarak kullanılan ülke uzantısı.",
+      "prices": [
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 24.57,
+          "regularRegistration": null,
+          "renewal": 29.15,
+          "transfer": 28.74
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 720.52,
+          "regularRegistration": null,
+          "renewal": 1405.16,
+          "transfer": 1813.69
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 1218.36,
+          "regularRegistration": null,
+          "renewal": 1538.87,
+          "transfer": 1785.78
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 11.36,
+          "regularRegistration": null,
+          "renewal": 36.45,
+          "transfer": 35.58
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 1267.43,
+          "regularRegistration": null,
+          "renewal": 1415.6,
+          "transfer": 1505.55
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 893.58,
+          "regularRegistration": null,
+          "renewal": 1483.55,
+          "transfer": 1769.14
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 805.42,
+          "regularRegistration": null,
+          "renewal": 1418.78,
+          "transfer": 1685.69
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 710.93
+        },
+        {
+          "month": "2026-07",
+          "amount": 665.07
+        },
+        {
+          "month": "2026-08",
+          "amount": 665.07
+        },
+        {
+          "month": "2026-09",
+          "amount": 630.67
+        },
+        {
+          "month": "2026-10",
+          "amount": 596.27
+        },
+        {
+          "month": "2026-11",
+          "amount": 573.33
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "xyz",
+      "category": "New",
+      "isPopular": false,
+      "documentRequired": null,
+      "registry": null,
+      "description": "Düşük ilk yıl fiyatıyla bilinen yeni genel uzantı.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 1.95,
+          "regularRegistration": null,
+          "renewal": 15.04,
+          "transfer": 13.5
+        },
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 1.05,
+          "regularRegistration": null,
+          "renewal": 14.54,
+          "transfer": 16.81
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 93.66,
+          "regularRegistration": null,
+          "renewal": 694.63,
+          "transfer": 662.79
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 97.82,
+          "regularRegistration": null,
+          "renewal": 684.83,
+          "transfer": 678.46
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 1.32,
+          "regularRegistration": null,
+          "renewal": 12.78,
+          "transfer": 13.33
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 89.46,
+          "regularRegistration": 260.55,
+          "renewal": 841.04,
+          "transfer": 732.08
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 104.29,
+          "regularRegistration": null,
+          "renewal": 726.96,
+          "transfer": 650.06
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 91.56,
+          "regularRegistration": null,
+          "renewal": 818.2,
+          "transfer": 659.11
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 65.71
+        },
+        {
+          "month": "2026-07",
+          "amount": 61.47
+        },
+        {
+          "month": "2026-08",
+          "amount": 61.47
+        },
+        {
+          "month": "2026-09",
+          "amount": 58.29
+        },
+        {
+          "month": "2026-10",
+          "amount": 55.11
+        },
+        {
+          "month": "2026-11",
+          "amount": 52.99
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "online",
+      "category": "New",
+      "isPopular": false,
+      "documentRequired": null,
+      "registry": null,
+      "description": "Çevrimiçi projeler için yeni genel uzantı.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 2.3,
+          "regularRegistration": null,
+          "renewal": 37.86,
+          "transfer": 34.25
+        },
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 2.09,
+          "regularRegistration": null,
+          "renewal": 41.73,
+          "transfer": 34.59
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 130.42,
+          "regularRegistration": null,
+          "renewal": 1766.02,
+          "transfer": 1611.82
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 127.86,
+          "regularRegistration": null,
+          "renewal": 1782.59,
+          "transfer": 2132.19
+        },
+        {
+          "provider": "natro",
+          "currency": "USD",
+          "registration": 1.74,
+          "regularRegistration": 3.75,
+          "renewal": 38.75,
+          "transfer": 41.82
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 141.1,
+          "regularRegistration": null,
+          "renewal": 1846.37,
+          "transfer": 1963.52
+        },
+        {
+          "provider": "yildiz-bilisim",
+          "currency": "TRY",
+          "registration": 113.09,
+          "regularRegistration": null,
+          "renewal": 2089.84,
+          "transfer": 1872.91
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 108.89
+        },
+        {
+          "month": "2026-07",
+          "amount": 101.87
+        },
+        {
+          "month": "2026-08",
+          "amount": 101.87
+        },
+        {
+          "month": "2026-09",
+          "amount": 96.6
+        },
+        {
+          "month": "2026-10",
+          "amount": 91.33
+        },
+        {
+          "month": "2026-11",
+          "amount": 87.82
+        }
+      ],
+      "faq": []
+    },
+    {
+      "tld": "app",
+      "category": "New",
+      "isPopular": false,
+      "documentRequired": null,
+      "registry": null,
+      "description": "Uygulamalar için yeni genel uzantı; HTTPS zorunludur.",
+      "prices": [
+        {
+          "provider": "alan-adi-kayit",
+          "currency": "USD",
+          "registration": 29.15,
+          "regularRegistration": null,
+          "renewal": 19.69,
+          "transfer": 23.17
+        },
+        {
+          "provider": "atak-domain",
+          "currency": "USD",
+          "registration": 20.96,
+          "regularRegistration": 53.28,
+          "renewal": 18.38,
+          "transfer": 22.96
+        },
+        {
+          "provider": "grinet",
+          "currency": "TRY",
+          "registration": 1212.2,
+          "regularRegistration": null,
+          "renewal": 1096.97,
+          "transfer": 919.15
+        },
+        {
+          "provider": "hosting-com-tr",
+          "currency": "TRY",
+          "registration": 1675.14,
+          "regularRegistration": 3472.38,
+          "renewal": 1008.85,
+          "transfer": 1098.57
+        },
+        {
+          "provider": "ihs",
+          "currency": "TRY",
+          "registration": 770.33,
+          "regularRegistration": null,
+          "renewal": 1200.45,
+          "transfer": 949.1
+        },
+        {
+          "provider": "turhost",
+          "currency": "TRY",
+          "registration": 1185.2,
+          "regularRegistration": 4315.21,
+          "renewal": 1127.55,
+          "transfer": 1137.33
+        },
+        {
+          "provider": "turkticaret",
+          "currency": "TRY",
+          "registration": 1057.71,
+          "regularRegistration": null,
+          "renewal": 1066.01,
+          "transfer": 1187.96
+        }
+      ],
+      "history": [
+        {
+          "month": "2026-06",
+          "amount": 955.21
+        },
+        {
+          "month": "2026-07",
+          "amount": 893.58
+        },
+        {
+          "month": "2026-08",
+          "amount": 893.58
+        },
+        {
+          "month": "2026-09",
+          "amount": 847.36
+        },
+        {
+          "month": "2026-10",
+          "amount": 801.14
+        },
+        {
+          "month": "2026-11",
+          "amount": 770.33
+        }
+      ],
+      "faq": []
+    }
+  ]
+}
