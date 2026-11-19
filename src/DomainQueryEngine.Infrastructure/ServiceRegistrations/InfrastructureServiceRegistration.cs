@@ -2,6 +2,7 @@
 using DomainQueryEngine.AtakDomain;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.GriNet;
+using DomainQueryEngine.HostingComTr;
 using DomainQueryEngine.Ihs;
 using DomainQueryEngine.IsimKayit;
 using DomainQueryEngine.IsimTescil;
@@ -30,6 +31,7 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<IDomainLookupStrategy, AtakDomainLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, TurhostLookupStrategy>();
             services.AddScoped<IDomainLookupStrategy, TurkticaretLookupStrategy>();
+            services.AddScoped<IDomainLookupStrategy, HostingComTrLookupStrategy>();
 
             services.AddScoped<YildizBilisimStrategyParser>();
             services.AddScoped<YoncuBilisimStrategyParser>();
@@ -42,6 +44,7 @@ namespace DomainQueryEngine.Infrastructure
             services.AddScoped<AtakDomainStrategyParser>();
             services.AddScoped<TurhostStrategyParser>();
             services.AddScoped<TurkticaretStrategyParser>();
+            services.AddScoped<HostingComTrStrategyParser>();
             return services;
         }
     }
