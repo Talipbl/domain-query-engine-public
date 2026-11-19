@@ -1,0 +1,76 @@
+﻿@model ResultsViewModel
+@* Search results for one domain. Rendered into #results on /ara (htmx) and by GET /api/lookup/{domain}. *@
+
+@if (Model.RespondedCount == 0)
+{
+    <div class="empty-state">
+        @(Model.Failed.Count > 0 ? T["Results.NoneResponded"] : T["Results.NoResults"])
+    </div>
+}
+else
+{
+    <div class="stack" data-currency="@Model.Currency">
+        <div class="search-summary">
+            <div class="stack" style="gap: var(--space-2)">
+                <div class="cluster" style="gap: var(--space-3)">
+                    <h1 class="search-summary__domain">@Model.DomainName</h1>
+                    @if (Model.AvailableCount > 0)
+                    {
+                        <badge kind="Available" pill="true">@T["Results.AvailableAt", Model.AvailableCount]</badge>
+                    }
+                    else
+                    {
+                        <badge kind="Taken" pill="true">@T["Results.Registered"]</badge>
+                    }
+                </div>
+                <span class="small muted">@T["Results.Asked", Model.AskedCount, Model.RespondedCount]</span>
+            </div>
+            @if (Model.Best?.Item.DisplayPrice != null)
+            {
+                <div class="best-offer">
+                    <div class="stack" style="gap: 0">
+                        <span class="best-offer__label">@T["Badge.Best"]</span>
+                        <span style="font-weight: 600">@Model.Best.Item.Result.ProviderInfo?.Name</span>
+                    </div>
+                    <span class="best-offer__amount">@(Model.Best.Item.IsConverted ? "≈ " : "")@PriceFormatter.Format(Model.Best.Item.DisplayPrice)</span>
+                </div>
+            }
+        </div>
+
+        <div class="result-list">
+            @if (Model.Rows.Count == 0)
+            {
+                <div class="empty-state">
+                    @T["Results.NoMatch"]
+                    <a href="@Url.Action("Index", "Search", new { q = Model.DomainName })" style="font-weight: 600">@T["Results.ClearFilters"]</a>
+                </div>
+            }
+            @foreach (var row in Model.Rows)
+            {
+                <partial name="Components/_ResultRow" model="row" />
+            }
+
+            @if (Model.Failed.Count > 0)
+            {
+                <details class="failed-list">
+                    <summary>@T["Results.Failed", Model.Failed.Count]</summary>
+                    <ul>
+                        @foreach (var failed in Model.Failed)
+                        {
+                            <li><span style="font-weight: 600">@failed.Name</span><span class="muted">@T[failed.ReasonKey]</span></li>
+                        }
+                    </ul>
+                </details>
+            }
+        </div>
+
+        @if (Model.Rates == null)
+        {
+            <p class="rate-note">@T["DataNote.NoRates"]</p>
+        }
+        else if (Model.AnyConverted)
+        {
+            <p class="rate-note">@T["DataNote.Converted", Model.Rates.Source, PriceFormatter.FormatDate(Model.Rates.Date)]</p>
+        }
+    </div>
+}

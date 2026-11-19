@@ -1,0 +1,46 @@
+@model ProviderListPageViewModel
+@{
+    ViewData["Title"] = T["Providers.Title"].Value;
+    ViewData["Description"] = T["Providers.Description"].Value;
+    ViewData["Nav"] = "providers";
+    var active = Model.Providers.Count(p => p.Status == DomainQueryEngine.Core.Catalog.ProviderStatus.Active);
+}
+
+<div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)">
+    <div class="page-title">
+        <div class="page-title__text">
+            <h1>@T["Providers.Title"]</h1>
+            <p class="lead">@T["Providers.Lead", active]</p>
+        </div>
+    </div>
+
+    <div class="grid-cards">
+        @foreach (var provider in Model.Providers)
+        {
+            <article class="card provider-card">
+                <div class="provider-card__head">
+                    @if (!string.IsNullOrEmpty(provider.LogoUrl))
+                    {
+                        <img class="provider-card__logo" src="@provider.LogoUrl" alt="" loading="lazy" referrerpolicy="no-referrer" />
+                    }
+                    <a class="provider-card__name" href="@Url.Action("Detail", new { slug = provider.Slug })">@provider.Name</a>
+                </div>
+                <div class="cluster">
+                    <partial name="Components/_ProviderStatus" model="provider.Status" />
+                </div>
+                <div class="cluster" style="justify-content: space-between">
+                    @if (provider.TldCount is > 0)
+                    {
+                        <span class="small muted">@T["Providers.TldCount", provider.TldCount]</span>
+                    }
+                    <btn variant="Link" href="@provider.Website" external="true">@T["Providers.GoToSite"]</btn>
+                </div>
+            </article>
+        }
+    </div>
+
+    @if (Model.IsSample)
+    {
+        <p class="rate-note"><badge kind="Mock"></badge> @T["Providers.SampleNote"]</p>
+    }
+</div>

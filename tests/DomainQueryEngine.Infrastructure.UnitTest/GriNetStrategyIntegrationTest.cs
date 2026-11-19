@@ -5,6 +5,7 @@ using Moq;
 
 namespace DomainQueryEngine.Infrastructure.Test
 {
+    [Trait("Category", "Integration")]
     public class GriNetLookupStrategyIntegrationTest
     {
         GriNetLookupStrategy _lookupStrategy;
@@ -12,7 +13,7 @@ namespace DomainQueryEngine.Infrastructure.Test
         public GriNetLookupStrategyIntegrationTest()
         {
             _parser = new GriNetStrategyParser();
-            _lookupStrategy = new GriNetLookupStrategy(_parser);
+            _lookupStrategy = new GriNetLookupStrategy(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]
@@ -24,6 +25,7 @@ namespace DomainQueryEngine.Infrastructure.Test
         }
     }
 
+    [Trait("Category", "Integration")]
     public class AlanAdiKayitLookupStrategyIntegrationTest
     {
         AlanAdiKayitLookupStrategy _lookupStrategy;
@@ -31,7 +33,7 @@ namespace DomainQueryEngine.Infrastructure.Test
         public AlanAdiKayitLookupStrategyIntegrationTest()
         {
             _parser = new AlanAdiKayitStrategyParser();
-            _lookupStrategy = new AlanAdiKayitLookupStrategy(_parser);
+            _lookupStrategy = new AlanAdiKayitLookupStrategy(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]

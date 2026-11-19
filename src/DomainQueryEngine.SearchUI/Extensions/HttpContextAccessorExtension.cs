@@ -16,14 +16,5 @@ namespace DomainQueryEngine.SearchUI.Extensions
                 return cookie.Token;
             }
         }
-        public static UserAgentModel GetUserAgent(this IHttpContextAccessor httpContextAccessor)
-        {
-            UserAgentModel model = new UserAgentModel()
-            {
-                Agent = httpContextAccessor.HttpContext.Request.Headers["User-Agent"],
-                Host = httpContextAccessor.HttpContext.Request.Headers["Host"],
-            };
-            return model;
-        }
     }
 }

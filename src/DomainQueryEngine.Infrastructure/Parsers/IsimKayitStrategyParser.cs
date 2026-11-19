@@ -33,7 +33,7 @@ namespace DomainQueryEngine.IsimKayit
                     IsValidDomain = item.IsValidDomain,
                     IsPremium = item.IsPremium,
                     RawResponse = JsonConvert.SerializeObject(item),
-                    CheckedAt = DateTime.Now
+                    CheckedAt = DateTime.UtcNow
                 };
 
                 if (item.Pricing != null)

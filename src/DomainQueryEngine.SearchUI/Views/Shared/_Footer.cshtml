@@ -1,0 +1,15 @@
+<footer class="site-footer">
+    <div class="container site-footer__inner">
+        <div class="site-footer__about">
+            <span class="brand__name">En <span class="brand__accent">Ucuz</span> Domain</span>
+            <span>@T["Footer.Disclaimer"]</span>
+        </div>
+        <nav aria-label="@T["Footer.Label"]">
+            <a href="@Url.Action("Index", "Home")">@T["Nav.Search"]</a>
+            <a href="@Url.Action("Index", "Tlds")">@T["Nav.Tlds"]</a>
+            <a href="@Url.Action("Index", "Providers")">@T["Nav.Providers"]</a>
+            <a href="@(Url.Action("Index", "Home") + "#nasil")">@T["Nav.How"]</a>
+            <a href="@Url.Action("Privacy", "Home")">@T["Nav.Privacy"]</a>
+        </nav>
+    </div>
+</footer>

@@ -1,3 +1,10 @@
 ﻿@using DomainQueryEngine.SearchUI
 @using DomainQueryEngine.SearchUI.Models
+@using DomainQueryEngine.SearchUI.Helpers
+@using DomainQueryEngine.SearchUI.TagHelpers
+@using DomainQueryEngine.Core
+@using Microsoft.Extensions.Localization
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, DomainQueryEngine.SearchUI
+@* Shared texts (Resources/SharedResource.*.resx): @T["Nav.Search"] *@
+@inject IStringLocalizer<SharedResource> T

@@ -1,0 +1,15 @@
+@* Placeholder row shown while a search is running. Pass the number of rows as the model. *@
+@model int
+@for (var i = 0; i < Model; i++)
+{
+    <div class="result-row" aria-hidden="true">
+        <div class="result-row__addon"><div class="skeleton" style="width: 64px; height: 28px"></div></div>
+        <div class="result-row__body">
+            <div class="result-row__provider">
+                <div class="skeleton skeleton--line" style="width: 55%"></div>
+                <div class="skeleton skeleton--line" style="width: 30%; height: 12px"></div>
+            </div>
+            <div class="skeleton skeleton--price"></div>
+        </div>
+    </div>
+}

@@ -30,7 +30,7 @@ namespace DomainQueryEngine.Application.Lookup
                 { existing.VisitLinkTemplate = info.VisitLink; changed = true; }
 
                 if (changed)
-                    _providerRepository.Update(existing);
+                    await _providerRepository.UpdateAsync(existing);
 
                 return existing;
             }

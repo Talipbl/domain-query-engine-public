@@ -1,5 +1,6 @@
 namespace DomainQueryEngine.Natro
 {
+    [Trait("Category", "Integration")]
     public class NatroLookupStrategyIntegrationTest
     {
         NatroLookupStrategy _lookupStrategy;
@@ -7,7 +8,7 @@ namespace DomainQueryEngine.Natro
         public NatroLookupStrategyIntegrationTest()
         {
             _parser = new NatroStrategyParser();
-            _lookupStrategy = new NatroLookupStrategy(_parser);
+            _lookupStrategy = new NatroLookupStrategy(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]

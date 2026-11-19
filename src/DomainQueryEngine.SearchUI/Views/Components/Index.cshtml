@@ -1,0 +1,121 @@
+@{
+    ViewData["Title"] = "Bileşenler";
+    ViewData["NoIndex"] = true;
+
+    BasePrice Try(decimal amount) => new() { Amount = amount, Currency = "TRY" };
+    BasePrice Usd(decimal amount) => new() { Amount = amount, Currency = "USD" };
+
+    ResultRowViewModel Row(string name, bool available, BasePrice display, BasePrice? original = null, bool best = false, bool outlier = false) => new()
+    {
+        IsBest = best,
+        IsOutlier = outlier,
+        Item = new ComparedResult
+        {
+            Period = 1,
+            DisplayPrice = display,
+            OriginalPrice = original ?? display,
+            Result = new SearchResult
+            {
+                ProviderInfo = new ProviderInfo { Name = name },
+                VisitLink = "#",
+                Domain = new DomainResult { DomainName = "ornekyazilimci.com", IsAvailable = available, IsTransferable = !available }
+            }
+        }
+    };
+
+    var colors = new[]
+    {
+        ("--color-ink", "Metin"), ("--color-ink-2", "İkincil metin"), ("--color-muted", "Soluk metin"), ("--color-border", "Çerçeve"),
+        ("--color-bg", "Zemin"), ("--color-surface", "Kart"), ("--color-accent", "Vurgu"), ("--color-accent-soft", "Vurgu zemini"),
+        ("--color-success", "Başarı"), ("--color-success-soft", "Başarı zemini"), ("--color-campaign", "Kampanya"), ("--color-campaign-soft", "Kampanya zemini"),
+        ("--color-danger", "Hata"), ("--color-danger-soft", "Hata zemini")
+    };
+}
+
+<div class="container section stack" style="gap: var(--space-8); padding-bottom: var(--space-12)">
+    <div class="stack" style="gap: var(--space-2)">
+        <h1>Bileşenler</h1>
+        <p class="lead">Arayüzdeki tüm parçalar tek sayfada. Yalnızca geliştirme ortamında açılır. Değerler <code>wwwroot/css/tokens.css</code> içinde; koyu tema sistem ayarını izler.</p>
+    </div>
+
+    <section class="card gallery-section" aria-labelledby="g-colors">
+        <h2 id="g-colors">Renkler</h2>
+        <div class="gallery-swatches">
+            @foreach (var (token, label) in colors)
+            {
+                <div class="gallery-swatch">
+                    <div class="gallery-swatch__color" style="background: var(@token)"></div>
+                    <strong>@label</strong>
+                    <span class="gallery-code">@token</span>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="card gallery-section" aria-labelledby="g-type">
+        <h2 id="g-type">Yazı</h2>
+        <h1>.com.tr fiyatları <span class="gallery-code">h1</span></h1>
+        <h2>Sağlayıcılara göre fiyat <span class="gallery-code">h2</span></h2>
+        <p class="lead">Domain'i yaz; fiyatları aynı listede karşılaştır. <span class="gallery-code">.lead</span></p>
+        <p class="small muted">Son kontrol 19.11.2026 14:32 <span class="gallery-code">.small .muted</span></p>
+    </section>
+
+    <section class="card gallery-section" aria-labelledby="g-buttons">
+        <h2 id="g-buttons">Butonlar ve kontroller</h2>
+        <div class="cluster" style="gap: var(--space-3)">
+            <btn variant="Primary" size="Md">Karşılaştır</btn>
+            <btn variant="Secondary" size="Md" href="#" external="true">Satın al</btn>
+            <btn variant="Link" href="#">Tüm uzantılar →</btn>
+            <btn variant="Primary" size="Md" disabled>Sorgulanıyor…</btn>
+        </div>
+        <div class="cluster" style="gap: var(--space-4)">
+            <partial name="_CurrencySwitch" />
+            <span class="gallery-code">&lt;btn variant size href external&gt; · _CurrencySwitch</span>
+        </div>
+        <form class="search-form search-form--compact" role="search" onsubmit="return false" style="max-width: 560px">
+            <label for="g-search" class="sr-only">Alan adı</label>
+            <input id="g-search" class="search-form__input" type="text" value="ornekyazilimci.com" />
+            <btn variant="Primary" type="submit">Karşılaştır</btn>
+        </form>
+    </section>
+
+    <section class="card gallery-section" aria-labelledby="g-badges">
+        <h2 id="g-badges">Rozetler ve fiyat etiketi</h2>
+        <div class="cluster">
+            <badge kind="Available">Müsait</badge>
+            <badge kind="Taken">Dolu</badge>
+            <badge kind="Transfer">Transfer edilebilir</badge>
+            <badge kind="Campaign">Kampanya</badge>
+            <badge kind="Best">En ucuz</badge>
+            <badge kind="Mock"></badge>
+            <badge kind="Available" pill="true">Müsait · 9 sağlayıcı</badge>
+        </div>
+        <div class="cluster" style="gap: var(--space-8); align-items: flex-start">
+            <price-tag price="Try(128.99m)" regular="Try(682.99m)" align-start="true"></price-tag>
+            <price-tag price="Try(150.90m)" original="Usd(2.99m)" align-start="true"></price-tag>
+            <price-tag price="Try(20000m)" warning="Diğer sağlayıcılardan çok yüksek" align-start="true"></price-tag>
+            <price-tag price="Try(48.02m)" period="1" best="true" align-start="true"></price-tag>
+        </div>
+        <span class="gallery-code">&lt;badge kind&gt; · &lt;price-tag price original regular period warning best&gt;</span>
+    </section>
+
+    <section class="card gallery-section" aria-labelledby="g-rows">
+        <h2 id="g-rows">Sonuç satırları ve durumlar</h2>
+        <div class="result-list">
+            <partial name="Components/_ResultRow" model='Row("Turkticaret.net", true, Try(128.99m), best: true)' />
+            <partial name="Components/_ResultRow" model='Row("Natro", true, Try(150.90m), Usd(2.99m))' />
+            <partial name="Components/_ResultRow" model='Row("Yıldız Bilişim", true, Try(20000m), outlier: true)' />
+            <partial name="Components/_ResultRow" model='Row("Atak Domain", false, Try(100.43m), Usd(1.99m))' />
+            <partial name="Components/_ResultRowSkeleton" model="1" />
+            <details class="failed-list" open>
+                <summary>2 sağlayıcıdan yanıt alınamadı</summary>
+                <ul>
+                    <li><span style="font-weight: 600">Yöncü Bilişim</span><span class="muted">Sorgu adresi bulunamadı (404)</span></li>
+                    <li><span style="font-weight: 600">İsim Kayıt</span><span class="muted">Sağlayıcı erişimi engelledi (403)</span></li>
+                </ul>
+            </details>
+            <div class="empty-state">Bu alan adı için sonuç bulunamadı.</div>
+        </div>
+        <span class="gallery-code">Views/Shared/Components/_ResultRow.cshtml · _ResultRowSkeleton.cshtml</span>
+    </section>
+</div>

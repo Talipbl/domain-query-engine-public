@@ -1,0 +1,66 @@
+@model ResultRowViewModel
+@{
+    var domain = Model.Item.Result.Domain;
+    var provider = Model.Item.Result.ProviderInfo;
+    var visitLink = Model.Item.Result.VisitLink;
+    var name = provider?.Name ?? string.Empty;
+    var initials = string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => char.ToUpperInvariant(w[0])));
+}
+<article class="result-row@(Model.IsBest ? " result-row--best" : "")">
+    @* Logo addon at the start of the row; initials when the provider has no logo. *@
+    <div class="result-row__addon" aria-hidden="true">
+        @if (!string.IsNullOrEmpty(provider?.LogoUrl))
+        {
+            <img class="result-row__logo" src="@provider.LogoUrl" alt="" loading="lazy" referrerpolicy="no-referrer" />
+        }
+        else
+        {
+            <span class="result-row__initials">@initials</span>
+        }
+    </div>
+
+    <div class="result-row__body">
+        <div class="result-row__provider">
+            <div class="result-row__name">
+                <span>@name</span>
+                @if (Model.IsBest)
+                {
+                    <badge kind="Best">@T["Badge.Best"]</badge>
+                }
+            </div>
+            <div class="cluster">
+                @if (domain.IsAvailable)
+                {
+                    <badge kind="Available">@T["Status.Available"]</badge>
+                }
+                else if (domain.IsTransferable)
+                {
+                    <badge kind="Transfer">@T["Status.Transferable"]</badge>
+                }
+                else
+                {
+                    <badge kind="Taken">@(domain.IsValidDomain ? T["Status.Taken"] : T["Status.Invalid"])</badge>
+                }
+                @if (Model.Item.IsCampaign)
+                {
+                    <badge kind="Campaign">@T["Badge.Campaign"]</badge>
+                }
+            </div>
+        </div>
+
+        @if (Model.Item.DisplayPrice != null)
+        {
+            <price-tag price="Model.Item.DisplayPrice" original="Model.Item.OriginalPrice" regular="Model.Item.RegularPrice" period="Model.Item.Period"
+                       warning="@(Model.IsOutlier ? T["Price.Outlier"].Value : null)" best="Model.IsBest"></price-tag>
+        }
+        else if (domain.IsAvailable)
+        {
+            <div class="price"><span class="price__note">@(Model.Item.Period is > 0 ? T["Results.PeriodNotOffered", Model.Item.Period] : T["Results.PriceUnavailable"])</span></div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(visitLink))
+        {
+            <btn variant="@(Model.IsBest ? ButtonVariant.Primary : ButtonVariant.Secondary)" href="@visitLink" external="true">@(domain.IsAvailable ? T["Action.Buy"] : T["Action.GoToProvider"])</btn>
+        }
+    </div>
+</article>

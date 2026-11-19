@@ -1,34 +1,57 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@inject SiteUrl SiteUrl
+@{
+    var brand = T["Brand.Name"].Value;
+    var pageTitle = ViewData["Title"] is string title ? $"{title} · {brand}" : brand;
+    var noIndex = ViewData["NoIndex"] is true;
+    var canonical = SiteUrl.Canonical(Context.Request);
+    var language = LanguagePreference.Current;
+    var theme = ThemePreference.Get(Context); // null: follow the system setting
+}
+<!DOCTYPE html>
+<html lang="@language" data-theme="@theme">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - DomainQueryEngine.SearchUI</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/DomainQueryEngine.SearchUI.styles.css" asp-append-version="true" />
+    <title>@pageTitle</title>
+    @if (ViewData["Description"] is string description)
+    {
+        <meta name="description" content="@description" />
+        <meta property="og:description" content="@description" />
+    }
+    @if (noIndex)
+    {
+        <meta name="robots" content="noindex" />
+    }
+    else
+    {
+        <link rel="canonical" href="@canonical" />
+        <meta property="og:url" content="@canonical" />
+    }
+    <meta property="og:title" content="@pageTitle" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="@brand" />
+    <meta property="og:locale" content="@System.Globalization.CultureInfo.CurrentUICulture.Name.Replace('-', '_')" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="~/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" />
+    <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    @await RenderSectionAsync("Head", required: false)
 </head>
 <body>
-    <div class="page-bg"></div>
-    <div class="main-container">
+    <a class="skip-link" href="#main">@T["Layout.SkipToContent"]</a>
+    <partial name="_Header" />
 
-        <header class="top-header">
-            <div class="logo">
-                <img src="~/source/query_engine_horizontal_logo.png" alt="En Ucuz Domain"/>
-            </div>
-
-            <div class="lang-select">
-                <a href="#">TR</a> | <a href="#">EN</a>
-            </div>
-        </header>
-
+    <main id="main" class="page-main">
         @RenderBody()
+    </main>
 
-        <footer class="footer">
-            ©2025 En Ucuz Domain Tüm Hakları Saklıdır
-        </footer>
-    </div>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_Footer" />
+
+    <script src="~/lib/htmx/htmx.min.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

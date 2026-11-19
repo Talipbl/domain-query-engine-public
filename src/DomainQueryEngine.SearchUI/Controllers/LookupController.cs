@@ -1,139 +1,41 @@
-﻿using DomainQueryEngine.Application;
-using DomainQueryEngine.Application.Lookup;
-using DomainQueryEngine.Core;
-using DomainQueryEngine.Core.Entities;
-using DomainQueryEngine.Core.Utilities;
-using DomainQueryEngine.SearchUI.Extensions;
-using DomainQueryEngine.SearchUI.Helpers;
-using DomainQueryEngine.SearchUI.Models;
+﻿using DomainQueryEngine.SearchUI.Models;
+using DomainQueryEngine.SearchUI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace DomainQueryEngine.SearchUI.Controllers
 {
+    /// <summary>
+    /// HTML-fragment lookup API (GET /api/lookup/{domain}). The site's own pages use /ara; this endpoint
+    /// stays for existing clients.
+    /// </summary>
     [Route("api/[controller]")]
-    [ApiController]
-    public class LookupController : ControllerBase
+    public class LookupController : Controller
     {
-        ILookupService _lookupService;
-        IDomainService _domainService;
-        IProviderService _providerService;
-        IHttpContextAccessor _httpContextAccessor;
-        private readonly IRazorViewEngine _viewEngine;
-        private readonly ITempDataProvider _tempDataProvider;
+        private readonly DomainSearchService _search;
 
-        private string AccessToken { get; set; }
-        public UserAgentModel UserAgent { get; private set; }
-
-        public LookupController(ILookupService lookupService, IRazorViewEngine viewEngine, ITempDataProvider tempDataProvider, IHttpContextAccessor httpContextAccessor, IDomainService domainService, IProviderService providerService)
+        public LookupController(DomainSearchService search)
         {
-            _lookupService = lookupService;
-            _domainService = domainService;
-            _providerService = providerService;
-            _viewEngine = viewEngine;
-            _tempDataProvider = tempDataProvider;
-            _httpContextAccessor = httpContextAccessor;
-
-            AccessToken = _httpContextAccessor.GetOrSetCookie();
-            UserAgent = _httpContextAccessor.GetUserAgent();
+            _search = search;
         }
 
+        /// <param name="domain">Domain or pasted URL.</param>
+        /// <param name="currency">Display currency (TRY, USD or EUR). When omitted, the visitor's saved choice (cookie) is used; anything unsupported falls back to TRY.</param>
+        /// <param name="reprice">
+        /// True when the page only re-shows the last search in another currency. Such requests are not
+        /// saved to the history, so query counts per domain stay accurate.
+        /// </param>
         [HttpGet("{domain}")]
-        [ResponseCache(VaryByHeader = "User-Agent", Duration = 120)]
-        public async Task<IActionResult> DomainLookup(string domain)
+        public async Task<IActionResult> DomainLookup(string domain, [FromQuery] string? currency = null, [FromQuery] bool reprice = false, CancellationToken ct = default)
         {
-            string validatedDomain = DomainHelper.ValidateAndNormalizeDomain(domain);
-
-            Domain domainDto = await SaveLookupRequest(validatedDomain);
-
-            var results = await _lookupService.LookupDomainAsync(validatedDomain);
-
-            await SaveLookupResult(domainDto, results);
-
-            var html = await RenderViewToStringAsync("/Views/Lookup/_Results.cshtml", results);
-            return Content(html, "text/html");
-        }
-
-        private async Task SaveLookupResult(Domain domainDto, List<SearchResult> results)
-        {
-            foreach (var r in results)
+            if (!DomainSearchService.TryNormalize(domain, out var normalized))
             {
-                ProviderInfo providerInfo = r.ProviderInfo;
-
-                var provider = await _providerService.GetOrCreateProviderAsync(providerInfo);
-
-                var minPriceEntry = r.Domain?.Prices?.OrderBy(p => p.Period).FirstOrDefault();
-                var lookupResult = new DomainLookupResult
-                {
-                    DomainId = domainDto.Id,
-                    ProviderId = provider.Id,
-                    IsSuccess = r.Domain.IsSuccess,
-                    IsAvailable = r.Domain.IsAvailable,
-                    ResponseTimeMs = 500,
-                    RawResponse = r.Domain.RawResponse,
-                    PriceAmount = minPriceEntry?.RegistrationPrice?.Amount,
-                    PriceCurrency = minPriceEntry?.RegistrationPrice?.Currency,
-                    PricePeriod = minPriceEntry?.Period,
-                    CheckedAt = DateTime.UtcNow
-                };
-
-                await _lookupService.AddDomainLookupResult(lookupResult);
-            }
-        }
-
-        private async Task<Domain> SaveLookupRequest(string domain)
-        {
-            Domain domainDto = new()
-            {
-                DomainName = domain,
-                Tld = DomainHelper.GetTldFromDomainName(domain),
-                CreatedAt = DateTime.UtcNow,
-                UserIp = NetworkHelper.GetRequestIp(_httpContextAccessor),
-                UserAgent = UserAgent.Agent,
-                SessionId = AccessToken
-            };
-
-            domainDto = await _domainService.AddDomainSearch(domainDto);
-            return domainDto;
-        }
-
-        private async Task<string> RenderViewToStringAsync(string viewPath, object model)
-        {
-            var actionContext = new ActionContext(HttpContext, RouteData, ControllerContext.ActionDescriptor);
-
-            var getViewResult = _viewEngine.GetView(executingFilePath: null, viewPath: viewPath, isMainPage: false);
-            var findViewResult = _viewEngine.FindView(actionContext, viewPath, isMainPage: false);
-
-            var viewResult = (getViewResult.Success ? getViewResult : findViewResult);
-
-            if (!viewResult.Success)
-            {
-                var searched = string.Join(Environment.NewLine, viewResult.SearchedLocations);
-                throw new InvalidOperationException($"View '{viewPath}' not found. Searched: {searched}");
+                // The caller inserts this response as HTML, so answer with a readable message, not a stack trace.
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                return PartialView("Components/_EmptyState", "Search.InvalidDomain");
             }
 
-            await using var sw = new StringWriter();
-            var viewDictionary = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-            {
-                Model = model
-            };
-
-            var tempData = new TempDataDictionary(HttpContext, _tempDataProvider);
-
-            var viewContext = new ViewContext(
-                actionContext,
-                viewResult.View,
-                viewDictionary,
-                tempData,
-                sw,
-                new HtmlHelperOptions()
-            );
-
-            await viewResult.View.RenderAsync(viewContext);
-            return sw.ToString();
+            var comparison = await _search.SearchAsync(normalized, record: !reprice, currency, ct: ct);
+            return PartialView("Components/_SearchResults", ResultsViewModel.From(comparison));
         }
     }
 }

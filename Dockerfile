@@ -27,8 +27,8 @@ WORKDIR /app
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 USER appuser
 
-# Render/containers: bind to 0.0.0.0 and use injected PORT (default 8080 for local)
-ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT:-8080}
+# Listen on port 8080 on all interfaces (docker-compose maps it to localhost:8080)
+ENV ASPNETCORE_HTTP_PORTS=8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 COPY --from=build /app/publish .

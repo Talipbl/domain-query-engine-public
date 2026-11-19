@@ -16,7 +16,7 @@ namespace DomainQueryEngine.Core
         public bool IsValidDomain { get; set; } = true;
         public bool IsTransferable { get; set; } = false;
         public string RawResponse { get; set; }
-        public DateTime CheckedAt { get; set; } = DateTime.Now;
+        public DateTime CheckedAt { get; set; } = DateTime.UtcNow;
         public List<DomainPrice> Prices { get; set; } = new();
     }
 }

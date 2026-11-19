@@ -1,0 +1,113 @@
+using DomainQueryEngine.Core;
+
+namespace DomainQueryEngine.SearchUI.Models
+{
+    public enum ResultSort
+    {
+        Price,
+        Name
+    }
+
+    /// <summary>Filters on the search page. Defaults show every provider, cheapest first, shortest period.</summary>
+    public sealed record SearchFilters(bool OnlyAvailable = false, int? Period = null, ResultSort Sort = ResultSort.Price)
+    {
+        public static readonly int[] Periods = { 1, 2, 5 };
+
+        public bool IsDefault => !OnlyAvailable && Period == null && Sort == ResultSort.Price;
+    }
+
+    /// <summary>
+    /// What the results view shows, derived from a <see cref="PriceComparison"/> so the view holds no logic.
+    /// </summary>
+    public sealed class ResultsViewModel
+    {
+        /// <summary>A price this many times the median of the other offers is flagged as unusually high.</summary>
+        public const decimal OutlierFactor = 5m;
+
+        public string DomainName { get; init; } = string.Empty;
+        public string Currency { get; init; } = ExchangeRates.BaseCurrency;
+        public ExchangeRates? Rates { get; init; }
+        public SearchFilters Filters { get; init; } = new();
+        public int AskedCount { get; init; }
+        public int RespondedCount { get; init; }
+        public int AvailableCount { get; init; }
+        public ResultRowViewModel? Best { get; init; }
+
+        /// <summary>Rows after the filters; <see cref="RespondedCount"/> counts them before.</summary>
+        public List<ResultRowViewModel> Rows { get; init; } = new();
+        public List<FailedProvider> Failed { get; init; } = new();
+        public bool AnyConverted => Rows.Any(r => r.Item.IsConverted);
+
+        public static ResultsViewModel From(PriceComparison comparison, SearchFilters? filters = null)
+        {
+            filters ??= new SearchFilters();
+            var succeeded = comparison.Items.Where(i => i.Result.Domain.IsSuccess).ToList();
+            var failed = comparison.Items.Where(i => !i.Result.Domain.IsSuccess).ToList();
+
+            var availablePrices = succeeded
+                .Where(i => i.Result.Domain.IsAvailable && i.DisplayPrice != null)
+                .Select(i => i.DisplayPrice!.Amount)
+                .OrderBy(a => a)
+                .ToList();
+            var median = availablePrices.Count > 0 ? availablePrices[availablePrices.Count / 2] : (decimal?)null;
+
+            // Items arrive sorted (cheapest available first), so the first priced available one is the best.
+            var bestItem = succeeded.FirstOrDefault(i => i.Result.Domain.IsAvailable && i.DisplayPrice != null);
+
+            var rows = succeeded.Select(item => new ResultRowViewModel
+            {
+                Item = item,
+                IsBest = ReferenceEquals(item, bestItem),
+                IsOutlier = availablePrices.Count >= 3 && median is > 0 && item.DisplayPrice != null
+                            && item.Result.Domain.IsAvailable && item.DisplayPrice.Amount > median.Value * OutlierFactor
+            });
+
+            if (filters.OnlyAvailable)
+                rows = rows.Where(r => r.Item.Result.Domain.IsAvailable);
+            if (filters.Sort == ResultSort.Name)
+                rows = rows.OrderBy(r => r.Item.Result.ProviderInfo?.Name, StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), true));
+
+            var rowList = rows.ToList();
+            return new ResultsViewModel
+            {
+                DomainName = comparison.Items.Select(i => i.Result.Domain.DomainName).FirstOrDefault(n => !string.IsNullOrEmpty(n)) ?? string.Empty,
+                Currency = comparison.Currency,
+                Rates = comparison.Rates,
+                Filters = filters,
+                AskedCount = comparison.Items.Count,
+                RespondedCount = succeeded.Count,
+                AvailableCount = succeeded.Count(i => i.Result.Domain.IsAvailable),
+                Best = rowList.FirstOrDefault(r => r.IsBest),
+                Rows = rowList,
+                Failed = failed.Select(i => new FailedProvider(i.Result.ProviderInfo?.Name ?? string.Empty, ErrorKey(i.Result.Domain.RawResponse))).ToList()
+            };
+        }
+
+        /// <summary>
+        /// Turns the stored error ("Error: …") into the key of a short, readable reason
+        /// (Resources/Locales: "Error.*").
+        /// </summary>
+        public static string ErrorKey(string? raw)
+        {
+            raw ??= string.Empty;
+            if (raw.Contains("Timed out", StringComparison.OrdinalIgnoreCase)) return "Error.Timeout";
+            if (raw.Contains("404")) return "Error.NotFound";
+            if (raw.Contains("403")) return "Error.Forbidden";
+            if (raw.Contains("E_KEY_ERROR")) return "Error.Challenge";
+            if (System.Text.RegularExpressions.Regex.IsMatch(raw, @"\b5\d\d\b")) return "Error.Server";
+            return "Error.Unknown";
+        }
+    }
+
+    public sealed class ResultRowViewModel
+    {
+        public ComparedResult Item { get; init; } = new();
+        public bool IsBest { get; init; }
+
+        /// <summary>The price is far above the other providers' (more than <see cref="ResultsViewModel.OutlierFactor"/> × median).</summary>
+        public bool IsOutlier { get; init; }
+    }
+
+    /// <param name="ReasonKey">Localization key of the reason, e.g. "Error.NotFound".</param>
+    public sealed record FailedProvider(string Name, string ReasonKey);
+}

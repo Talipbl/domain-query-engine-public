@@ -1,0 +1,13 @@
+@* TR / EN switch. Posts to /tercihler/dil and comes back to the same page in the chosen language. *@
+@{
+    var current = LanguagePreference.Current;
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+<form asp-controller="Preferences" asp-action="Language" method="post" class="segmented" aria-label="@T["Language.Label"]">
+    <input type="hidden" name="returnUrl" value="@returnUrl" />
+    @foreach (var (code, culture, name) in LanguagePreference.Languages)
+    {
+        <button type="submit" name="culture" value="@code" class="segmented__option" lang="@code"
+                aria-pressed="@(code == current ? "true" : "false")" title="@name">@code.ToUpperInvariant()</button>
+    }
+</form>

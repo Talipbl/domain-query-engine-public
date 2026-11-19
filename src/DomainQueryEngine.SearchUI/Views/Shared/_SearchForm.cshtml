@@ -1,0 +1,15 @@
+@* Domain search form. Model: the current input (may be empty). ViewData["Compact"] = true for the smaller variant. *@
+@model string
+@{
+    var compact = ViewData["Compact"] is true;
+    var id = compact ? "search-q-compact" : "search-q";
+}
+<form class="search-form@(compact ? " search-form--compact" : "")" role="search" method="get" action="@Url.Action("Index", "Search")">
+    <label for="@id" class="sr-only">@T["Search.InputLabel"]</label>
+    <input id="@id" name="q" class="search-form__input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false"
+           placeholder="@T["Search.Placeholder"]" value="@Model" required />
+    <btn variant="Primary" size="@(compact ? ButtonSize.Sm : ButtonSize.Lg)" type="submit">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20 20"></path></svg>
+        @T["Search.Submit"]
+    </btn>
+</form>

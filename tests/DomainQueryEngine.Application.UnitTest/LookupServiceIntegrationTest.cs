@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace DomainQueryEngine.Application.Test
 {
+    [Trait("Category", "Integration")]
     public class LookupServiceIntegrationTest : TestBase
     {
         [Fact]

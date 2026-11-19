@@ -16,7 +16,7 @@
         public string? PriceCurrency { get; set; }
         public int? PricePeriod { get; set; }
 
-        public DateTime CheckedAt { get; set; } = DateTime.Now;
+        public DateTime CheckedAt { get; set; } = DateTime.UtcNow;
 
         public virtual Domain Domain { get; set; }
         public virtual Provider Provider { get; set; }

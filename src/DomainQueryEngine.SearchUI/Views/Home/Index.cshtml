@@ -1,95 +1,122 @@
-﻿@{
-    ViewData["Title"] = "En Ucuz Domain Sorgula";
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = T["Home.Title"].Value;
+    ViewData["Description"] = T["Home.Description", Model.ActiveProviders.Count].Value;
+    ViewData["Nav"] = "search";
 }
-
-<link rel="stylesheet" href="~/css/main.css" />
 
 <section class="hero">
-    <h1>En Ucuz Domain Sorgula</h1>
-    <p>Aradığın alan adı en uygun fiyata burada</p>
-
-    <form id="domainSearchForm">
-        <div class="search-box" id="searchBox">
-            <input id="domainInput" name="domain" type="text" placeholder="ornek.com" />
-            <button type="submit">SORGULA</button>
-        </div>
-    </form>
-</section>
-
-<div id="loader" class="loader hidden">
-    <div class="loader-box">
-        <div class="spinner"></div>
-        <span>Sorgulanıyor...</span>
-    </div>
-</div>
-
-<div id="searchResults"></div>
-
-<section class="why-section">
-    <div class="why-container">
-
-        <div class="why-box">
-            <div class="why-icon">
-                <i class="bi bi-speedometer2"></i>
-            </div>
-            <h3>Hızlı Sorgulama Motoru</h3>
-            <p>Sorgular global domain sağlayıcılarından yüksek hızda çekilir. Sistem, yoğun trafik altında bile gecikme olmadan çalışır.</p>
-        </div>
-
-        <div class="why-box">
-            <div class="why-icon">
-                <i class="bi bi-clipboard-check-fill"></i>
-            </div>
-            <h3>Akıllı TLD Tanılama</h3>
-            <p>Girdiğin alan adını otomatik analiz eder. Eksik, hatalı veya farklı TLD formatlarını doğru şekilde ayrıştırır.</p>
-        </div>
-
-        <div class="why-box">
-            <div class="why-icon">
-                <i class="bi bi-broadcast-pin"></i>
-            </div>
-            <h3>Anlık Veri Güncellemesi</h3>
-            <p>Sonuçlar gerçek zamanlı olarak sağlanır. Anlık durum değişikliklerini (boş/dolu) anında algılar ve ekrana yansıtır.</p>
-        </div>
-
-    </div>
-</section>
-
-
-
-@section Scripts {
-    <script>
-        const form = document.getElementById("domainSearchForm");
-        const input = document.getElementById("domainInput");
-        const searchBox = document.getElementById("searchBox");
-        const loader = document.getElementById("loader");
-        const searchResults = document.getElementById("searchResults");
-
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const domain = input.value.trim();
-
-            if (!domain) {
-                searchBox.classList.add("input-error");
-                return;
+    <div class="hero__inner">
+        <badge kind="Available" pill="true">@T["Home.Badge", Model.ActiveProviders.Count]</badge>
+        <h1 class="hero__title">@T["Home.Heading"]</h1>
+        <p class="lead" style="max-width: 640px">@T["Home.Lead"]</p>
+        <partial name="_SearchForm" model="string.Empty" />
+        <div class="cluster" style="justify-content: center">
+            <span class="muted">@T["Home.PriceLists"]</span>
+            @foreach (var tld in Model.PopularTlds)
+            {
+                <a class="chip" href="@Url.Action("Detail", "Tlds", new { slug = tld.Entry.Slug })">.@tld.Entry.Tld</a>
             }
+        </div>
+    </div>
+</section>
 
-            searchBox.classList.remove("input-error");
-
-            loader.classList.remove("hidden");
-
-            fetch(`api/lookup/${encodeURIComponent(domain)}`, {
-                method: "GET"
-            })
-                .then(r => r.text())
-                .then(html => {
-                    searchResults.innerHTML = html;
-                })
-                .finally(() => {
-                    loader.classList.add("hidden");
-                    form.scrollIntoView();
-                });
-        });
-    </script>
+@if (Model.PopularTlds.Count > 0)
+{
+    <section class="container section" aria-labelledby="popular-title">
+        <div class="section-head">
+            <div class="stack" style="gap: 6px">
+                <h2 id="popular-title">@T["Home.Popular.Title"]</h2>
+                <p class="muted">@T["Home.Popular.Subtitle"]</p>
+            </div>
+            <btn variant="Link" href="@Url.Action("Index", "Tlds")">@T["Home.AllTlds"]</btn>
+        </div>
+        <div class="grid-cards">
+            @foreach (var item in Model.PopularTlds)
+            {
+                var offer = item.CheapestRegistration;
+                <a class="card card-link@(Model.TldList.IsSample ? " card--mock" : "")" href="@Url.Action("Detail", "Tlds", new { slug = item.Entry.Slug })">
+                    <span class="tld-card__name">.@item.Entry.Tld</span>
+                    <span class="small muted">@T["Common.CheapestRegistration"]</span>
+                    @if (offer != null)
+                    {
+                        <span class="tld-card__price">@(offer.IsConverted ? "≈ " : "")@PriceFormatter.Format(offer.Display)</span>
+                        <span>@T["Home.Popular.Provider", offer.Provider.Name, item.ProviderCount]</span>
+                    }
+                    else
+                    {
+                        <span class="tld-card__price">—</span>
+                    }
+                </a>
+            }
+        </div>
+        <partial name="Components/_DataNote" model="new DataNoteModel(Model.TldList.IsSample, Model.TldList.AsOf, Model.TldList.Rates, Model.AnyConverted)" />
+    </section>
 }
+
+<section class="container section" id="nasil">
+    <div class="split">
+        <div class="card">
+            <div class="card__head" style="margin-bottom: 14px">
+                <h2 style="font-size: var(--text-xl)">@T["Home.MostSearched.Title"]</h2>
+                @if (Model.MostSearchedIsSample)
+                {
+                    <badge kind="Mock"></badge>
+                }
+            </div>
+            @if (Model.MostSearchedTlds.Count == 0)
+            {
+                <p class="muted">@T["Home.MostSearched.Empty"]</p>
+            }
+            else
+            {
+                <ol class="ranked">
+                    @foreach (var item in Model.MostSearchedTlds)
+                    {
+                        var href = item.HasPricePage
+                            ? Url.Action("Detail", "Tlds", new { slug = item.Tld.Slug })
+                            : Url.Action("Index", "Tlds", new { ara = item.Tld.Tld });
+                        <li>
+                            <a class="tld-name" href="@href">.@item.Tld.Tld</a>
+                            <span class="small muted num">@T["Home.MostSearched.Count", item.Tld.Count]</span>
+                        </li>
+                    }
+                </ol>
+            }
+        </div>
+
+        <div class="card">
+            <h2 style="font-size: var(--text-xl); margin-bottom: 18px">@T["Home.How.Title"]</h2>
+            <ol class="steps">
+                <li>
+                    <span class="steps__no">1</span>
+                    <div><div class="steps__title">@T["Home.How.Step1.Title"]</div><div class="steps__text">@T["Home.How.Step1.Text"]</div></div>
+                </li>
+                <li>
+                    <span class="steps__no">2</span>
+                    <div><div class="steps__title">@T["Home.How.Step2.Title"]</div><div class="steps__text">@T["Home.How.Step2.Text"]</div></div>
+                </li>
+                <li>
+                    <span class="steps__no">3</span>
+                    <div><div class="steps__title">@T["Home.How.Step3.Title"]</div><div class="steps__text">@T["Home.How.Step3.Text"]</div></div>
+                </li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+<section class="container section" aria-labelledby="providers-title" style="padding-bottom: var(--space-12)">
+    <div class="section-head">
+        <div class="stack" style="gap: 6px">
+            <h2 id="providers-title">@T["Home.Providers.Title"]</h2>
+            <p class="muted">@T["Home.Providers.Subtitle"]</p>
+        </div>
+        <btn variant="Link" href="@Url.Action("Index", "Providers")">@T["Home.AllProviders"]</btn>
+    </div>
+    <ul class="cluster" style="list-style: none; margin: 0; padding: 0; gap: 10px">
+        @foreach (var provider in Model.ActiveProviders)
+        {
+            <li><a class="provider-chip" style="display: inline-block; text-decoration: none" href="@Url.Action("Detail", "Providers", new { slug = provider.Slug })">@provider.Name</a></li>
+        }
+    </ul>
+</section>

@@ -1,0 +1,13 @@
+@model DomainQueryEngine.Core.Catalog.ProviderStatus
+@switch (Model)
+{
+    case DomainQueryEngine.Core.Catalog.ProviderStatus.Active:
+        <badge kind="Available">@T["ProviderStatus.Active"]</badge>
+        break;
+    case DomainQueryEngine.Core.Catalog.ProviderStatus.Failing:
+        <badge kind="Warning">@T["ProviderStatus.Failing"]</badge>
+        break;
+    default:
+        <badge kind="Neutral">@T["ProviderStatus.Disabled"]</badge>
+        break;
+}

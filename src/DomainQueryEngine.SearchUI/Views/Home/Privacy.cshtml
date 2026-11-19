@@ -1,6 +1,11 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = T["Privacy.Title"].Value;
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container section" style="max-width: 760px">
+    <div class="card stack">
+        <h1 style="font-size: var(--text-3xl)">@T["Privacy.Title"]</h1>
+        <p>@T["Privacy.Draft"]</p>
+        <p class="muted">@T["Privacy.Current"]</p>
+    </div>
+</div>

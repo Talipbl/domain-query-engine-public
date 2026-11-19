@@ -1,0 +1,27 @@
+@* A price in a table cell: "≈" when converted, the provider's own price and the regular price as notes.
+   Model: OfferCellModel. *@
+@model OfferCellModel
+@if (Model.Offer == null)
+{
+    <span class="muted" aria-label="@T["Common.NoPrice"]">—</span>
+}
+else
+{
+    var offer = Model.Offer;
+    var title = offer.IsConverted ? T["Price.ProviderPrice", PriceFormatter.Format(offer.Original)].Value : null;
+    <span class="offer@(Model.Highlight ? " offer--best" : "")" title="@title">
+        <span class="offer__amount">@(offer.IsConverted ? "≈ " : "")@PriceFormatter.Format(offer.Display)</span>
+        @if (Model.ShowProvider)
+        {
+            <span class="offer__note">@offer.Provider.Name</span>
+        }
+        @if (Model.ShowDetails && offer.IsCampaign && offer.Regular != null)
+        {
+            <span class="offer__note">@T["Price.RegularShort"] <s>@PriceFormatter.Format(offer.Regular)</s></span>
+        }
+        @if (Model.ShowDetails && offer.IsConverted)
+        {
+            <span class="offer__note">@T["Price.ProviderPrice", PriceFormatter.Format(offer.Original)]</span>
+        }
+    </span>
+}
