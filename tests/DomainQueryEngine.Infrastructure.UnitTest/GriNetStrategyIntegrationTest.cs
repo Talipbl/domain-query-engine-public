@@ -5,6 +5,7 @@ using Moq;
 
 namespace DomainQueryEngine.Infrastructure.Test
 {
+    [Trait("Category", "Integration")]
     public class GriNetLookupStrategyIntegrationTest
     {
         GriNetLookupStrategy _lookupStrategy;
@@ -24,6 +25,7 @@ namespace DomainQueryEngine.Infrastructure.Test
         }
     }
 
+    [Trait("Category", "Integration")]
     public class AlanAdiKayitLookupStrategyIntegrationTest
     {
         AlanAdiKayitLookupStrategy _lookupStrategy;

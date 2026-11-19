@@ -49,6 +49,11 @@ namespace DomainQueryEngine.Core.Utilities
                 domain = domain.Substring(7);
             else if (domain.StartsWith("https://"))
                 domain = domain.Substring(8);
+            // Drop any path, query string or fragment from a pasted URL ("example.com/a?b#c").
+            var endOfHost = domain.IndexOfAny(new[] { '/', '\\', '?', '#' });
+            if (endOfHost >= 0)
+                domain = domain.Substring(0, endOfHost);
+
             if (domain.StartsWith("www."))
                 domain = domain.Substring(4);
 

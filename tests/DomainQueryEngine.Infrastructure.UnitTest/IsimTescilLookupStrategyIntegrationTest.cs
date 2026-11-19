@@ -2,6 +2,7 @@ using DomainQueryEngine.IsimTescil;
 
 namespace DomainQueryEngine.Natro
 {
+    [Trait("Category", "Integration")]
     public class IsimTescilLookupStrategyIntegrationTest
     {
         IsimTescilLookupStrategy _lookupStrategy;

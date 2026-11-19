@@ -11,7 +11,7 @@ Domain Query Engine is a .NET 8 web application and supporting libraries for que
 - `src/DomainQueryEngine.Core` – Domain entities, models, abstractions (repositories/strategies), utilities.
 - `src/DomainQueryEngine.Infrastructure` – Provider-specific lookup strategies and parsers.
 - `src/DomainQueryEngine.PostgreSQL` – EF Core PostgreSQL `DbContext`, migrations, repository implementations.
-- `tests/*` – Unit test projects.
+- `tests/*` – Unit tests and live-site integration tests (see [Tests](#tests)).
 
 ## Features
 
@@ -102,6 +102,20 @@ Current registrations include (names inferred from strategy classes):
 - `NatroLookupStrategy`
 - `IhsLookupStrategy`
 - `IsimKayitLookupStrategy`
+
+## Tests
+
+Unit tests run offline against saved provider responses (`tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/SampleResponses.cs`) and fake strategies. The only network access they need is a one-time download of the public suffix list.
+
+```powershell
+# unit tests (default)
+dotnet test --filter "Category!=Integration"
+
+# integration tests: send real requests to the provider websites
+dotnet test --filter "Category=Integration"
+```
+
+Integration tests depend on the providers' live sites and can fail when a site is down, changes its markup or rate-limits requests.
 
 ## Development notes
 

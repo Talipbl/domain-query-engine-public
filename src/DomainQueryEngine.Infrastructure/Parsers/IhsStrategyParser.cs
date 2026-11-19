@@ -39,15 +39,17 @@ namespace DomainQueryEngine.Ihs
                     if (priceNodes != null)
                     {
                         var tlNode = node.SelectSingleNode(".//span[contains(@class,'show-tl-curr')]");
-                        var tlPrice = TryParsePrice(tlNode?.InnerText);
+                        var tlPrice = TryParsePrice(tlNode?.InnerText ?? string.Empty);
 
-                        var domainPrice = new DomainPrice
+                        // TryParsePrice returns null when the TL price is missing or unreadable.
+                        if (tlPrice != null)
                         {
-                            Period = 1,
-                            RegistrationPrice = new BasePrice { Amount = tlPrice.Amount, Currency = tlPrice.Currency }
-                        };
-
-                        prices.Add(domainPrice);
+                            prices.Add(new DomainPrice
+                            {
+                                Period = 1,
+                                RegistrationPrice = new BasePrice { Amount = tlPrice.Amount, Currency = tlPrice.Currency }
+                            });
+                        }
                     }
 
                     var isAvailable = node.GetClasses().Any(c => c.Contains("available"));

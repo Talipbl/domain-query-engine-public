@@ -33,6 +33,8 @@ namespace DomainQueryEngine.Infrastructure.Models
         {
             public string Register { get; set; }
             public string Transfer { get; set; }
+            // The WHMCS domain check API sends this as "renew", not "renewal".
+            [Newtonsoft.Json.JsonProperty("renew")]
             public string Renewal { get; set; }
         }
         public class ShortestPeriodModel
