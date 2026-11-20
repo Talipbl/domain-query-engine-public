@@ -39,8 +39,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
             var paths = new List<string>
             {
                 Url.Action("Index", "Home")!,
-                Url.Action("Index", "Tlds")!,
-                Url.Action("Privacy", "Home")!
+                Url.Action("Index", "Tlds")!
             };
             paths.AddRange((await _tlds.GetAllAsync(ct)).Select(t => Url.Action("Detail", "Tlds", new { slug = t.Slug })!));
 

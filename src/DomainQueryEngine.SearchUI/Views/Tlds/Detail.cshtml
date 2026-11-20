@@ -8,27 +8,30 @@
     ViewData["Nav"] = "tlds";
 }
 
-<div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)">
-    <nav class="breadcrumb" aria-label="@T["Common.Breadcrumb"]">
-        <a href="@Url.Action("Index")">@T["Tlds.Title"]</a><span aria-hidden="true">/</span><span aria-current="page">.@tld</span>
-    </nav>
-
-    <div class="page-title">
-        <div class="page-title__text">
-            <h1>@T["TldDetail.Title", tld]</h1>
-            <p class="lead">@T["TldDetail.Lead", priced]</p>
-        </div>
-        <form class="search-form search-form--compact" role="search" method="get" action="@Url.Action("Index", "Search")" style="flex: 0 1 440px">
-            <input type="hidden" name="extension" value="@tld" />
-            <label for="tld-name" class="sr-only">@T["TldDetail.SearchLabel", tld]</label>
-            <div class="suffix-input">
-                <input id="tld-name" name="name" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@T["TldDetail.SearchPlaceholder"]" required />
-                <span aria-hidden="true">.@tld</span>
+<section class="catalog-head">
+    <div class="container stack catalog-head__inner">
+        <nav class="breadcrumb" aria-label="@T["Common.Breadcrumb"]">
+            <a href="@Url.Action("Index")">@T["Tlds.Title"]</a><span aria-hidden="true">/</span><span aria-current="page">.@tld</span>
+        </nav>
+        <div class="page-title">
+            <div class="page-title__text">
+                <h1>@T["TldDetail.Title", tld]</h1>
+                <p class="lead">@T["TldDetail.Lead", priced]</p>
             </div>
-            <btn variant="Primary" type="submit">@T["TldDetail.Check"]</btn>
-        </form>
+            <form class="search-form search-form--compact" role="search" method="get" action="@Url.Action("Index", "Search")" style="flex: 0 1 440px">
+                <input type="hidden" name="extension" value="@tld" />
+                <label for="tld-name" class="sr-only">@T["TldDetail.SearchLabel", tld]</label>
+                <div class="suffix-input">
+                    <input id="tld-name" name="name" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@T["TldDetail.SearchPlaceholder"]" required />
+                    <span aria-hidden="true">.@tld</span>
+                </div>
+                <btn variant="Primary" type="submit">@T["TldDetail.Check"]</btn>
+            </form>
+        </div>
     </div>
+</section>
 
+<div class="container section stack catalog-content" style="gap: var(--space-6); padding-bottom: var(--space-12)">
     <div class="stats">
         <div class="stat stat--best">
             <div class="stat__label">@T["Common.CheapestRegistration"]</div>

@@ -48,12 +48,6 @@ namespace DomainQueryEngine.SearchUI.Controllers
             });
         }
 
-        [Route("gizlilik")]
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         /// <summary>Page for error status codes such as 404 (re-executed by UseStatusCodePagesWithReExecute).</summary>
         [Route("hata/{code:int}")]
         public IActionResult StatusCodePage(int code)

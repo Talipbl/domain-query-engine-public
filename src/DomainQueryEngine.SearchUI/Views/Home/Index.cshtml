@@ -1,4 +1,4 @@
-﻿@model HomeViewModel
+@model HomeViewModel
 @{
     ViewData["Title"] = T["Home.Title"].Value;
     ViewData["Description"] = T["Home.Description", Model.Providers.Count].Value;
@@ -7,15 +7,61 @@
 
 <section class="hero">
     <div class="hero__inner">
-        <h1 class="hero__title">@T["Home.Heading"]</h1>
+        <h1 class="hero__title"><span>@T["Home.Heading.First"]</span><span class="hero__accent">@T["Home.Heading.Second"]</span></h1>
         <p class="lead" style="max-width: 640px">@T["Home.Lead"]</p>
         <partial name="_SearchForm" model="string.Empty" />
-        <div class="cluster" style="justify-content: center">
+        <div class="cluster hero__examples">
             <span class="muted">@T["Home.PriceLists"]</span>
             @foreach (var tld in Model.PopularTlds)
             {
                 <a class="chip" href="@Url.Action("Detail", "Tlds", new { slug = tld.Entry.Slug })">.@tld.Entry.Tld</a>
             }
+        </div>
+    </div>
+</section>
+
+<section class="provider-band" aria-label="@T["Home.Providers.Title"]">
+    <div class="container provider-marquee-section">
+        <p class="provider-band__label">@T["Home.Providers.Title"]</p>
+        <div class="provider-marquee">
+            <div class="provider-marquee__track">
+                @for (var copy = 0; copy < 2; copy++)
+                {
+                    var decorativeCopy = copy == 1;
+                    <ul class="provider-marquee__group" aria-hidden="@(decorativeCopy ? "true" : null)">
+                        @foreach (var provider in Model.Providers)
+                        {
+                            <li class="provider-marquee__item @(string.IsNullOrWhiteSpace(provider.LogoUrl) ? "is-logo-missing" : "")">
+                                @if (!string.IsNullOrWhiteSpace(provider.Website))
+                                {
+                                    <a class="provider-marquee__link" href="@provider.Website" target="_blank" rel="noopener noreferrer" aria-label="@provider.Name" tabindex="@(decorativeCopy ? "-1" : null)">
+                                        @if (!string.IsNullOrWhiteSpace(provider.LogoUrl))
+                                        {
+                                            <img src="@provider.LogoUrl" alt="@provider.Name" loading="lazy" referrerpolicy="no-referrer" data-provider-logo />
+                                            <span class="provider-marquee__fallback">@provider.Name</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="provider-marquee__fallback">@provider.Name</span>
+                                        }
+                                    </a>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(provider.LogoUrl))
+                                {
+                                    <span class="provider-marquee__link" aria-label="@provider.Name">
+                                        <img src="@provider.LogoUrl" alt="@provider.Name" loading="lazy" referrerpolicy="no-referrer" data-provider-logo />
+                                        <span class="provider-marquee__fallback">@provider.Name</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="provider-marquee__link provider-marquee__fallback">@provider.Name</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
         </div>
     </div>
 </section>
@@ -53,75 +99,29 @@
     </section>
 }
 
-<section class="container section" id="nasil">
-    <div class="split">
-        <div class="card">
-            <div class="card__head" style="margin-bottom: 14px">
-                <h2 style="font-size: var(--text-xl)">@T["Home.MostSearched.Title"]</h2>
-            </div>
-            @if (Model.MostSearchedTlds.Count == 0)
-            {
-                <p class="muted">@T["Home.MostSearched.Empty"]</p>
-            }
-            else
-            {
-                <ol class="ranked">
-                    @foreach (var item in Model.MostSearchedTlds)
-                    {
-                        var href = item.HasPricePage
-                            ? Url.Action("Detail", "Tlds", new { slug = item.Tld.Slug })
-                            : Url.Action("Index", "Tlds", new { search = item.Tld.Tld });
-                        <li>
-                            <a class="tld-name" href="@href">.@item.Tld.Tld</a>
-                            <span class="small muted num">@T["Home.MostSearched.Count", item.Tld.Count]</span>
-                        </li>
-                    }
-                </ol>
-            }
+<section class="container section">
+    <div class="card">
+        <div class="card__head" style="margin-bottom: 14px">
+            <h2 style="font-size: var(--text-xl)">@T["Home.MostSearched.Title"]</h2>
         </div>
-
-        <div class="card">
-            <h2 style="font-size: var(--text-xl); margin-bottom: 18px">@T["Home.How.Title"]</h2>
-            <ol class="steps">
-                <li>
-                    <span class="steps__no">1</span>
-                    <div><div class="steps__title">@T["Home.How.Step1.Title"]</div><div class="steps__text">@T["Home.How.Step1.Text"]</div></div>
-                </li>
-                <li>
-                    <span class="steps__no">2</span>
-                    <div><div class="steps__title">@T["Home.How.Step2.Title"]</div><div class="steps__text">@T["Home.How.Step2.Text"]</div></div>
-                </li>
-                <li>
-                    <span class="steps__no">3</span>
-                    <div><div class="steps__title">@T["Home.How.Step3.Title"]</div><div class="steps__text">@T["Home.How.Step3.Text"]</div></div>
-                </li>
+        @if (Model.MostSearchedTlds.Count == 0)
+        {
+            <p class="muted">@T["Home.MostSearched.Empty"]</p>
+        }
+        else
+        {
+            <ol class="ranked">
+                @foreach (var item in Model.MostSearchedTlds)
+                {
+                    var href = item.HasPricePage
+                        ? Url.Action("Detail", "Tlds", new { slug = item.Tld.Slug })
+                        : Url.Action("Index", "Tlds", new { search = item.Tld.Tld });
+                    <li>
+                        <a class="tld-name" href="@href">.@item.Tld.Tld</a>
+                        <span class="small muted num">@T["Home.MostSearched.Count", item.Tld.Count]</span>
+                    </li>
+                }
             </ol>
-        </div>
-    </div>
-</section>
-
-<section class="container section provider-marquee-section" aria-label="@T["Home.Providers.Title"]">
-    <div class="provider-marquee">
-        <div class="provider-marquee__track">
-            @for (var copy = 0; copy < 2; copy++)
-            {
-                <ul class="provider-marquee__group" aria-hidden="@(copy == 1 ? "true" : null)">
-                    @foreach (var provider in Model.Providers)
-                    {
-                        <li class="provider-marquee__item @(string.IsNullOrWhiteSpace(provider.LogoUrl) ? "is-logo-missing" : "")" title="@provider.Name">
-                            @if (!string.IsNullOrWhiteSpace(provider.LogoUrl))
-                            {
-                                <img src="@provider.LogoUrl" alt="@provider.Name" loading="lazy" referrerpolicy="no-referrer" data-provider-logo />
-                                <span class="provider-marquee__fallback">@provider.Name</span>
-                            }
-                            else
-                            {
-                                <span class="provider-marquee__fallback">@provider.Name</span>
-                            }
-                        </li>
-                    }
-                </ul>
-            }
-        </div>
+        }
     </div>
 </section>

@@ -5,7 +5,7 @@
 <form asp-controller="Preferences" asp-action="Currency" method="post" class="preference-control" data-currency-switch aria-label="@T["Currency.Label"]">
     <input type="hidden" name="returnUrl" value="@returnUrl" />
     <label class="sr-only" for="currency-select">@T["Currency.Label"]</label>
-    <select id="currency-select" name="currency" class="preference-select" onchange="this.form.requestSubmit()">
+    <select id="currency-select" name="currency" class="preference-select preference-select--currency" onchange="this.form.requestSubmit()">
     @foreach (var (code, label) in CurrencyPreference.Options)
     {
         <option value="@code" selected="@(code == current)">@label</option>

@@ -6,7 +6,7 @@
 <form asp-controller="Preferences" asp-action="Language" method="post" class="preference-control" aria-label="@T["Language.Label"]">
     <input type="hidden" name="returnUrl" value="@returnUrl" />
     <label class="sr-only" for="language-select">@T["Language.Label"]</label>
-    <select id="language-select" name="culture" class="preference-select" lang="@current" onchange="this.form.requestSubmit()">
+    <select id="language-select" name="culture" class="preference-select preference-select--language" lang="@current" onchange="this.form.requestSubmit()">
     @foreach (var (code, culture, name) in LanguagePreference.Languages)
     {
         <option value="@code" lang="@code" selected="@(code == current)" title="@name">@code.ToUpperInvariant()</option>

@@ -6,14 +6,16 @@
 
 }
 
-<div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)" hx-boost="true" hx-target="main" hx-select="main" hx-swap="outerHTML">
-    <div class="page-title">
+<section class="catalog-head">
+    <div class="container page-title">
         <div class="page-title__text">
             <h1>@T["Tlds.Title"]</h1>
             <p class="lead">@T["Tlds.Lead"]</p>
         </div>
     </div>
+</section>
 
+<div class="container section stack catalog-content" style="gap: var(--space-6); padding-bottom: var(--space-12)" hx-boost="true" hx-target="main" hx-select="main" hx-swap="outerHTML">
     <div class="toolbar">
         <form class="toolbar__controls" method="get" action="@Url.Action("Index")" role="search">
             <label for="tld-q" class="sr-only">@T["Tlds.SearchLabel"]</label>
