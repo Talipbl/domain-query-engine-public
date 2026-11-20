@@ -1,4 +1,4 @@
-using DomainQueryEngine.Application.Lookup;
+using DomainQueryEngine.Application.DomainSearch;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.Core.Abstractions;
 using DomainQueryEngine.Core.Entities;
@@ -106,7 +106,7 @@ namespace DomainQueryEngine.Application.Test
             // The slow strategy ignores the cancellation token, like a strategy calling HttpClient without one.
             var slow = new FakeStrategy("slow", () => Result(available: true, 1, "TRY"), delay: TimeSpan.FromSeconds(10), ignoreToken: true);
             var fast = Strategy("fast", Result(available: true, 2, "TRY"));
-            var service = new LookupService(new IDomainLookupStrategy[] { slow, fast }, new NoOpLookupResultRepository(), TimeSpan.FromMilliseconds(200));
+            var service = new LookupService(new IDomainAvailabilityProvider[] { slow, fast }, new NoOpLookupResultRepository(), TimeSpan.FromMilliseconds(200));
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var results = await service.LookupDomainAsync(Domain);
@@ -118,7 +118,7 @@ namespace DomainQueryEngine.Application.Test
             Assert.True(results.Single(r => r.ProviderInfo.Name == "fast").Domain.IsSuccess);
         }
 
-        private static LookupService CreateService(params IDomainLookupStrategy[] strategies)
+        private static LookupService CreateService(params IDomainAvailabilityProvider[] strategies)
             => new(strategies, new NoOpLookupResultRepository());
 
         private static FakeStrategy Strategy(string name, DomainResult result, string visitLink = "https://provider.test/{0}")
@@ -135,7 +135,7 @@ namespace DomainQueryEngine.Application.Test
         private static DomainPrice Price(int period, decimal amount, string currency)
             => new() { Period = period, RegistrationPrice = new BasePrice { Amount = amount, Currency = currency } };
 
-        private sealed class FakeStrategy : IDomainLookupStrategy
+        private sealed class FakeStrategy : IDomainAvailabilityProvider
         {
             private readonly Func<DomainResult?> _lookup;
             private readonly TimeSpan _delay;

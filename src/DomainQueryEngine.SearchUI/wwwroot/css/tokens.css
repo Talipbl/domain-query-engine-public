@@ -7,41 +7,51 @@
     color-scheme: light;
 
     /* Surfaces */
-    --color-bg: #F6F7F9;
+    --color-bg: #F6F8F3;
+    --color-search-input: #FFFFFF;
+    --color-search-input-ink: #17334A;
+    --color-search-placeholder: #687D89;
+    --color-provider-band: #FFFFFF;
+    --color-provider-band-ink: #60777D;
+    --color-provider-band-border: #DFE6DD;
+    --color-hero: #102F35;
+    --color-hero-ink: #F5F8F5;
+    --color-hero-muted: #B7C8C8;
     --color-surface: #FFFFFF;
-    --color-surface-alt: #F9FAFC;
-    --color-border: #E3E6EB;
-    --color-border-strong: #C9CFD8;
-    --color-divider: #EEF0F3;
+    --color-surface-alt: #F1F4EE;
+    --color-border: #DFE6DD;
+    --color-border-strong: #C6D2C8;
+    --color-divider: #E8EDE6;
 
     /* Provider logos are made for light backgrounds, so their box stays light in both themes. */
     --color-logo-bg: #FFFFFF;
     --color-logo-border: #E3E6EB;
 
     /* Text */
-    --color-ink: #0E1726;
-    --color-ink-2: #3D4757;
-    --color-muted: #5B6474;
+    --color-ink: #112F35;
+    --color-ink-2: #385157;
+    --color-muted: #63777A;
 
-    /* Accent (links, primary actions, selection) */
-    --color-accent: #2350D8;
-    --color-accent-hover: #1A3FAE;
-    --color-accent-soft: #EEF2FB;
-    --color-on-accent: #FFFFFF;
+    /* Dark accent for text links; bright accent fill for buttons and dark surfaces. */
+    --color-accent: #2D6849;
+    --color-accent-hover: #22563D;
+    --color-accent-fill: #A6E95F;
+    --color-accent-fill-hover: #93D64E;
+    --color-accent-soft: #EDF7E4;
+    --color-on-accent: #15343A;
 
     /* Status */
-    --color-success: #0B7A55;
-    --color-success-soft: #E7F6EF;
-    --color-success-border: #B9E3CF;
-    --color-campaign: #A23C08;
-    --color-campaign-soft: #FFF0E5;
+    --color-success: #28734B;
+    --color-success-soft: #E6F3E4;
+    --color-success-border: #C7E2C0;
+    --color-campaign: #A85427;
+    --color-campaign-soft: #FFF1E7;
     --color-danger: #B42318;
     --color-danger-soft: #FDECEA;
-    --color-mock-border: #A3ABB8;
 
     /* Type */
     --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+    --font-display: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
     --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
     --text-xs: 0.75rem;   /* 12 */
     --text-sm: 0.8125rem; /* 13 */
@@ -86,31 +96,41 @@
 :root[data-theme="dark"] {
     color-scheme: dark;
 
-    --color-bg: #0B1220;
-    --color-surface: #121A2B;
-    --color-surface-alt: #172136;
-    --color-border: #26314A;
-    --color-border-strong: #3A4763;
-    --color-divider: #1E2840;
-    --color-logo-border: #3A4763;
+    --color-bg: #0A1D22;
+    --color-search-input: #FFFFFF;
+    --color-search-input-ink: #17334A;
+    --color-search-placeholder: #687D89;
+    --color-provider-band: #F8FAF7;
+    --color-provider-band-ink: #53696D;
+    --color-provider-band-border: #DCE4DF;
+    --color-hero: #0D2A30;
+    --color-hero-ink: #F5F8F4;
+    --color-hero-muted: #B9CDCA;
+    --color-surface: #122B31;
+    --color-surface-alt: #1A373D;
+    --color-border: #2D4A50;
+    --color-border-strong: #4A686B;
+    --color-divider: #243F44;
+    --color-logo-border: #3B5558;
 
-    --color-ink: #E8ECF4;
-    --color-ink-2: #C3CBDA;
-    --color-muted: #96A1B5;
+    --color-ink: #F4F8F5;
+    --color-ink-2: #D5E1DD;
+    --color-muted: #A9BFBB;
 
-    --color-accent: #8AA8FF;
-    --color-accent-hover: #B0C4FF;
-    --color-accent-soft: #1B2A4D;
-    --color-on-accent: #0B1220;
+    --color-accent: #B3EB69;
+    --color-accent-hover: #C8F58B;
+    --color-accent-fill: #B3EB69;
+    --color-accent-fill-hover: #C8F58B;
+    --color-accent-soft: #2B4435;
+    --color-on-accent: #15343A;
 
-    --color-success: #5CD3A3;
-    --color-success-soft: #12322A;
-    --color-success-border: #1F5A47;
-    --color-campaign: #F5A673;
-    --color-campaign-soft: #3A2414;
-    --color-danger: #F59A90;
-    --color-danger-soft: #3B1A18;
-    --color-mock-border: #5A6680;
+    --color-success: #84D9A7;
+    --color-success-soft: #1B3A30;
+    --color-success-border: #37654C;
+    --color-campaign: #FFB47D;
+    --color-campaign-soft: #3B2D23;
+    --color-danger: #FFA49B;
+    --color-danger-soft: #412522;
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
@@ -121,31 +141,41 @@
     :root:not([data-theme="light"]) {
         color-scheme: dark;
 
-        --color-bg: #0B1220;
-        --color-surface: #121A2B;
-        --color-surface-alt: #172136;
-        --color-border: #26314A;
-        --color-border-strong: #3A4763;
-        --color-divider: #1E2840;
-        --color-logo-border: #3A4763;
+        --color-bg: #0A1D22;
+        --color-search-input: #FFFFFF;
+        --color-search-input-ink: #17334A;
+        --color-search-placeholder: #687D89;
+        --color-provider-band: #F8FAF7;
+        --color-provider-band-ink: #53696D;
+        --color-provider-band-border: #DCE4DF;
+        --color-hero: #0D2A30;
+        --color-hero-ink: #F5F8F4;
+        --color-hero-muted: #B9CDCA;
+        --color-surface: #122B31;
+        --color-surface-alt: #1A373D;
+        --color-border: #2D4A50;
+        --color-border-strong: #4A686B;
+        --color-divider: #243F44;
+        --color-logo-border: #3B5558;
 
-        --color-ink: #E8ECF4;
-        --color-ink-2: #C3CBDA;
-        --color-muted: #96A1B5;
+        --color-ink: #F4F8F5;
+        --color-ink-2: #D5E1DD;
+        --color-muted: #A9BFBB;
 
-        --color-accent: #8AA8FF;
-        --color-accent-hover: #B0C4FF;
-        --color-accent-soft: #1B2A4D;
-        --color-on-accent: #0B1220;
+        --color-accent: #B3EB69;
+        --color-accent-hover: #C8F58B;
+        --color-accent-fill: #B3EB69;
+        --color-accent-fill-hover: #C8F58B;
+        --color-accent-soft: #2B4435;
+        --color-on-accent: #15343A;
 
-        --color-success: #5CD3A3;
-        --color-success-soft: #12322A;
-        --color-success-border: #1F5A47;
-        --color-campaign: #F5A673;
-        --color-campaign-soft: #3A2414;
-        --color-danger: #F59A90;
-        --color-danger-soft: #3B1A18;
-        --color-mock-border: #5A6680;
+        --color-success: #84D9A7;
+        --color-success-soft: #1B3A30;
+        --color-success-border: #37654C;
+        --color-campaign: #FFB47D;
+        --color-campaign-soft: #3B2D23;
+        --color-danger: #FFA49B;
+        --color-danger-soft: #412522;
 
         --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
         --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);

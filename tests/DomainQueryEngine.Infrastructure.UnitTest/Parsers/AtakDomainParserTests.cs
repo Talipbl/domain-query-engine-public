@@ -1,4 +1,4 @@
-using DomainQueryEngine.AtakDomain;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.AtakDomain;
 using DomainQueryEngine.Infrastructure.Test.Fixtures;
 
 namespace DomainQueryEngine.Infrastructure.Test.Parsers
@@ -7,7 +7,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class AtakDomainParserTests
     {
-        private readonly AtakDomainStrategyParser _parser = new();
+        private readonly AtakDomainLookupResponseParser _parser = new();
 
         [Fact]
         public void Parses_Available_Domain_With_Campaign_Price()

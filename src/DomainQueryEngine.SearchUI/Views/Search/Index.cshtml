@@ -4,7 +4,7 @@
     ViewData["Nav"] = "search";
     ViewData["NoIndex"] = true;
     var f = Model.Filters;
-    var resultsUrl = Url.Action("Results", new { q = Model.Domain, musait = f.OnlyAvailable ? "true" : null, sure = f.Period, sirala = f.Sort == ResultSort.Price ? null : f.Sort.ToString().ToLowerInvariant() });
+    var resultsUrl = Url.Action("Results", new { q = Model.Domain, onlyAvailable = f.OnlyAvailable ? "true" : null, period = f.Period, sort = f.Sort == ResultSort.Price ? null : f.Sort.ToString().ToLowerInvariant() });
 }
 
 <section class="page-head">
@@ -30,21 +30,21 @@
 
                 <fieldset>
                     <legend>@T["Filters.Status"]</legend>
-                    <label class="check"><input type="checkbox" name="musait" value="true" checked="@f.OnlyAvailable" /> @T["Filters.OnlyAvailable"]</label>
+                    <label class="check"><input type="checkbox" name="onlyAvailable" value="true" checked="@f.OnlyAvailable" /> @T["Filters.OnlyAvailable"]</label>
                 </fieldset>
 
                 <fieldset>
                     <legend>@T["Filters.Period"]</legend>
-                    <label class="check"><input type="radio" name="sure" value="" checked="@(f.Period == null)" /> @T["Filters.ShortestPeriod"]</label>
+                    <label class="check"><input type="radio" name="period" value="" checked="@(f.Period == null)" /> @T["Filters.ShortestPeriod"]</label>
                     @foreach (var period in SearchFilters.Periods)
                     {
-                        <label class="check"><input type="radio" name="sure" value="@period" checked="@(f.Period == period)" /> @T["Filters.Years", period]</label>
+                        <label class="check"><input type="radio" name="period" value="@period" checked="@(f.Period == period)" /> @T["Filters.Years", period]</label>
                     }
                 </fieldset>
 
                 <fieldset>
-                    <legend><label for="sirala">@T["Filters.Sort"]</label></legend>
-                    <select id="sirala" name="sirala" class="select">
+                    <legend><label for="sort">@T["Filters.Sort"]</label></legend>
+                    <select id="sort" name="sort" class="select">
                         <option value="Price" selected="@(f.Sort == ResultSort.Price)">@T["Filters.SortPrice"]</option>
                         <option value="Name" selected="@(f.Sort == ResultSort.Name)">@T["Filters.SortName"]</option>
                     </select>

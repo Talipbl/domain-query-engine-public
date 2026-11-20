@@ -1,19 +1,19 @@
-using DomainQueryEngine.AAK;
-using DomainQueryEngine.GriNet;
-using DomainQueryEngine.YildizBilisim;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.AAK;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.GriNet;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.YildizBilisim;
 using Moq;
 
 namespace DomainQueryEngine.Infrastructure.Test
 {
     [Trait("Category", "Integration")]
-    public class GriNetLookupStrategyIntegrationTest
+    public class GriNetDomainAvailabilityProviderIntegrationTest
     {
-        GriNetLookupStrategy _lookupStrategy;
-        GriNetStrategyParser _parser;
-        public GriNetLookupStrategyIntegrationTest()
+        GriNetDomainAvailabilityProvider _lookupStrategy;
+        GriNetLookupResponseParser _parser;
+        public GriNetDomainAvailabilityProviderIntegrationTest()
         {
-            _parser = new GriNetStrategyParser();
-            _lookupStrategy = new GriNetLookupStrategy(_parser, TestHttpClientFactory.Create());
+            _parser = new GriNetLookupResponseParser();
+            _lookupStrategy = new GriNetDomainAvailabilityProvider(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]
@@ -26,14 +26,14 @@ namespace DomainQueryEngine.Infrastructure.Test
     }
 
     [Trait("Category", "Integration")]
-    public class AlanAdiKayitLookupStrategyIntegrationTest
+    public class AlanAdiKayitDomainAvailabilityProviderIntegrationTest
     {
-        AlanAdiKayitLookupStrategy _lookupStrategy;
-        AlanAdiKayitStrategyParser _parser;
-        public AlanAdiKayitLookupStrategyIntegrationTest()
+        AlanAdiKayitDomainAvailabilityProvider _lookupStrategy;
+        AlanAdiKayitLookupResponseParser _parser;
+        public AlanAdiKayitDomainAvailabilityProviderIntegrationTest()
         {
-            _parser = new AlanAdiKayitStrategyParser();
-            _lookupStrategy = new AlanAdiKayitLookupStrategy(_parser, TestHttpClientFactory.Create());
+            _parser = new AlanAdiKayitLookupResponseParser();
+            _lookupStrategy = new AlanAdiKayitDomainAvailabilityProvider(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]

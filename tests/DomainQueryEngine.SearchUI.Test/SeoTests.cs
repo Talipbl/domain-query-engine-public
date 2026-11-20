@@ -21,7 +21,7 @@ namespace DomainQueryEngine.SearchUI.Test
             Assert.Contains("https://test.example/", urls);
             Assert.Contains("https://test.example/uzantilar", urls);
             Assert.Contains("https://test.example/uzantilar/com-tr", urls);
-            Assert.Contains("https://test.example/saglayicilar/turhost", urls);
+            Assert.DoesNotContain(urls, url => url.Contains("saglayicilar", StringComparison.Ordinal));
             Assert.Contains("https://test.example/gizlilik", urls);
             Assert.DoesNotContain(urls, u => u.Contains("/ara"));
             Assert.Equal(urls.Count, urls.Distinct().Count());
@@ -40,7 +40,7 @@ namespace DomainQueryEngine.SearchUI.Test
         [Fact]
         public async Task Catalog_Pages_Have_A_Canonical_Url_Without_Query()
         {
-            var html = await _client.GetStringAsync("/uzantilar?grup=tr");
+            var html = await _client.GetStringAsync("/uzantilar?order=renewal");
 
             Assert.Contains("<link rel=\"canonical\" href=\"https://test.example/uzantilar\" />", html);
             Assert.Contains("<meta property=\"og:url\" content=\"https://test.example/uzantilar\" />", html);

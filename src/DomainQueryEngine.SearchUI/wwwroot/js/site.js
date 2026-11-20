@@ -4,30 +4,41 @@
 (function () {
     "use strict";
 
-    // Currency switch: the form works without JavaScript (POST + redirect). With JavaScript we save the
+    // Keep a readable brand mark when a provider's remote logo is unavailable.
+    document.querySelectorAll("[data-provider-logo]").forEach(function (image) {
+        function syncProviderLogo() {
+            if (image.complete && image.naturalWidth === 0) {
+                image.closest(".provider-marquee__item")?.classList.add("is-logo-missing");
+            }
+        }
+
+        image.addEventListener("load", syncProviderLogo);
+        image.addEventListener("error", syncProviderLogo);
+        if (image.complete) syncProviderLogo();
+    });
+
+    // Currency dropdown: the form works without JavaScript (POST + redirect). With JavaScript we save the
     // choice with fetch and let the page re-render in place; pages that can do so listen for
     // "dqe:currency" and call preventDefault(). Otherwise the page reloads to render server-side.
     document.addEventListener("submit", function (event) {
         const form = event.target;
         if (!(form instanceof HTMLFormElement) || !form.matches("[data-currency-switch]")) return;
 
+        const select = form.querySelector("select[name=currency]");
         const button = event.submitter;
-        if (!button || button.name !== "currency") return;
+        const currency = select?.value || (button?.name === "currency" ? button.value : "");
+        if (!currency) return;
         event.preventDefault();
 
         const data = new FormData(form);
-        data.set("currency", button.value);
+        data.set("currency", currency);
 
         fetch(form.action, { method: "POST", body: data, headers: { "X-Requested-With": "fetch" } })
             .then(function (response) {
                 if (!response.ok) throw new Error("Currency could not be saved");
 
-                form.querySelectorAll("button[name=currency]").forEach(function (b) {
-                    b.setAttribute("aria-pressed", b === button ? "true" : "false");
-                });
-
                 const notHandled = document.dispatchEvent(new CustomEvent("dqe:currency", {
-                    detail: { currency: button.value },
+                    detail: { currency: currency },
                     cancelable: true
                 }));
                 if (notHandled) window.location.reload();

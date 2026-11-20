@@ -1,10 +1,10 @@
-using DomainQueryEngine.Application.Lookup;
+using DomainQueryEngine.Application.DomainSearch;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.Core.Abstractions;
 using DomainQueryEngine.Core.Entities;
-using DomainQueryEngine.GriNet;
-using DomainQueryEngine.YildizBilisim;
-using DomainQueryEngine.YoncuBilisim;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.GriNet;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.YildizBilisim;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.YoncuBilisim;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using HttpClientFactory = DomainQueryEngine.Http.HttpClientFactory;
@@ -25,12 +25,12 @@ namespace DomainQueryEngine.Application.Test
             services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
             services.AddSingleton<IDomainLookupResultRepository, InMemoryDomainLookupResultRepository>();
 
-            services.AddSingleton<IDomainLookupStrategy, YildizBilisimLookupStrategy>();
-            services.AddSingleton<IDomainLookupStrategy, YoncuBilisimLookupStrategy>();
-            services.AddSingleton<IDomainLookupStrategy, GriNetLookupStrategy>();
-            services.AddSingleton<YildizBilisimStrategyParser>();
-            services.AddSingleton<YoncuBilisimStrategyParser>();
-            services.AddSingleton<GriNetStrategyParser>();
+            services.AddSingleton<IDomainAvailabilityProvider, YildizBilisimDomainAvailabilityProvider>();
+            services.AddSingleton<IDomainAvailabilityProvider, YoncuBilisimDomainAvailabilityProvider>();
+            services.AddSingleton<IDomainAvailabilityProvider, GriNetDomainAvailabilityProvider>();
+            services.AddSingleton<YildizBilisimLookupResponseParser>();
+            services.AddSingleton<YoncuBilisimLookupResponseParser>();
+            services.AddSingleton<GriNetLookupResponseParser>();
             services.AddSingleton<ILookupService, LookupService>();
 
             _services = services.BuildServiceProvider();

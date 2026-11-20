@@ -22,13 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\source\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <!-- UI texts: flat key/value JSON per language, read by Localization/JsonStringLocalizer. -->
     <Content Remove="Resources\Locales\*.json" />
     <EmbeddedResource Include="Resources\Locales\*.json" LogicalName="Locales.%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\source\query_engine_horizontal_logo.png" />
   </ItemGroup>
 
   <ItemGroup>

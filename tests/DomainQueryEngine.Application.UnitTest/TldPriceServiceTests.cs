@@ -1,7 +1,7 @@
-using DomainQueryEngine.Application.Catalog;
+using DomainQueryEngine.Application.TldPricing;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.Core.Abstractions;
-using DomainQueryEngine.Core.Catalog;
+using DomainQueryEngine.Core.TldPricing;
 
 namespace DomainQueryEngine.Application.Test
 {
@@ -21,22 +21,22 @@ namespace DomainQueryEngine.Application.Test
         {
             new()
             {
-                Tld = "com", Category = TldCategory.Generic, IsPopular = true,
+                Tld = "com",
                 Prices =
                 {
-                    Price("lira", "TRY", registration: 300m, regular: 600m, renewal: 600m, transfer: 450m),
-                    Price("dolar", "USD", registration: 5m, renewal: 10m, transfer: 8m), // 250 TRY, 500, 400
+                    Price("lira", "TRY", registration: 300m, regular: 600m, renewal: 600m),
+                    Price("dolar", "USD", registration: 5m, renewal: 10m, registrationTermYears: 2), // 250 TRY, 500
                     Price("pahali", "TRY", registration: 900m)
                 }
             },
             new()
             {
-                Tld = "com.tr", Category = TldCategory.Turkish, IsPopular = true,
+                Tld = "com.tr",
                 Prices = { Price("lira", "TRY", registration: 50m), Price("dolar", "USD", registration: 1.5m) } // 75 TRY
             },
             new()
             {
-                Tld = "xyz", Category = TldCategory.New,
+                Tld = "xyz",
                 Prices = { Price("dolar", "USD", registration: 0.8m) } // 40 TRY
             }
         };
@@ -54,8 +54,8 @@ namespace DomainQueryEngine.Application.Test
             Assert.Equal(250m, com.CheapestRegistration.Display.Amount);
             Assert.True(com.CheapestRegistration.IsConverted);
             Assert.Equal(5m, com.CheapestRegistration.Original.Amount);
-            Assert.Equal(400m, com.CheapestTransfer!.Display.Amount);
             Assert.Equal(500m, com.CheapestRenewal!.Display.Amount);
+            Assert.Equal(2, com.CheapestRegistration.TermYears);
             Assert.Equal(3, com.ProviderCount);
         }
 
@@ -71,22 +71,18 @@ namespace DomainQueryEngine.Application.Test
         }
 
         [Fact]
-        public async Task Lists_Popular_Extensions_First_And_Counts_Categories()
+        public async Task Lists_Extensions_Alphabetically()
         {
             var list = await Service().GetListAsync("TRY");
 
             Assert.Equal(new[] { "com", "com.tr", "xyz" }, list.Items.Select(i => i.Entry.Tld));
-            Assert.Equal(3, list.TotalCount);
-            Assert.Equal(1, list.CategoryCounts[TldCategory.New]);
+            Assert.Equal(new[] { "com", "com.tr", "xyz" }, list.Items.Select(i => i.Entry.Tld));
         }
 
         [Fact]
-        public async Task Filters_By_Category_And_Sorts_By_Price()
+        public async Task Sorts_By_Price()
         {
-            var turkish = await Service().GetListAsync("TRY", TldCategory.Turkish);
-            Assert.Equal("com.tr", Assert.Single(turkish.Items).Entry.Tld);
-
-            var cheapestFirst = await Service().GetListAsync("TRY", sort: TldSort.CheapestRegistration);
+            var cheapestFirst = await Service().GetListAsync("TRY", TldSort.CheapestRegistration);
             Assert.Equal(new[] { "xyz", "com.tr", "com" }, cheapestFirst.Items.Select(i => i.Entry.Tld));
         }
 
@@ -100,7 +96,6 @@ namespace DomainQueryEngine.Application.Test
             Assert.True(detail.Rows[0].IsCheapest);
             Assert.False(detail.Rows[1].IsCheapest);
             Assert.Equal(250m, detail.CheapestRegistration!.Display.Amount);
-            Assert.Equal(300m, detail.MedianRegistration!.Amount);
         }
 
         [Fact]
@@ -111,25 +106,6 @@ namespace DomainQueryEngine.Application.Test
             var lira = detail!.Rows.Single(r => r.Provider.Slug == "lira").Registration!;
             Assert.True(lira.IsCampaign);
             Assert.Equal(600m, lira.Regular!.Amount);
-        }
-
-        [Fact]
-        public async Task Lists_One_Providers_Prices_Popular_First()
-        {
-            var prices = await Service().GetProviderPricesAsync("dolar", "TRY");
-
-            Assert.NotNull(prices);
-            Assert.Equal("Dolar Host", prices!.Provider.Name);
-            Assert.Equal(new[] { "com", "com.tr", "xyz" }, prices.Rows.Select(r => r.Entry.Tld));
-            Assert.Equal(250m, prices.Rows[0].Registration!.Display.Amount);
-            Assert.Equal(400m, prices.Rows[0].Transfer!.Display.Amount);
-            Assert.Null(prices.Rows[1].Renewal);
-        }
-
-        [Fact]
-        public async Task Provider_Prices_Are_Null_For_Unknown_Provider()
-        {
-            Assert.Null(await Service().GetProviderPricesAsync("bilinmeyen", "TRY"));
         }
 
         [Fact]
@@ -146,24 +122,21 @@ namespace DomainQueryEngine.Application.Test
             Assert.Null(detail!.Rates);
             Assert.Equal(new[] { "Lira Host", "Pahalı Host", "Dolar Host" }, detail.Rows.Select(r => r.Provider.Name));
             Assert.Equal("USD", detail.Rows[2].Registration!.Display.Currency);
-            Assert.Equal(600m, detail.MedianRegistration!.Amount);
         }
 
-        private static TldProviderPrice Price(string provider, string currency, decimal? registration = null, decimal? regular = null, decimal? renewal = null, decimal? transfer = null)
-            => new() { Provider = provider, Currency = currency, Registration = registration, RegularRegistration = regular, Renewal = renewal, Transfer = transfer };
+        private static TldProviderPrice Price(string provider, string currency, decimal? registration = null, decimal? regular = null, decimal? renewal = null, int registrationTermYears = 1)
+            => new() { Provider = provider, Currency = currency, Registration = registration, RegularRegistration = regular, Renewal = renewal, RegistrationTermYears = registrationTermYears };
 
-        private sealed class FakeTlds : ITldCatalog
+        private sealed class FakeTlds : ITldPriceCatalog
         {
-            public bool IsSample => true;
-            public DateTime AsOf => new(2026, 11, 19);
+            public Task<DateTime> GetAsOfAsync(CancellationToken ct = default) => Task.FromResult(new DateTime(2026, 11, 19));
             public Task<IReadOnlyList<TldEntry>> GetAllAsync(CancellationToken ct = default) => Task.FromResult<IReadOnlyList<TldEntry>>(Tlds);
             public Task<TldEntry?> GetAsync(string tld, CancellationToken ct = default)
                 => Task.FromResult(Tlds.FirstOrDefault(t => t.Tld == tld.TrimStart('.').Replace('-', '.')));
         }
 
-        private sealed class FakeProviders : IProviderCatalog
+        private sealed class FakeProviders : IProviderDirectory
         {
-            public bool IsSample => true;
             public Task<IReadOnlyList<ProviderEntry>> GetAllAsync(CancellationToken ct = default) => Task.FromResult<IReadOnlyList<ProviderEntry>>(Providers);
             public Task<ProviderEntry?> GetAsync(string slug, CancellationToken ct = default) => Task.FromResult(Providers.FirstOrDefault(p => p.Slug == slug));
         }

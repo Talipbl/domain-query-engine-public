@@ -1,10 +1,10 @@
-using DomainQueryEngine.AAK;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.AAK;
 using DomainQueryEngine.Core;
-using DomainQueryEngine.GriNet;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.GriNet;
 using DomainQueryEngine.Infrastructure.Test.Fixtures;
-using DomainQueryEngine.IsimKayit;
-using DomainQueryEngine.Natro;
-using DomainQueryEngine.YildizBilisim;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.IsimKayit;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.Natro;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.YildizBilisim;
 
 namespace DomainQueryEngine.Infrastructure.Test.Parsers
 {
@@ -13,16 +13,16 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
     /// </summary>
     public class WhmcsParserTests
     {
-        public static TheoryData<IStrategyParser> Parsers => new()
+        public static TheoryData<IDomainLookupResponseParser> Parsers => new()
         {
-            new YildizBilisimStrategyParser(),
-            new GriNetStrategyParser(),
-            new AlanAdiKayitStrategyParser()
+            new YildizBilisimLookupResponseParser(),
+            new GriNetLookupResponseParser(),
+            new AlanAdiKayitLookupResponseParser()
         };
 
         [Theory]
         [MemberData(nameof(Parsers))]
-        public void Parses_Available_Domain_With_All_Periods(IStrategyParser parser)
+        public void Parses_Available_Domain_With_All_Periods(IDomainLookupResponseParser parser)
         {
             var result = Assert.Single(parser.ParseDomainResult(SampleResponses.WhmcsAvailable));
 
@@ -45,7 +45,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
         [Theory]
         [MemberData(nameof(Parsers))]
-        public void Parses_Taken_Domain_Without_Prices(IStrategyParser parser)
+        public void Parses_Taken_Domain_Without_Prices(IDomainLookupResponseParser parser)
         {
             var result = Assert.Single(parser.ParseDomainResult(SampleResponses.WhmcsTaken));
 
@@ -56,7 +56,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
         [Theory]
         [MemberData(nameof(Parsers))]
-        public void Rejects_Response_Without_Result(IStrategyParser parser)
+        public void Rejects_Response_Without_Result(IDomainLookupResponseParser parser)
         {
             Assert.Throws<ArgumentException>(() => parser.ParseDomainResult("{}"));
         }
@@ -71,7 +71,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class IsimKayitParserTests
     {
-        private readonly IsimKayitStrategyParser _parser = new();
+        private readonly IsimKayitLookupResponseParser _parser = new();
 
         [Fact]
         public void Parses_Available_Domain()
@@ -105,7 +105,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class NatroParserTests
     {
-        private readonly NatroStrategyParser _parser = new();
+        private readonly NatroLookupResponseParser _parser = new();
 
         [Fact]
         public void Parses_Available_Domain_With_Usd_Price()

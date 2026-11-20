@@ -1,10 +1,9 @@
-@* Where the numbers on a catalog page come from: sample-data label, collection date and the exchange rate used. *@
+@* Where the numbers on a catalog page come from: collection date and exchange rate used. *@
 @model DataNoteModel
 <p class="rate-note">
-    @if (Model.IsSample)
+    @if (Model.AsOf > DateTime.UnixEpoch)
     {
-        <badge kind="Mock"></badge>
-        <span>@T["DataNote.Sample", PriceFormatter.FormatDate(Model.AsOf)]</span>
+        <span>@T["DataNote.Updated", PriceFormatter.FormatDate(Model.AsOf)]</span>
     }
     @if (Model.Rates == null)
     {

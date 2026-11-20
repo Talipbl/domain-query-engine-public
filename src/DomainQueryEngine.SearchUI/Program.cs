@@ -1,11 +1,13 @@
 using DomainQueryEngine.Application;
-using DomainQueryEngine.Application.Lookup;
+using DomainQueryEngine.Application.DomainSearch;
 using DomainQueryEngine.Application.Services;
 using DomainQueryEngine.Http;
 using DomainQueryEngine.Infrastructure;
 using DomainQueryEngine.PostgreSQL;
 using DomainQueryEngine.SearchUI.Extensions;
 using DomainQueryEngine.SearchUI.Helpers;
+using DomainQueryEngine.SearchUI.Health;
+using DomainQueryEngine.SearchUI.Hosting;
 using DomainQueryEngine.SearchUI.Localization;
 using DomainQueryEngine.SearchUI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +52,9 @@ if (string.IsNullOrWhiteSpace(connectionString))
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>("database");
+builder.Services.AddHostedService<DatabaseHealthCheckHostedService>();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddMemoryCache();
@@ -68,9 +73,10 @@ builder.Services.AddSingleton<IAsyncPolicy<HttpResponseMessage>>(sp =>
         .WaitAndRetryAsync(2, retry => TimeSpan.FromSeconds(Math.Pow(2, retry)));
 });
 
-builder.Services.AddInfrastructureServices();
+builder.Services.AddDomainSearchInfrastructure();
+builder.Services.AddTldPricingInfrastructure();
 builder.Services.AddPostgreSQLServices();
-builder.Services.AddDataSources(builder.Configuration);
+builder.Services.AddTldPricingServices(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
@@ -111,6 +117,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapHealthChecks("/health/db");
 
 app.MapControllerRoute(
     name: "default",

@@ -1,4 +1,4 @@
-using DomainQueryEngine.GuzelHosting;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.GuzelHosting;
 using DomainQueryEngine.Infrastructure.Test.Fixtures;
 
 namespace DomainQueryEngine.Infrastructure.Test.Parsers
@@ -7,7 +7,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class GuzelHostingParserTests
     {
-        private readonly GuzelHostingStrategyParser _parser = new();
+        private readonly GuzelHostingLookupResponseParser _parser = new();
 
         [Fact]
         public void Parses_Available_Domain_With_All_Periods()

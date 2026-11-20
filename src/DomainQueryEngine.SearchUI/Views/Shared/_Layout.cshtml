@@ -1,11 +1,40 @@
 ﻿@inject SiteUrl SiteUrl
 @{
+    var siteBase = SiteUrl.Base(Context.Request);
     var brand = T["Brand.Name"].Value;
     var pageTitle = ViewData["Title"] is string title ? $"{title} · {brand}" : brand;
     var noIndex = ViewData["NoIndex"] is true;
     var canonical = SiteUrl.Canonical(Context.Request);
     var language = LanguagePreference.Current;
     var theme = ThemePreference.Get(Context); // null: follow the system setting
+    var websiteSchema = new System.Collections.Generic.Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "WebSite",
+        ["name"] = brand,
+        ["url"] = siteBase,
+        ["inLanguage"] = language,
+        ["publisher"] = new System.Collections.Generic.Dictionary<string, object?>
+        {
+            ["@type"] = "Organization",
+            ["name"] = brand,
+            ["logo"] = SiteUrl.Absolute(Context.Request, "/favicon.svg")
+        }
+    };
+    if (Context.Request.Path == "/")
+    {
+        websiteSchema["potentialAction"] = new System.Collections.Generic.Dictionary<string, object?>
+        {
+            ["@type"] = "SearchAction",
+            ["target"] = new System.Collections.Generic.Dictionary<string, object?>
+            {
+                ["@type"] = "EntryPoint",
+                ["urlTemplate"] = SiteUrl.Absolute(Context.Request, "/ara") + "?q={search_term_string}"
+            },
+            ["query-input"] = "required name=search_term_string"
+        };
+    }
+    var websiteSchemaJson = System.Text.Json.JsonSerializer.Serialize(websiteSchema);
 }
 <!DOCTYPE html>
 <html lang="@language" data-theme="@theme">
@@ -17,6 +46,7 @@
     {
         <meta name="description" content="@description" />
         <meta property="og:description" content="@description" />
+        <meta name="twitter:description" content="@description" />
     }
     @if (noIndex)
     {
@@ -28,11 +58,14 @@
         <meta property="og:url" content="@canonical" />
     }
     <meta property="og:title" content="@pageTitle" />
+    <meta name="twitter:title" content="@pageTitle" />
+    <meta name="twitter:card" content="summary" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="@brand" />
     <meta property="og:locale" content="@System.Globalization.CultureInfo.CurrentUICulture.Name.Replace('-', '_')" />
     <meta name="color-scheme" content="light dark" />
-    <link rel="icon" href="~/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" asp-append-version="true" />
+    <link rel="alternate icon" href="~/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" />
@@ -40,6 +73,7 @@
     <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
     @await RenderSectionAsync("Head", required: false)
+    <script type="application/ld+json">@Html.Raw(websiteSchemaJson)</script>
 </head>
 <body>
     <a class="skip-link" href="#main">@T["Layout.SkipToContent"]</a>

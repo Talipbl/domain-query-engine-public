@@ -1,16 +1,16 @@
-using DomainQueryEngine.IsimTescil;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.IsimTescil;
 
-namespace DomainQueryEngine.Natro
+namespace DomainQueryEngine.Infrastructure.DomainSearch.Providers.Natro
 {
     [Trait("Category", "Integration")]
-    public class IsimTescilLookupStrategyIntegrationTest
+    public class IsimTescilDomainAvailabilityProviderIntegrationTest
     {
-        IsimTescilLookupStrategy _lookupStrategy;
-        IsimTescilStrategyParser _parser;
-        public IsimTescilLookupStrategyIntegrationTest()
+        IsimTescilDomainAvailabilityProvider _lookupStrategy;
+        IsimTescilLookupResponseParser _parser;
+        public IsimTescilDomainAvailabilityProviderIntegrationTest()
         {
-            _parser = new IsimTescilStrategyParser();
-            _lookupStrategy = new IsimTescilLookupStrategy(_parser, TestHttpClientFactory.Create());
+            _parser = new IsimTescilLookupResponseParser();
+            _lookupStrategy = new IsimTescilDomainAvailabilityProvider(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]

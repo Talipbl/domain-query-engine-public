@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "searchui",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "src/DomainQueryEngine.SearchUI", "--launch-profile", "http"],
+      "port": 5102
+    }
+  ]
+}

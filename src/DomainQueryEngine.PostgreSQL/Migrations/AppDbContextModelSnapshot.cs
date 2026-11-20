@@ -184,6 +184,88 @@ namespace DomainQueryEngine.PostgreSQL.Migrations
                     b.ToTable("Providers", (string)null);
                 });
 
+            modelBuilder.Entity("DomainQueryEngine.Core.Entities.TldProviderPriceRecord", b =>
+                {
+                    b.Property<string>("ProviderSlug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Tld")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<decimal?>("Registration")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal?>("RegularRegistration")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int>("RegistrationTermYears")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("Renewal")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int>("RenewalTermYears")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceUrl")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("ObservedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ProviderSlug", "Tld");
+
+                    b.HasIndex("ObservedAt");
+
+                    b.HasIndex("Tld");
+
+                    b.ToTable("TldProviderPrices", (string)null);
+                });
+
+            modelBuilder.Entity("DomainQueryEngine.Core.Entities.TldPriceSyncRecord", b =>
+                {
+                    b.Property<string>("ProviderSlug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("SourceUrl")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("LastAttemptAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LastSuccessAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PriceCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.HasKey("ProviderSlug");
+
+                    b.ToTable("TldPriceSync", (string)null);
+                });
+
             modelBuilder.Entity("DomainQueryEngine.Core.Entities.DomainLookupResult", b =>
                 {
                     b.HasOne("DomainQueryEngine.Core.Entities.Domain", "Domain")

@@ -1,10 +1,10 @@
-@model DomainQueryEngine.Core.Catalog.ProviderStatus
+@model DomainQueryEngine.Core.TldPricing.ProviderStatus
 @switch (Model)
 {
-    case DomainQueryEngine.Core.Catalog.ProviderStatus.Active:
+    case DomainQueryEngine.Core.TldPricing.ProviderStatus.Active:
         <badge kind="Available">@T["ProviderStatus.Active"]</badge>
         break;
-    case DomainQueryEngine.Core.Catalog.ProviderStatus.Failing:
+    case DomainQueryEngine.Core.TldPricing.ProviderStatus.Failing:
         <badge kind="Warning">@T["ProviderStatus.Failing"]</badge>
         break;
     default:

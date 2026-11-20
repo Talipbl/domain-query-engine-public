@@ -3,11 +3,14 @@
     var current = LanguagePreference.Current;
     var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
 }
-<form asp-controller="Preferences" asp-action="Language" method="post" class="segmented" aria-label="@T["Language.Label"]">
+<form asp-controller="Preferences" asp-action="Language" method="post" class="preference-control" aria-label="@T["Language.Label"]">
     <input type="hidden" name="returnUrl" value="@returnUrl" />
+    <label class="sr-only" for="language-select">@T["Language.Label"]</label>
+    <select id="language-select" name="culture" class="preference-select preference-select--language" lang="@current" onchange="this.form.requestSubmit()">
     @foreach (var (code, culture, name) in LanguagePreference.Languages)
     {
-        <button type="submit" name="culture" value="@code" class="segmented__option" lang="@code"
-                aria-pressed="@(code == current ? "true" : "false")" title="@name">@code.ToUpperInvariant()</button>
+        <option value="@code" lang="@code" selected="@(code == current)" title="@name">@code.ToUpperInvariant()</option>
     }
+    </select>
+    <noscript><button type="submit" class="btn btn--secondary preference-apply">@T["Common.Apply"]</button></noscript>
 </form>

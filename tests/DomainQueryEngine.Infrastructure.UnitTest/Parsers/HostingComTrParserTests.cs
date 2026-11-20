@@ -1,4 +1,4 @@
-using DomainQueryEngine.HostingComTr;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.HostingComTr;
 using DomainQueryEngine.Infrastructure.Test.Fixtures;
 
 namespace DomainQueryEngine.Infrastructure.Test.Parsers
@@ -7,7 +7,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class HostingComTrParserTests
     {
-        private readonly HostingComTrStrategyParser _parser = new();
+        private readonly HostingComTrLookupResponseParser _parser = new();
 
         [Fact]
         public void Parses_Available_Domain_With_Try_Prices()

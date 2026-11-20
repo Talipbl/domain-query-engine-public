@@ -1,5 +1,5 @@
 using DomainQueryEngine.Application;
-using DomainQueryEngine.Application.Lookup;
+using DomainQueryEngine.Application.DomainSearch;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.Core.Abstractions;
 using DomainQueryEngine.Core.Entities;
@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using DomainQueryEngine.SearchUI.Hosting.TldPricing;
 
 namespace DomainQueryEngine.SearchUI.Test
 {
     /// <summary>
-    /// Starts the real app with everything that reaches outside replaced: no database, no provider
-    /// sites, no TCMB. Catalogs use the embedded sample data and statistics the sample list.
+    /// Starts the real app with external dependencies replaced. Catalogs return a small,
+    /// deterministic set of test data.
     /// </summary>
     public sealed class SiteFactory : WebApplicationFactory<Program>
     {
@@ -23,11 +25,21 @@ namespace DomainQueryEngine.SearchUI.Test
             builder.UseEnvironment("Development");
             builder.UseSetting("ConnectionStrings:DefaultConnection", "Host=localhost;Database=unused-in-tests");
             builder.UseSetting("Database:MigrateOnStartup", "false");
-            builder.UseSetting("DataSource:Statistics", "Mock");
             builder.UseSetting("Site:BaseUrl", "https://test.example");
 
             builder.ConfigureServices(services =>
             {
+                foreach (var descriptor in services.Where(d => d.ServiceType == typeof(IHostedService)
+                    && d.ImplementationType == typeof(TldPriceCollectionHostedService)).ToList())
+                    services.Remove(descriptor);
+                var catalogs = new TestCatalogs();
+                services.RemoveAll<ITldPriceCatalog>();
+                services.AddSingleton<ITldPriceCatalog>(catalogs);
+                services.RemoveAll<IProviderDirectory>();
+                services.AddSingleton<IProviderDirectory>(catalogs);
+                services.RemoveAll<ISearchStatistics>();
+                services.AddSingleton<ISearchStatistics>(catalogs);
+
                 services.RemoveAll<IExchangeRateProvider>();
                 services.AddSingleton<IExchangeRateProvider>(new FixedRates());
 

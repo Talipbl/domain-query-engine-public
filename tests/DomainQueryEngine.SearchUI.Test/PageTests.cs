@@ -17,10 +17,8 @@ namespace DomainQueryEngine.SearchUI.Test
         [Theory]
         [InlineData("/", "Alan adını en ucuz nereden alacağını tek aramada gör")]
         [InlineData("/uzantilar", "Uzantı fiyatları")]
-        [InlineData("/uzantilar?grup=tr&sirala=kayit", ".com.tr")]
+        [InlineData("/uzantilar?order=registration&search=com.tr", ".com.tr")]
         [InlineData("/uzantilar/com-tr", ".com.tr fiyatları")]
-        [InlineData("/saglayicilar", "Sağlayıcılar")]
-        [InlineData("/saglayicilar/turhost", "Turhost")]
         [InlineData("/gizlilik", "Gizlilik")]
         [InlineData("/ara?q=ornek.com", "ornek.com için sağlayıcılara soruluyor")]
         [InlineData("/_bilesenler", "Bileşenler")]
@@ -36,7 +34,8 @@ namespace DomainQueryEngine.SearchUI.Test
 
         [Theory]
         [InlineData("/uzantilar/bilinmeyen")]
-        [InlineData("/saglayicilar/bilinmeyen")]
+        [InlineData("/saglayicilar")]
+        [InlineData("/saglayicilar/turhost")]
         [InlineData("/olmayan-sayfa")]
         public async Task Unknown_Pages_Return_The_Not_Found_Page(string url)
         {
@@ -48,7 +47,6 @@ namespace DomainQueryEngine.SearchUI.Test
 
         [Theory]
         [InlineData("/uzantilar/.com.tr", HttpStatusCode.MovedPermanently, "/uzantilar/com-tr")]
-        [InlineData("/saglayicilar/TURHOST", HttpStatusCode.MovedPermanently, "/saglayicilar/turhost")]
         [InlineData("/?q=ornek.com", HttpStatusCode.Redirect, "/ara?q=ornek.com")]
         [InlineData("/ara", HttpStatusCode.Redirect, "/")]
         public async Task Old_And_Alternative_Addresses_Redirect(string url, HttpStatusCode status, string location)
@@ -74,8 +72,8 @@ namespace DomainQueryEngine.SearchUI.Test
             var domain = $"sayim-{Guid.NewGuid():N}.com"[..20] + ".com";
 
             var html = await _client.GetStringAsync($"/ara/sonuclar?q={domain}");
-            await _client.GetStringAsync($"/ara/sonuclar?q={domain}&reprice=true&sure=1");
-            await _client.GetStringAsync($"/ara/sonuclar?q={domain}&reprice=true&musait=true");
+            await _client.GetStringAsync($"/ara/sonuclar?q={domain}&reprice=true&period=1");
+            await _client.GetStringAsync($"/ara/sonuclar?q={domain}&reprice=true&onlyAvailable=true");
 
             Assert.Contains("Lira Host", html);
             Assert.Contains("Dolar Host", html);
@@ -99,12 +97,12 @@ namespace DomainQueryEngine.SearchUI.Test
         [Fact]
         public async Task Htmx_Results_Request_Updates_The_Address_Bar()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/ara/sonuclar?q=ornek.com&reprice=true&sure=2&musait=true");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/ara/sonuclar?q=ornek.com&reprice=true&period=2&onlyAvailable=true");
             request.Headers.Add("HX-Request", "true");
 
             var response = await _client.SendAsync(request);
 
-            Assert.Equal("/ara?q=ornek.com&musait=true&sure=2", Assert.Single(response.Headers.GetValues("HX-Replace-Url")));
+            Assert.Equal("/ara?q=ornek.com&onlyAvailable=true&period=2", Assert.Single(response.Headers.GetValues("HX-Replace-Url")));
         }
 
         [Fact]
@@ -116,7 +114,7 @@ namespace DomainQueryEngine.SearchUI.Test
             var html = await (await _client.SendAsync(request)).Content.ReadAsStringAsync();
 
             Assert.Contains(" $", html);
-            Assert.Contains("aria-pressed=\"true\">$ USD", html);
+            Assert.Contains("<option value=\"USD\" selected=\"selected\">$ USD</option>", html);
         }
 
         [Fact]

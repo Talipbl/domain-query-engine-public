@@ -15,9 +15,9 @@ Domain Query Engine is a .NET 8 web application and supporting libraries for que
 
 ## Features
 
-- Parallel domain lookup execution via pluggable `IDomainLookupStrategy` implementations
+- Parallel domain lookup execution via pluggable `IDomainAvailabilityProvider` implementations
 - Aggregated results sorted by availability, then by lowest registration price in the currency the visitor picks (TRY, USD or EUR)
-- Prices are converted with the TCMB daily forex selling rates (refreshed hourly); converted prices are marked "≈" and show the provider's original price. If no rates can be loaded, prices are shown as the providers sent them, TRY first
+- Prices are converted with the TCMB daily forex selling rates (cached for two hours); converted prices are marked "≈" and show the provider's original price. If no rates can be loaded, prices are shown as the providers sent them, TRY first
 - The history stores the providers' original prices; changing the display currency is not counted as a new search
 - Campaign prices are compared when a provider offers one, otherwise the regular price
 - Each provider gets 8 seconds; a slower provider is reported as failed instead of holding up the page
@@ -88,9 +88,13 @@ Then open the printed URL (for example `https://localhost:xxxx`).
 |---|---|---|
 | `ConnectionStrings:DefaultConnection` | empty (required) | PostgreSQL connection string |
 | `Site:BaseUrl` | empty | Public address used for canonical links, Open Graph and the sitemap (e.g. `https://example.com`). Empty: taken from the request; set it behind a proxy that terminates HTTPS |
-| `DataSource:Tlds` / `DataSource:Providers` | `Mock` | Extension and provider catalog. Only `Mock` (embedded sample data) exists so far |
-| `DataSource:Statistics` | `Database` | "Most searched" list: `Database` (lookup history) or `Mock` |
+| TLD prices | PostgreSQL | Current registration and renewal price snapshots; no sample fallback is used |
+| Provider profiles | Configured provider metadata | Provider metadata is independent from price-list source adapters |
+| Search statistics | PostgreSQL | "Most searched" list from lookup history |
+| `PriceCollection:IntervalMinutes` / `PriceCollection:MaxConcurrency` | `720` / `3` | Scheduled provider price-list collection cadence and maximum parallel fetches |
 | `Database:MigrateOnStartup` | `true` | Apply pending migrations when the app starts |
+
+The application checks PostgreSQL every five minutes while it is running. `GET /health/db` returns an HTTP health result that an external monitor can poll. Render's free web services still spin down after 15 minutes without inbound traffic, so a database check inside the app does not keep a free instance awake; configure an external monitor to request `/health/db` every five minutes or use a paid instance.
 
 Environment variables use `__` instead of `:` (e.g. `Site__BaseUrl`).
 
@@ -104,15 +108,14 @@ Pages are rendered on the server; htmx loads search results and makes filters, t
 
 | Address | Page | Data |
 |---|---|---|
-| `/` | Search box, cheapest offers for popular extensions, most searched extensions in the last 24 hours, providers | Catalog (sample), statistics |
+| `/` | Search box, cheapest offers for popular extensions, most searched extensions in the last 24 hours, scrolling provider logos | Provider price snapshots, statistics |
 | `/ara?q=…` | Search results: page renders at once, results load from `/ara/sonuclar`. Filters: only available, period (1/2/5 years), sort | Live lookups |
-| `/uzantilar` | Extension list: group tabs, text filter, sort by popularity, cheapest registration, cheapest renewal or name | Catalog (sample) |
-| `/uzantilar/{slug}` | One extension (`/uzantilar/com-tr`): summary, per-provider prices, price history, FAQ | Catalog (sample) |
-| `/saglayicilar`, `/saglayicilar/{slug}` | Providers with their status; one provider's prices | Catalog (sample) |
+| `/uzantilar` | Extension list: text filter, sort by registration price, renewal price or name | Provider price snapshots |
+| `/uzantilar/{slug}` | One extension (`/uzantilar/com-tr`): current registration and renewal prices by provider | Provider price snapshots |
 | `/gizlilik` | Privacy | Static |
-| `/_bilesenler` | Component gallery (Development only) | Sample |
+| `/_bilesenler` | Component gallery (Development only) | Static examples |
 
-Sample data is labelled "Örnek veri" on the pages. Filter, sort and currency changes on `/ara` re-show the cached results and are not counted as new searches.
+Filter, sort and currency changes on `/ara` re-show the cached results and are not counted as new searches.
 
 - **Design system:** `wwwroot/css/tokens.css` (colors, type, spacing; light and dark themes), `base.css`, `components.css`.
 - **Theme:** the sun/moon button in the header switches light/dark at once and saves the choice in the `dqe_theme` cookie; the server renders `data-theme` from it, so the page does not flash. Without a choice the page follows the system setting.
@@ -141,23 +144,23 @@ Notes:
 
 ## Providers / strategies
 
-Strategies are registered in `src/DomainQueryEngine.Infrastructure/ServiceRegistrations/InfrastructureServiceRegistration.cs` via `AddInfrastructureServices()`.
+Lookup providers and price sources are registered separately in `src/DomainQueryEngine.Infrastructure/ServiceRegistrations/InfrastructureServiceRegistration.cs` via `AddDomainSearchInfrastructure()` and `AddTldPricingInfrastructure()`.
 
 | Provider | Strategy | How it queries | Status |
 |---|---|---|---|
-| Yıldız Bilişim | `YildizBilisimLookupStrategy` | WHMCS domain check (CSRF token) | Active |
-| GriNet | `GriNetLookupStrategy` | WHMCS domain check (CSRF token) | Active |
-| Alan Adı Kayıt | `AlanAdiKayitLookupStrategy` | WHMCS domain check (CSRF token) | Active |
-| Natro | `NatroLookupStrategy` | JSON query service | Active |
-| IHS | `IhsLookupStrategy` | HTML form post | Active |
-| Atak Domain | `AtakDomainLookupStrategy` | `POST /api/domain/getavailability` (JSON) | Active |
-| Turhost | `TurhostLookupStrategy` | `GET panel.turhost.com/api/v1/domain/query` (JSONP) | Active |
-| Turkticaret.net | `TurkticaretLookupStrategy` | `POST smartquery_v2.php` (`trquery` for .tr) | Active |
-| Hosting.com.tr | `HostingComTrLookupStrategy` | `POST /web/domain/querynew/lookup` (session + CSRF token) | Active |
-| Yöncü Bilişim | `YoncuBilisimLookupStrategy` | HTML endpoint | Registered, currently returns 404 |
-| İsim Kayıt | `IsimKayitLookupStrategy` | WHMCS domain check | Registered, currently returns 403 |
-| İsim Tescil | `IsimTescilLookupStrategy` | HTML form post | Not registered |
-| Güzel Hosting | `GuzelHostingLookupStrategy` | WHMCS `checkAvailabilityOne` | Not registered: Cloudflare answers server-side requests with a bot challenge |
+| Yıldız Bilişim | `YildizBilisimDomainAvailabilityProvider` | WHMCS domain check (CSRF token) | Active |
+| GriNet | `GriNetDomainAvailabilityProvider` | WHMCS domain check (CSRF token) | Active |
+| Alan Adı Kayıt | `AlanAdiKayitDomainAvailabilityProvider` | WHMCS domain check (CSRF token) | Active |
+| Natro | `NatroDomainAvailabilityProvider` | JSON query service | Active |
+| IHS | `IhsDomainAvailabilityProvider` | HTML form post | Active |
+| Atak Domain | `AtakDomainDomainAvailabilityProvider` | `POST /api/domain/getavailability` (JSON) | Active |
+| Turhost | `TurhostDomainAvailabilityProvider` | `GET panel.turhost.com/api/v1/domain/query` (JSONP) | Active |
+| Turkticaret.net | `TurkticaretDomainAvailabilityProvider` | `POST smartquery_v2.php` (`trquery` for .tr) | Active |
+| Hosting.com.tr | `HostingComTrDomainAvailabilityProvider` | `POST /web/domain/querynew/lookup` (session + CSRF token) | Active |
+| Yöncü Bilişim | `YoncuBilisimDomainAvailabilityProvider` | JSON API (`/API/Domain/Check`, cftoken) | Registered |
+| İsim Kayıt | `IsimKayitDomainAvailabilityProvider` | WHMCS domain check | Not registered: the site left WHMCS, the check endpoint returns 403 and there is no server-side availability API |
+| İsim Tescil | `IsimTescilDomainAvailabilityProvider` | HTML form post | Not registered |
+| Güzel Hosting | `GuzelHostingDomainAvailabilityProvider` | WHMCS `checkAvailabilityOne` | Not registered: Cloudflare answers server-side requests with a bot challenge |
 
 We do not work around bot protection or captchas. When Turkticaret.net asks for its image challenge (`E_KEY_ERROR`), that lookup is reported as failed.
 
@@ -166,7 +169,7 @@ We do not work around bot protection or captchas. When Turkticaret.net asks for 
 Unit tests run offline against provider responses and fake strategies. The only network access they need is a one-time download of the public suffix list.
 
 - `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/Responses/`: real responses captured from Atak Domain, Turhost, Turkticaret.net, Hosting.com.tr and Güzel Hosting
-- `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/SampleResponses.cs`: responses for the older providers (Yıldız and Yöncü are real captures; the others were written to match the parsers)
+- `tests/DomainQueryEngine.Infrastructure.UnitTest/Fixtures/SampleResponses.cs`: responses for the older providers (Yıldız is a real capture; the others were written to match the parsers)
 - `tests/DomainQueryEngine.SearchUI.Test`: page tests that start the whole app with `WebApplicationFactory`. The database, provider sites and TCMB are replaced by fakes, so they need neither PostgreSQL nor network access
 
 ```powershell

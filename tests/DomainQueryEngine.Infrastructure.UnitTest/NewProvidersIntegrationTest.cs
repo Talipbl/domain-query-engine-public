@@ -1,9 +1,9 @@
-using DomainQueryEngine.AtakDomain;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.AtakDomain;
 using DomainQueryEngine.Core;
-using DomainQueryEngine.GuzelHosting;
-using DomainQueryEngine.HostingComTr;
-using DomainQueryEngine.Turhost;
-using DomainQueryEngine.Turkticaret;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.GuzelHosting;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.HostingComTr;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.Turhost;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.Turkticaret;
 
 namespace DomainQueryEngine.Infrastructure.Test
 {
@@ -17,16 +17,16 @@ namespace DomainQueryEngine.Infrastructure.Test
         // Güzel Hosting is left out: Cloudflare blocks server-side requests to it with a bot challenge.
         public static TheoryData<string> Providers => new() { "atak", "turhost", "turkticaret", "hostingcomtr" };
 
-        private static IDomainLookupStrategy Create(string provider)
+        private static IDomainAvailabilityProvider Create(string provider)
         {
             var http = TestHttpClientFactory.Create();
             return provider switch
             {
-                "atak" => new AtakDomainLookupStrategy(new AtakDomainStrategyParser(), http),
-                "turhost" => new TurhostLookupStrategy(new TurhostStrategyParser(), http),
-                "guzel" => new GuzelHostingLookupStrategy(new GuzelHostingStrategyParser(), http),
-                "turkticaret" => new TurkticaretLookupStrategy(new TurkticaretStrategyParser(), http),
-                "hostingcomtr" => new HostingComTrLookupStrategy(new HostingComTrStrategyParser(), http),
+                "atak" => new AtakDomainDomainAvailabilityProvider(new AtakDomainLookupResponseParser(), http),
+                "turhost" => new TurhostDomainAvailabilityProvider(new TurhostLookupResponseParser(), http),
+                "guzel" => new GuzelHostingDomainAvailabilityProvider(new GuzelHostingLookupResponseParser(), http),
+                "turkticaret" => new TurkticaretDomainAvailabilityProvider(new TurkticaretLookupResponseParser(), http),
+                "hostingcomtr" => new HostingComTrDomainAvailabilityProvider(new HostingComTrLookupResponseParser(), http),
                 _ => throw new ArgumentOutOfRangeException(nameof(provider))
             };
         }

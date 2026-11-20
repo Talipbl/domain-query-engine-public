@@ -1,4 +1,4 @@
-using DomainQueryEngine.Application.Lookup;
+using DomainQueryEngine.Application.DomainSearch;
 
 namespace DomainQueryEngine.SearchUI.Helpers
 {
