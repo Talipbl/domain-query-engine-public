@@ -64,16 +64,16 @@ namespace DomainQueryEngine.Infrastructure
         {
             services.AddSingleton<IExchangeRateProvider, TcmbExchangeRateProvider>();
             services.AddSingleton<TldPriceTableParser>();
-            services.AddSingleton(new ProviderEntry { Slug = "alan-adi-kayit", Name = "Alan Adı Kayıt", Website = "https://account.aak.com.tr" });
-            services.AddSingleton(new ProviderEntry { Slug = "atak-domain", Name = "Atak Domain", Website = "https://atakdomain.com" });
-            services.AddSingleton(new ProviderEntry { Slug = "grinet", Name = "GriNet", Website = "https://www.gri.net" });
-            services.AddSingleton(new ProviderEntry { Slug = "hosting-com-tr", Name = "Hosting.com.tr", Website = "https://www.hosting.com.tr" });
-            services.AddSingleton(new ProviderEntry { Slug = "ihs", Name = "IHS", Website = "https://www.ihs.com.tr" });
-            services.AddSingleton(new ProviderEntry { Slug = "isim-kayit", Name = "İsim Kayıt", Website = "https://www.isimkayit.com" });
-            services.AddSingleton(new ProviderEntry { Slug = "natro", Name = "Natro", Website = "https://www.natro.com" });
-            services.AddSingleton(new ProviderEntry { Slug = "turhost", Name = "Turhost", Website = "https://www.turhost.com" });
-            services.AddSingleton(new ProviderEntry { Slug = "turkticaret", Name = "Turkticaret.net", Website = "https://www.turkticaret.net" });
-            services.AddSingleton(new ProviderEntry { Slug = "yoncu-bilisim", Name = "Yöncü Bilişim", Website = "https://www.yoncu.com" });
+            services.AddSingleton(new ProviderEntry { Slug = "alan-adi-kayit", Name = "Alan Adı Kayıt", Website = "https://aak.com.tr", LogoUrl = "https://aak.com.tr/img/logo.png" });
+            services.AddSingleton(new ProviderEntry { Slug = "atak-domain", Name = "Atak Domain", Website = "https://atakdomain.com", LogoUrl = "https://www.atakdomain.com/assets/img/brand/atak-domain-hosting-logo.svg" });
+            services.AddSingleton(new ProviderEntry { Slug = "grinet", Name = "GriNet", Website = "https://www.gri.net", LogoUrl = "https://www.find.com.tr/assets/images/Uploads/Company/1752566/find_20181231_102346364_griinternettek.jpg" });
+            services.AddSingleton(new ProviderEntry { Slug = "hosting-com-tr", Name = "Hosting.com.tr", Website = "https://www.hosting.com.tr", LogoUrl = "https://www.hosting.com.tr/templates/battani/img/hosting-logo.svg" });
+            services.AddSingleton(new ProviderEntry { Slug = "ihs", Name = "IHS", Website = "https://www.ihs.com.tr", LogoUrl = "https://www.ihs.com.tr/assets/images/header-menu/ihs-logo-new.svg" });
+            services.AddSingleton(new ProviderEntry { Slug = "isim-kayit", Name = "İsim Kayıt", Website = "https://www.isimkayit.com", LogoUrl = "https://www.isimkayit.com/templates/ikmc/img/logo.png" });
+            services.AddSingleton(new ProviderEntry { Slug = "natro", Name = "Natro", Website = "https://www.natro.com", LogoUrl = "https://www.natro.com/favicon.ico" });
+            services.AddSingleton(new ProviderEntry { Slug = "turhost", Name = "Turhost", Website = "https://www.turhost.com", LogoUrl = "https://www.turhost.com/assets/img/logo.png" });
+            services.AddSingleton(new ProviderEntry { Slug = "turkticaret", Name = "Turkticaret.net", Website = "https://www.turkticaret.net", LogoUrl = "https://www.turkticaret.net/new_assets_2015/img/logo.png" });
+            services.AddSingleton(new ProviderEntry { Slug = "yoncu-bilisim", Name = "Yöncü Bilişim", Website = "https://www.yoncu.com", LogoUrl = "https://www.yoncu.com/favicon.ico" });
             services.AddScoped<ITldPriceSource, AakTldPriceSource>();
             services.AddScoped<ITldPriceSource, AtakDomainTldPriceSource>();
             services.AddScoped<ITldPriceSource, GriNetTldPriceSource>();

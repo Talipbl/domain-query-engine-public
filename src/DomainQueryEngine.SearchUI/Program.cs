@@ -6,6 +6,8 @@ using DomainQueryEngine.Infrastructure;
 using DomainQueryEngine.PostgreSQL;
 using DomainQueryEngine.SearchUI.Extensions;
 using DomainQueryEngine.SearchUI.Helpers;
+using DomainQueryEngine.SearchUI.Health;
+using DomainQueryEngine.SearchUI.Hosting;
 using DomainQueryEngine.SearchUI.Localization;
 using DomainQueryEngine.SearchUI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +52,9 @@ if (string.IsNullOrWhiteSpace(connectionString))
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>("database");
+builder.Services.AddHostedService<DatabaseHealthCheckHostedService>();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddMemoryCache();
@@ -112,6 +117,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapHealthChecks("/health/db");
 
 app.MapControllerRoute(
     name: "default",

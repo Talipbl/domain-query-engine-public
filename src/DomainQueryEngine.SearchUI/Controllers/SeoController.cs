@@ -10,13 +10,11 @@ namespace DomainQueryEngine.SearchUI.Controllers
     {
         private readonly SiteUrl _siteUrl;
         private readonly ITldPriceCatalog _tlds;
-        private readonly IProviderDirectory _providers;
 
-        public SeoController(SiteUrl siteUrl, ITldPriceCatalog tlds, IProviderDirectory providers)
+        public SeoController(SiteUrl siteUrl, ITldPriceCatalog tlds)
         {
             _siteUrl = siteUrl;
             _tlds = tlds;
-            _providers = providers;
         }
 
         /// <summary>Search results, API and preference endpoints are not for indexing.</summary>
@@ -42,11 +40,9 @@ namespace DomainQueryEngine.SearchUI.Controllers
             {
                 Url.Action("Index", "Home")!,
                 Url.Action("Index", "Tlds")!,
-                Url.Action("Index", "Providers")!,
                 Url.Action("Privacy", "Home")!
             };
             paths.AddRange((await _tlds.GetAllAsync(ct)).Select(t => Url.Action("Detail", "Tlds", new { slug = t.Slug })!));
-            paths.AddRange((await _providers.GetAllAsync(ct)).Select(p => Url.Action("Detail", "Providers", new { slug = p.Slug })!));
 
             var output = new StringBuilder();
             using (var xml = XmlWriter.Create(new StringWriterWithEncoding(output, Encoding.UTF8), new XmlWriterSettings { Indent = true, Async = true }))

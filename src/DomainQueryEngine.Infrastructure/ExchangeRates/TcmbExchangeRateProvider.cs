@@ -8,14 +8,14 @@ namespace DomainQueryEngine.Infrastructure.ExchangeRates
 {
     /// <summary>
     /// Reads the Central Bank of the Republic of Türkiye (TCMB) daily rates (forex selling) and keeps
-    /// them for an hour. If TCMB cannot be reached, the last rates loaded are used; with none at all,
+    /// them for two hours. If TCMB cannot be reached, the last rates loaded are used; with none at all,
     /// <see cref="GetRatesAsync"/> returns null and prices are shown unconverted.
     /// </summary>
     public sealed class TcmbExchangeRateProvider : IExchangeRateProvider, IDisposable
     {
         public const string Source = "TCMB";
         private static readonly Uri TodayUri = new("https://www.tcmb.gov.tr/kurlar/today.xml");
-        private static readonly TimeSpan RefreshAfter = TimeSpan.FromHours(1);
+        private static readonly TimeSpan RefreshAfter = TimeSpan.FromHours(2);
         private static readonly TimeSpan RetryAfterFailure = TimeSpan.FromMinutes(5);
 
         private readonly IHttpClientFactory _httpClientFactory;

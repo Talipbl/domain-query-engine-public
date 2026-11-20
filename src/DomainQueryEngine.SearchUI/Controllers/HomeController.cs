@@ -42,8 +42,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
                 MostSearchedTlds = mostSearched
                     .Select(t => new MostSearchedTld(t, priceByTld.ContainsKey(t.Tld)))
                     .ToList(),
-                ActiveProviders = (await _providers.GetAllAsync(ct))
-                    .Where(p => p.Status == ProviderStatus.Active)
+                Providers = (await _providers.GetAllAsync(ct))
                     .OrderBy(p => p.Name, turkish)
                     .ToList()
             });

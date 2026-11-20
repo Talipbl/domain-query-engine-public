@@ -21,7 +21,7 @@ namespace DomainQueryEngine.SearchUI.Test
             Assert.Contains("https://test.example/", urls);
             Assert.Contains("https://test.example/uzantilar", urls);
             Assert.Contains("https://test.example/uzantilar/com-tr", urls);
-            Assert.Contains("https://test.example/saglayicilar/turhost", urls);
+            Assert.DoesNotContain(urls, url => url.Contains("saglayicilar", StringComparison.Ordinal));
             Assert.Contains("https://test.example/gizlilik", urls);
             Assert.DoesNotContain(urls, u => u.Contains("/ara"));
             Assert.Equal(urls.Count, urls.Distinct().Count());

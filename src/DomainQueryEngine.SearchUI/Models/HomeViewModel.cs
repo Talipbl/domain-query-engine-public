@@ -14,8 +14,8 @@ namespace DomainQueryEngine.SearchUI.Models
         /// <summary>Most searched extensions in the last 24 hours.</summary>
         public List<MostSearchedTld> MostSearchedTlds { get; init; } = new();
 
-        /// <summary>Providers whose prices are compared, in Turkish alphabetical order.</summary>
-        public List<ProviderEntry> ActiveProviders { get; init; } = new();
+        /// <summary>Providers shown in the homepage logo carousel.</summary>
+        public List<ProviderEntry> Providers { get; init; } = new();
 
         public bool AnyConverted => PopularTlds.Any(t => t.CheapestRegistration?.IsConverted == true || t.CheapestRenewal?.IsConverted == true);
     }

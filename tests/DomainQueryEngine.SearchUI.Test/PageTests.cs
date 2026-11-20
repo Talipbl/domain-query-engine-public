@@ -19,8 +19,6 @@ namespace DomainQueryEngine.SearchUI.Test
         [InlineData("/uzantilar", "Uzantı fiyatları")]
         [InlineData("/uzantilar?order=registration&search=com.tr", ".com.tr")]
         [InlineData("/uzantilar/com-tr", ".com.tr fiyatları")]
-        [InlineData("/saglayicilar", "Sağlayıcılar")]
-        [InlineData("/saglayicilar/turhost", "Turhost")]
         [InlineData("/gizlilik", "Gizlilik")]
         [InlineData("/ara?q=ornek.com", "ornek.com için sağlayıcılara soruluyor")]
         [InlineData("/_bilesenler", "Bileşenler")]
@@ -36,7 +34,8 @@ namespace DomainQueryEngine.SearchUI.Test
 
         [Theory]
         [InlineData("/uzantilar/bilinmeyen")]
-        [InlineData("/saglayicilar/bilinmeyen")]
+        [InlineData("/saglayicilar")]
+        [InlineData("/saglayicilar/turhost")]
         [InlineData("/olmayan-sayfa")]
         public async Task Unknown_Pages_Return_The_Not_Found_Page(string url)
         {
@@ -48,7 +47,6 @@ namespace DomainQueryEngine.SearchUI.Test
 
         [Theory]
         [InlineData("/uzantilar/.com.tr", HttpStatusCode.MovedPermanently, "/uzantilar/com-tr")]
-        [InlineData("/saglayicilar/TURHOST", HttpStatusCode.MovedPermanently, "/saglayicilar/turhost")]
         [InlineData("/?q=ornek.com", HttpStatusCode.Redirect, "/ara?q=ornek.com")]
         [InlineData("/ara", HttpStatusCode.Redirect, "/")]
         public async Task Old_And_Alternative_Addresses_Redirect(string url, HttpStatusCode status, string location)
@@ -116,7 +114,7 @@ namespace DomainQueryEngine.SearchUI.Test
             var html = await (await _client.SendAsync(request)).Content.ReadAsStringAsync();
 
             Assert.Contains(" $", html);
-            Assert.Contains("aria-pressed=\"true\">$ USD", html);
+            Assert.Contains("<option value=\"USD\" selected=\"selected\">$ USD</option>", html);
         }
 
         [Fact]

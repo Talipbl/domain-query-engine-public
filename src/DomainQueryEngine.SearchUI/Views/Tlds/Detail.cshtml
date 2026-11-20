@@ -63,7 +63,7 @@
                         <tr>
                             <th scope="row">
                                 <div class="cluster">
-                                    <a href="@Url.Action("Detail", "Providers", new { slug = row.Provider.Slug })" style="font-weight: 600; text-decoration: none; color: var(--color-ink)">@row.Provider.Name</a>
+                                    <span style="font-weight: 600; color: var(--color-ink)">@row.Provider.Name</span>
                                     @if (row.IsCheapest)
                                     {
                                         <badge kind="Best">@T["Badge.Best"]</badge>

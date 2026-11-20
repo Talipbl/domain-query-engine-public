@@ -1,13 +1,12 @@
 ﻿@model HomeViewModel
 @{
     ViewData["Title"] = T["Home.Title"].Value;
-    ViewData["Description"] = T["Home.Description", Model.ActiveProviders.Count].Value;
+    ViewData["Description"] = T["Home.Description", Model.Providers.Count].Value;
     ViewData["Nav"] = "search";
 }
 
 <section class="hero">
     <div class="hero__inner">
-        <badge kind="Available" pill="true">@T["Home.Badge", Model.ActiveProviders.Count]</badge>
         <h1 class="hero__title">@T["Home.Heading"]</h1>
         <p class="lead" style="max-width: 640px">@T["Home.Lead"]</p>
         <partial name="_SearchForm" model="string.Empty" />
@@ -101,18 +100,28 @@
     </div>
 </section>
 
-<section class="container section" aria-labelledby="providers-title" style="padding-bottom: var(--space-12)">
-    <div class="section-head">
-        <div class="stack" style="gap: 6px">
-            <h2 id="providers-title">@T["Home.Providers.Title"]</h2>
-            <p class="muted">@T["Home.Providers.Subtitle"]</p>
+<section class="container section provider-marquee-section" aria-label="@T["Home.Providers.Title"]">
+    <div class="provider-marquee">
+        <div class="provider-marquee__track">
+            @for (var copy = 0; copy < 2; copy++)
+            {
+                <ul class="provider-marquee__group" aria-hidden="@(copy == 1 ? "true" : null)">
+                    @foreach (var provider in Model.Providers)
+                    {
+                        <li class="provider-marquee__item @(string.IsNullOrWhiteSpace(provider.LogoUrl) ? "is-logo-missing" : "")" title="@provider.Name">
+                            @if (!string.IsNullOrWhiteSpace(provider.LogoUrl))
+                            {
+                                <img src="@provider.LogoUrl" alt="@provider.Name" loading="lazy" referrerpolicy="no-referrer" data-provider-logo />
+                                <span class="provider-marquee__fallback">@provider.Name</span>
+                            }
+                            else
+                            {
+                                <span class="provider-marquee__fallback">@provider.Name</span>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
         </div>
-        <btn variant="Link" href="@Url.Action("Index", "Providers")">@T["Home.AllProviders"]</btn>
     </div>
-    <ul class="cluster" style="list-style: none; margin: 0; padding: 0; gap: 10px">
-        @foreach (var provider in Model.ActiveProviders)
-        {
-            <li><a class="provider-chip" style="display: inline-block; text-decoration: none" href="@Url.Action("Detail", "Providers", new { slug = provider.Slug })">@provider.Name</a></li>
-        }
-    </ul>
 </section>

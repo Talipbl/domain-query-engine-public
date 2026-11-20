@@ -98,41 +98,6 @@ namespace DomainQueryEngine.Application.TldPricing
             };
         }
 
-        /// <summary>One provider's prices across the catalog, ordered alphabetically.</summary>
-        /// <returns>Null when the provider is unknown.</returns>
-        public async Task<ProviderPriceList?> GetProviderPricesAsync(string slug, string? currency, CancellationToken ct = default)
-        {
-            var provider = await _providers.GetAsync(slug, ct);
-            if (provider == null)
-                return null;
-
-            var target = PriceComparisonService.NormalizeCurrency(currency);
-            var rates = await _exchangeRates.GetRatesAsync(ct);
-            var providers = new Dictionary<string, ProviderEntry>(StringComparer.OrdinalIgnoreCase) { [provider.Slug] = provider };
-            var entries = await _tlds.GetAllAsync(ct);
-
-            var rows = entries
-                .Select(e => (Entry: e, Price: e.Prices.FirstOrDefault(p => string.Equals(p.Provider, provider.Slug, StringComparison.OrdinalIgnoreCase))))
-                .Where(x => x.Price != null)
-                .OrderBy(x => x.Entry.Tld, StringComparer.Ordinal)
-                .Select(x => new ProviderTldRow
-                {
-                    Entry = x.Entry,
-                    Registration = Offer(x.Price!, x.Price!.Registration, x.Price!.RegistrationTermYears, target, rates, providers, withRegular: true),
-                    Renewal = Offer(x.Price!, x.Price!.Renewal, x.Price!.RenewalTermYears, target, rates, providers)
-                })
-                .ToList();
-
-            return new ProviderPriceList
-            {
-                Provider = provider,
-                Currency = target,
-                Rates = rates,
-                AsOf = await _tlds.GetAsOfAsync(ct),
-                Rows = rows
-            };
-        }
-
         private async Task<Dictionary<string, ProviderEntry>> LoadProvidersAsync(CancellationToken ct)
             => (await _providers.GetAllAsync(ct)).ToDictionary(p => p.Slug, StringComparer.OrdinalIgnoreCase);
 
