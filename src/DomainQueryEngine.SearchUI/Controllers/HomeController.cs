@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using DomainQueryEngine.Application.Catalog;
+using DomainQueryEngine.Application.TldPricing;
 using DomainQueryEngine.Core.Abstractions;
-using DomainQueryEngine.Core.Catalog;
+using DomainQueryEngine.Core.TldPricing;
 using DomainQueryEngine.SearchUI.Helpers;
 using DomainQueryEngine.SearchUI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +13,10 @@ namespace DomainQueryEngine.SearchUI.Controllers
         private static readonly TimeSpan PopularWindow = TimeSpan.FromHours(24);
 
         private readonly TldPriceService _prices;
-        private readonly IProviderCatalog _providers;
+        private readonly IProviderDirectory _providers;
         private readonly ISearchStatistics _statistics;
 
-        public HomeController(TldPriceService prices, IProviderCatalog providers, ISearchStatistics statistics)
+        public HomeController(TldPriceService prices, IProviderDirectory providers, ISearchStatistics statistics)
         {
             _prices = prices;
             _providers = providers;
@@ -32,16 +32,16 @@ namespace DomainQueryEngine.SearchUI.Controllers
             var tlds = await _prices.GetListAsync(CurrencyPreference.Get(HttpContext), ct: ct);
             var turkish = StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), true);
 
-            var catalogTlds = tlds.Items.Select(i => i.Entry.Tld).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var priceByTld = tlds.Items.ToDictionary(i => i.Entry.Tld, StringComparer.OrdinalIgnoreCase);
+            var mostSearched = await _statistics.GetMostSearchedTldsAsync(PopularWindow, 5, ct);
 
             return View(new HomeViewModel
             {
-                PopularTlds = tlds.Items.Where(i => i.Entry.IsPopular).Take(4).ToList(),
+                PopularTlds = mostSearched.Select(t => priceByTld.GetValueOrDefault(t.Tld)).Where(i => i != null).Cast<TldListItem>().Take(4).ToList(),
                 TldList = tlds,
-                MostSearchedTlds = (await _statistics.GetMostSearchedTldsAsync(PopularWindow, 5, ct))
-                    .Select(t => new MostSearchedTld(t, catalogTlds.Contains(t.Tld)))
+                MostSearchedTlds = mostSearched
+                    .Select(t => new MostSearchedTld(t, priceByTld.ContainsKey(t.Tld)))
                     .ToList(),
-                MostSearchedIsSample = _statistics.IsSample,
                 ActiveProviders = (await _providers.GetAllAsync(ct))
                     .Where(p => p.Status == ProviderStatus.Active)
                     .OrderBy(p => p.Name, turkish)

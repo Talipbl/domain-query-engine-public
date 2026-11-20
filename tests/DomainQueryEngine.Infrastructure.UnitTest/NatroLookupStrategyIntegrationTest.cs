@@ -1,14 +1,14 @@
-namespace DomainQueryEngine.Natro
+namespace DomainQueryEngine.Infrastructure.DomainSearch.Providers.Natro
 {
     [Trait("Category", "Integration")]
-    public class NatroLookupStrategyIntegrationTest
+    public class NatroDomainAvailabilityProviderIntegrationTest
     {
-        NatroLookupStrategy _lookupStrategy;
-        NatroStrategyParser _parser;
-        public NatroLookupStrategyIntegrationTest()
+        NatroDomainAvailabilityProvider _lookupStrategy;
+        NatroLookupResponseParser _parser;
+        public NatroDomainAvailabilityProviderIntegrationTest()
         {
-            _parser = new NatroStrategyParser();
-            _lookupStrategy = new NatroLookupStrategy(_parser, TestHttpClientFactory.Create());
+            _parser = new NatroLookupResponseParser();
+            _lookupStrategy = new NatroDomainAvailabilityProvider(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]

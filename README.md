@@ -88,8 +88,10 @@ Then open the printed URL (for example `https://localhost:xxxx`).
 |---|---|---|
 | `ConnectionStrings:DefaultConnection` | empty (required) | PostgreSQL connection string |
 | `Site:BaseUrl` | empty | Public address used for canonical links, Open Graph and the sitemap (e.g. `https://example.com`). Empty: taken from the request; set it behind a proxy that terminates HTTPS |
-| `DataSource:Tlds` / `DataSource:Providers` | `Mock` | Extension and provider catalog. Only `Mock` (embedded sample data) exists so far |
-| `DataSource:Statistics` | `Database` | "Most searched" list: `Database` (lookup history) or `Mock` |
+| TLD prices | PostgreSQL | Current registration and renewal price snapshots; no sample fallback is used |
+| Provider profiles | Configured price-list strategies | Provider names and websites are derived from the live source adapters |
+| Search statistics | PostgreSQL | "Most searched" list from lookup history |
+| `PriceCollection:IntervalMinutes` / `PriceCollection:MaxConcurrency` | `360` / `3` | Scheduled provider price-list collection cadence and maximum parallel fetches |
 | `Database:MigrateOnStartup` | `true` | Apply pending migrations when the app starts |
 
 Environment variables use `__` instead of `:` (e.g. `Site__BaseUrl`).
@@ -104,15 +106,15 @@ Pages are rendered on the server; htmx loads search results and makes filters, t
 
 | Address | Page | Data |
 |---|---|---|
-| `/` | Search box, cheapest offers for popular extensions, most searched extensions in the last 24 hours, providers | Catalog (sample), statistics |
+| `/` | Search box, cheapest offers for popular extensions, most searched extensions in the last 24 hours, providers | Provider price snapshots, statistics |
 | `/ara?q=…` | Search results: page renders at once, results load from `/ara/sonuclar`. Filters: only available, period (1/2/5 years), sort | Live lookups |
-| `/uzantilar` | Extension list: group tabs, text filter, sort by popularity, cheapest registration, cheapest renewal or name | Catalog (sample) |
-| `/uzantilar/{slug}` | One extension (`/uzantilar/com-tr`): summary, per-provider prices, price history, FAQ | Catalog (sample) |
-| `/saglayicilar`, `/saglayicilar/{slug}` | Providers with their status; one provider's prices | Catalog (sample) |
+| `/uzantilar` | Extension list: text filter, sort by registration price, renewal price or name | Provider price snapshots |
+| `/uzantilar/{slug}` | One extension (`/uzantilar/com-tr`): current registration and renewal prices by provider | Provider price snapshots |
+| `/saglayicilar`, `/saglayicilar/{slug}` | Providers with their status; one provider's registration and renewal prices | Provider profiles, price snapshots |
 | `/gizlilik` | Privacy | Static |
-| `/_bilesenler` | Component gallery (Development only) | Sample |
+| `/_bilesenler` | Component gallery (Development only) | Static examples |
 
-Sample data is labelled "Örnek veri" on the pages. Filter, sort and currency changes on `/ara` re-show the cached results and are not counted as new searches.
+Filter, sort and currency changes on `/ara` re-show the cached results and are not counted as new searches.
 
 - **Design system:** `wwwroot/css/tokens.css` (colors, type, spacing; light and dark themes), `base.css`, `components.css`.
 - **Theme:** the sun/moon button in the header switches light/dark at once and saves the choice in the `dqe_theme` cookie; the server renders `data-theme` from it, so the page does not flash. Without a choice the page follows the system setting.

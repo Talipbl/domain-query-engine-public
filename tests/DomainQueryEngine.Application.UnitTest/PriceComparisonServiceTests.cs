@@ -1,4 +1,4 @@
-using DomainQueryEngine.Application.Lookup;
+using DomainQueryEngine.Application.DomainSearch;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.Core.Abstractions;
 

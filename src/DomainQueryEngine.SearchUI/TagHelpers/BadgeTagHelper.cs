@@ -1,38 +1,13 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Localization;
 
 namespace DomainQueryEngine.SearchUI.TagHelpers
 {
-    public enum BadgeKind
-    {
-        Available,
-        Taken,
-        Transfer,
-        Campaign,
-        Best,
-        Mock,
-
-        /// <summary>Something needs attention (e.g. a provider that is failing).</summary>
-        Warning,
-
-        /// <summary>Plain, informational (e.g. a disabled provider).</summary>
-        Neutral
-    }
-
     /// <summary>
     /// <c>&lt;badge kind="available"&gt;Müsait&lt;/badge&gt;</c> → <c>&lt;span class="badge badge--available"&gt;</c>.
-    /// <c>kind="mock"</c> marks sample data; without content it reads "Örnek veri" / "Sample data".
     /// </summary>
     [HtmlTargetElement("badge")]
     public class BadgeTagHelper : TagHelper
     {
-        private readonly IStringLocalizer<SharedResource> _text;
-
-        public BadgeTagHelper(IStringLocalizer<SharedResource> text)
-        {
-            _text = text;
-        }
-
         public BadgeKind Kind { get; set; } = BadgeKind.Available;
 
         /// <summary>Rounded "pill" shape, used for larger status labels.</summary>
@@ -48,8 +23,6 @@ namespace DomainQueryEngine.SearchUI.TagHelpers
             output.Attributes.SetAttribute("class", string.IsNullOrEmpty(existing) ? classes : $"{classes} {existing}");
 
             var content = await output.GetChildContentAsync();
-            if (content.IsEmptyOrWhiteSpace && Kind == BadgeKind.Mock)
-                output.Content.SetContent(_text["Badge.Mock"]);
         }
     }
 }

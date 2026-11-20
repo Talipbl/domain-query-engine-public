@@ -1,5 +1,5 @@
 using DomainQueryEngine.Application;
-using DomainQueryEngine.Application.Lookup;
+using DomainQueryEngine.Application.DomainSearch;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.Core.Entities;
 using DomainQueryEngine.Core.Utilities;

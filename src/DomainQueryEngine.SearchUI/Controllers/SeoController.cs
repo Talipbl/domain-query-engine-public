@@ -9,10 +9,10 @@ namespace DomainQueryEngine.SearchUI.Controllers
     public class SeoController : Controller
     {
         private readonly SiteUrl _siteUrl;
-        private readonly ITldCatalog _tlds;
-        private readonly IProviderCatalog _providers;
+        private readonly ITldPriceCatalog _tlds;
+        private readonly IProviderDirectory _providers;
 
-        public SeoController(SiteUrl siteUrl, ITldCatalog tlds, IProviderCatalog providers)
+        public SeoController(SiteUrl siteUrl, ITldPriceCatalog tlds, IProviderDirectory providers)
         {
             _siteUrl = siteUrl;
             _tlds = tlds;
@@ -37,7 +37,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
         [HttpGet("/sitemap.xml")]
         public async Task<IActionResult> Sitemap(CancellationToken ct)
         {
-            var lastModified = _tlds.AsOf.ToString("yyyy-MM-dd");
+            var lastModified = (await _tlds.GetAsOfAsync(ct)).ToString("yyyy-MM-dd");
             var paths = new List<string>
             {
                 Url.Action("Index", "Home")!,

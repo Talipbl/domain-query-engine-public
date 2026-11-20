@@ -1,6 +1,6 @@
-using DomainQueryEngine.Application.Catalog;
+using DomainQueryEngine.Application.TldPricing;
 using DomainQueryEngine.Core.Abstractions;
-using DomainQueryEngine.Core.Catalog;
+using DomainQueryEngine.Core.TldPricing;
 using DomainQueryEngine.SearchUI.Helpers;
 using DomainQueryEngine.SearchUI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +10,10 @@ namespace DomainQueryEngine.SearchUI.Controllers
     [Route("saglayicilar")]
     public class ProvidersController : Controller
     {
-        private readonly IProviderCatalog _providers;
+        private readonly IProviderDirectory _providers;
         private readonly TldPriceService _prices;
 
-        public ProvidersController(IProviderCatalog providers, TldPriceService prices)
+        public ProvidersController(IProviderDirectory providers, TldPriceService prices)
         {
             _providers = providers;
             _prices = prices;
@@ -28,7 +28,7 @@ namespace DomainQueryEngine.SearchUI.Controllers
                 .ThenBy(p => p.Name, turkish)
                 .ToList();
 
-            return View(new ProviderListPageViewModel { Providers = providers, IsSample = _providers.IsSample });
+            return View(new ProviderListPageViewModel { Providers = providers });
         }
 
         [HttpGet("{slug}")]

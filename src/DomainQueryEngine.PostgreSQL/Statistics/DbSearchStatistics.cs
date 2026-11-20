@@ -1,5 +1,5 @@
 using DomainQueryEngine.Core.Abstractions;
-using DomainQueryEngine.Core.Catalog;
+using DomainQueryEngine.Core.TldPricing;
 using Microsoft.EntityFrameworkCore;
 
 namespace DomainQueryEngine.PostgreSQL
@@ -15,8 +15,6 @@ namespace DomainQueryEngine.PostgreSQL
         {
             _context = context;
         }
-
-        public bool IsSample => false;
 
         public async Task<IReadOnlyList<PopularQuery>> GetMostSearchedAsync(TimeSpan window, int take, CancellationToken ct = default)
         {

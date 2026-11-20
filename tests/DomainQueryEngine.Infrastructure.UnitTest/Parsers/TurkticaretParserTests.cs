@@ -1,5 +1,5 @@
 using DomainQueryEngine.Infrastructure.Test.Fixtures;
-using DomainQueryEngine.Turkticaret;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.Turkticaret;
 
 namespace DomainQueryEngine.Infrastructure.Test.Parsers
 {
@@ -7,7 +7,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class TurkticaretParserTests
     {
-        private readonly TurkticaretStrategyParser _parser = new();
+        private readonly TurkticaretLookupResponseParser _parser = new();
 
         [Theory]
         [InlineData("turkticaret-available.json", "ornekyazilimci.com", "com", 128.99, 682.99)]
@@ -42,7 +42,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
         [Fact]
         public void Fails_On_Security_Challenge_Instead_Of_Solving_It()
         {
-            Assert.Throws<InvalidOperationException>(() => _parser.ParseDomainResult(TurkticaretStrategyParser.SecurityChallengeResponse));
+            Assert.Throws<InvalidOperationException>(() => _parser.ParseDomainResult(TurkticaretLookupResponseParser.SecurityChallengeResponse));
         }
 
         [Fact]

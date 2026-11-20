@@ -1,5 +1,5 @@
 using DomainQueryEngine.Infrastructure.Test.Fixtures;
-using DomainQueryEngine.YoncuBilisim;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.YoncuBilisim;
 
 namespace DomainQueryEngine.Infrastructure.Test.Parsers
 {
@@ -10,7 +10,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
         private static readonly DateTimeOffset AfterCampaign = new(2026, 11, 19, 0, 0, 0, TimeSpan.Zero);
         private static readonly DateTimeOffset DuringCampaign = new(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
-        private readonly YoncuBilisimStrategyParser _parser = new() { Now = () => AfterCampaign };
+        private readonly YoncuBilisimLookupResponseParser _parser = new() { Now = () => AfterCampaign };
 
         [Fact]
         public void Parses_Available_Domain()
@@ -40,7 +40,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
             WhmcsParserTests.AssertPrice(850m, "TRY", expired.RegistrationPrice);
             Assert.Null(expired.RegularRegistrationPrice);
 
-            var activeParser = new YoncuBilisimStrategyParser { Now = () => DuringCampaign };
+            var activeParser = new YoncuBilisimLookupResponseParser { Now = () => DuringCampaign };
             var active = Assert.Single(activeParser.ParseDomainResult(json)).Prices.Single();
             WhmcsParserTests.AssertPrice(700m, "TRY", active.RegistrationPrice);
             WhmcsParserTests.AssertPrice(850m, "TRY", active.RegularRegistrationPrice);
@@ -78,8 +78,8 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
         [Fact]
         public void Reads_Cf_Token_From_Page()
         {
-            Assert.Equal("abc123", YoncuBilisimStrategyParser.GetCfToken("<script>window.cftoken = \"abc123\";</script>"));
-            Assert.Equal(string.Empty, YoncuBilisimStrategyParser.GetCfToken("<html></html>"));
+            Assert.Equal("abc123", YoncuBilisimLookupResponseParser.GetCfToken("<script>window.cftoken = \"abc123\";</script>"));
+            Assert.Equal(string.Empty, YoncuBilisimLookupResponseParser.GetCfToken("<html></html>"));
         }
     }
 }

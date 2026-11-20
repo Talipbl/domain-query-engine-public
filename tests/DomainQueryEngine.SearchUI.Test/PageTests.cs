@@ -17,7 +17,7 @@ namespace DomainQueryEngine.SearchUI.Test
         [Theory]
         [InlineData("/", "Alan adını en ucuz nereden alacağını tek aramada gör")]
         [InlineData("/uzantilar", "Uzantı fiyatları")]
-        [InlineData("/uzantilar?groupKey=tr&order=kayit", ".com.tr")]
+        [InlineData("/uzantilar?order=registration&search=com.tr", ".com.tr")]
         [InlineData("/uzantilar/com-tr", ".com.tr fiyatları")]
         [InlineData("/saglayicilar", "Sağlayıcılar")]
         [InlineData("/saglayicilar/turhost", "Turhost")]

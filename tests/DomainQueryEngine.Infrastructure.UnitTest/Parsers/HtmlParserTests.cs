@@ -1,7 +1,7 @@
-﻿using DomainQueryEngine.Ihs;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.Ihs;
 using DomainQueryEngine.Infrastructure.Test.Fixtures;
-using DomainQueryEngine.IsimTescil;
-using DomainQueryEngine.YildizBilisim;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.IsimTescil;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.YildizBilisim;
 
 namespace DomainQueryEngine.Infrastructure.Test.Parsers
 {
@@ -10,7 +10,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class IhsParserTests
     {
-        private readonly IhsStrategyParser _parser = new();
+        private readonly IhsLookupResponseParser _parser = new();
 
         [Fact]
         public void Parses_Only_Available_Rows_With_Tl_Price()
@@ -44,7 +44,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class IsimTescilParserTests
     {
-        private readonly IsimTescilStrategyParser _parser = new();
+        private readonly IsimTescilLookupResponseParser _parser = new();
 
         [Fact]
         public void Parses_Available_Domain_And_Ignores_Old_Price()
@@ -69,7 +69,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class CsrfTokenTests
     {
-        private readonly YildizBilisimStrategyParser _parser = new();
+        private readonly YildizBilisimLookupResponseParser _parser = new();
 
         [Fact]
         public void Reads_Token_From_Script()

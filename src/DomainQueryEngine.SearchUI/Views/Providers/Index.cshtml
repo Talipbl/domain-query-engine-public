@@ -3,7 +3,7 @@
     ViewData["Title"] = T["Providers.Title"].Value;
     ViewData["Description"] = T["Providers.Description"].Value;
     ViewData["Nav"] = "providers";
-    var active = Model.Providers.Count(p => p.Status == DomainQueryEngine.Core.Catalog.ProviderStatus.Active);
+    var active = Model.Providers.Count(p => p.Status == DomainQueryEngine.Core.TldPricing.ProviderStatus.Active);
 }
 
 <div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)">
@@ -39,8 +39,4 @@
         }
     </div>
 
-    @if (Model.IsSample)
-    {
-        <p class="rate-note"><badge kind="Mock"></badge> @T["Providers.SampleNote"]</p>
-    }
 </div>

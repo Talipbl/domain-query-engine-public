@@ -4,7 +4,6 @@
     ViewData["Description"] = T["Tlds.Description"].Value;
     ViewData["Nav"] = "tlds";
 
-    string GroupUrl(string key) => Url.Action("Index", new { groupKey = key == "tumu" ? null : key, order = Model.Sort.Key == "populerlik" ? null : Model.Sort.Key, search = string.IsNullOrEmpty(Model.Query) ? null : Model.Query })!;
 }
 
 <div class="container section stack" style="gap: var(--space-6); padding-bottom: var(--space-12)" hx-boost="true" hx-target="main" hx-select="main" hx-swap="outerHTML">
@@ -16,19 +15,7 @@
     </div>
 
     <div class="toolbar">
-        <nav class="tabs" aria-label="@T["Tlds.Groups"]">
-            @foreach (var group in TldListPageViewModel.Groups)
-            {
-                <a class="tab" href="@GroupUrl(group.Key)" aria-current="@(group == Model.Group ? "page" : null)">
-                    @T[group.LabelKey]<span class="tab__count">@Model.GroupCounts.GetValueOrDefault(group.Key)</span>
-                </a>
-            }
-        </nav>
         <form class="toolbar__controls" method="get" action="@Url.Action("Index")" role="search">
-            @if (Model.Group.Key != "tumu")
-            {
-                <input type="hidden" name="groupKey" value="@Model.Group.Key" />
-            }
             <label for="tld-q" class="sr-only">@T["Tlds.SearchLabel"]</label>
             <input id="tld-q" class="input" type="search" name="search" value="@Model.Query" placeholder="@T["Tlds.SearchPlaceholder"]" style="width: 200px; max-width: 100%" />
             <label class="small muted" for="tld-sort">@T["Filters.Sort"]</label>
@@ -58,9 +45,7 @@
                         <th scope="col">@T["Tlds.Col.Tld"]</th>
                         <th scope="col" class="num">@T["Tlds.Col.Registration"]</th>
                         <th scope="col" class="num">@T["Tlds.Col.Renewal"]</th>
-                        <th scope="col" class="num">@T["Tlds.Col.Transfer"]</th>
                         <th scope="col" class="num">@T["Tlds.Col.Providers"]</th>
-                        <th scope="col">@T["Tlds.Col.Document"]</th>
                         <th scope="col"><span class="sr-only">@T["Tlds.Col.Detail"]</span></th>
                     </tr>
                 </thead>
@@ -74,22 +59,7 @@
                             </th>
                             <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(item.CheapestRegistration, ShowProvider: true, Highlight: true)" /></td>
                             <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(item.CheapestRenewal)" /></td>
-                            <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(item.CheapestTransfer)" /></td>
                             <td class="num">@item.ProviderCount</td>
-                            <td>
-                                @if (item.Entry.DocumentRequired == true)
-                                {
-                                    <badge kind="Warning">@T["Document.Required"]</badge>
-                                }
-                                else if (item.Entry.DocumentRequired == false)
-                                {
-                                    <badge kind="Available">@T["Document.NotRequired"]</badge>
-                                }
-                                else
-                                {
-                                    <span class="muted" aria-label="@T["Common.NoInfo"]">—</span>
-                                }
-                            </td>
                             <td><a href="@detailUrl" style="font-weight: 600; text-decoration: none; white-space: nowrap">@T["Tlds.Compare"] →</a></td>
                         </tr>
                     }
@@ -98,5 +68,5 @@
         </div>
     }
 
-    <partial name="Components/_DataNote" model="new DataNoteModel(Model.List.IsSample, Model.List.AsOf, Model.List.Rates, Model.AnyConverted)" />
+    <partial name="Components/_DataNote" model="new DataNoteModel(Model.List.AsOf, Model.List.Rates, Model.AnyConverted)" />
 </div>

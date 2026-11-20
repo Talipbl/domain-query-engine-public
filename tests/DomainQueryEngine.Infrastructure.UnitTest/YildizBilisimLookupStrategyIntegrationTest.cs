@@ -1,14 +1,14 @@
-namespace DomainQueryEngine.YildizBilisim
+namespace DomainQueryEngine.Infrastructure.DomainSearch.Providers.YildizBilisim
 {
     [Trait("Category", "Integration")]
-    public class YildizBilisimLookupStrategyIntegrationTest
+    public class YildizBilisimDomainAvailabilityProviderIntegrationTest
     {
-        YildizBilisimLookupStrategy _lookupStrategy;
-        YildizBilisimStrategyParser _parser;
-        public YildizBilisimLookupStrategyIntegrationTest()
+        YildizBilisimDomainAvailabilityProvider _lookupStrategy;
+        YildizBilisimLookupResponseParser _parser;
+        public YildizBilisimDomainAvailabilityProviderIntegrationTest()
         {
-            _parser = new YildizBilisimStrategyParser();
-            _lookupStrategy = new YildizBilisimLookupStrategy(_parser, TestHttpClientFactory.Create());
+            _parser = new YildizBilisimLookupResponseParser();
+            _lookupStrategy = new YildizBilisimDomainAvailabilityProvider(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]

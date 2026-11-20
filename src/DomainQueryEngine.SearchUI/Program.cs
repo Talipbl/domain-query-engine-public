@@ -1,5 +1,5 @@
 using DomainQueryEngine.Application;
-using DomainQueryEngine.Application.Lookup;
+using DomainQueryEngine.Application.DomainSearch;
 using DomainQueryEngine.Application.Services;
 using DomainQueryEngine.Http;
 using DomainQueryEngine.Infrastructure;
@@ -68,9 +68,10 @@ builder.Services.AddSingleton<IAsyncPolicy<HttpResponseMessage>>(sp =>
         .WaitAndRetryAsync(2, retry => TimeSpan.FromSeconds(Math.Pow(2, retry)));
 });
 
-builder.Services.AddInfrastructureServices();
+builder.Services.AddDomainSearchInfrastructure();
+builder.Services.AddTldPricingInfrastructure();
 builder.Services.AddPostgreSQLServices();
-builder.Services.AddDataSources(builder.Configuration);
+builder.Services.AddTldPricingServices(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

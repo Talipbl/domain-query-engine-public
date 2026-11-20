@@ -1,17 +1,17 @@
-﻿using DomainQueryEngine.YoncuBilisim;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.YoncuBilisim;
 using Moq;
 
 namespace DomainQueryEngine.Infrastructure.Test
 {
     [Trait("Category", "Integration")]
-    public class YoncuBilisimLookupStrategyIntegrationTest
+    public class YoncuBilisimDomainAvailabilityProviderIntegrationTest
     {
-        YoncuBilisimLookupStrategy _lookupStrategy;
-        YoncuBilisimStrategyParser _parser;
-        public YoncuBilisimLookupStrategyIntegrationTest()
+        YoncuBilisimDomainAvailabilityProvider _lookupStrategy;
+        YoncuBilisimLookupResponseParser _parser;
+        public YoncuBilisimDomainAvailabilityProviderIntegrationTest()
         {
-            _parser = new YoncuBilisimStrategyParser();
-            _lookupStrategy = new YoncuBilisimLookupStrategy(_parser, TestHttpClientFactory.Create()); 
+            _parser = new YoncuBilisimLookupResponseParser();
+            _lookupStrategy = new YoncuBilisimDomainAvailabilityProvider(_parser, TestHttpClientFactory.Create());
         }
 
         [Fact]

@@ -1,5 +1,5 @@
 using DomainQueryEngine.Infrastructure.Test.Fixtures;
-using DomainQueryEngine.Turhost;
+using DomainQueryEngine.Infrastructure.DomainSearch.Providers.Turhost;
 
 namespace DomainQueryEngine.Infrastructure.Test.Parsers
 {
@@ -7,7 +7,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
 
     public class TurhostParserTests
     {
-        private readonly TurhostStrategyParser _parser = new();
+        private readonly TurhostLookupResponseParser _parser = new();
 
         [Fact]
         public void Parses_Available_Domain_Preferring_Campaign_Prices()
@@ -53,7 +53,7 @@ namespace DomainQueryEngine.Infrastructure.Test.Parsers
         [InlineData("{\"a\":1}", "{\"a\":1}")]
         public void Strips_Jsonp_Wrapper(string input, string expected)
         {
-            Assert.Equal(expected, TurhostStrategyParser.StripJsonp(input));
+            Assert.Equal(expected, TurhostLookupResponseParser.StripJsonp(input));
         }
     }
 }

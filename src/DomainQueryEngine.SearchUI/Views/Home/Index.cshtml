@@ -35,7 +35,7 @@
             @foreach (var item in Model.PopularTlds)
             {
                 var offer = item.CheapestRegistration;
-                <a class="card card-link@(Model.TldList.IsSample ? " card--mock" : "")" href="@Url.Action("Detail", "Tlds", new { slug = item.Entry.Slug })">
+                <a class="card card-link" href="@Url.Action("Detail", "Tlds", new { slug = item.Entry.Slug })">
                     <span class="tld-card__name">.@item.Entry.Tld</span>
                     <span class="small muted">@T["Common.CheapestRegistration"]</span>
                     @if (offer != null)
@@ -50,7 +50,7 @@
                 </a>
             }
         </div>
-        <partial name="Components/_DataNote" model="new DataNoteModel(Model.TldList.IsSample, Model.TldList.AsOf, Model.TldList.Rates, Model.AnyConverted)" />
+        <partial name="Components/_DataNote" model="new DataNoteModel(Model.TldList.AsOf, Model.TldList.Rates, Model.AnyConverted)" />
     </section>
 }
 
@@ -59,10 +59,6 @@
         <div class="card">
             <div class="card__head" style="margin-bottom: 14px">
                 <h2 style="font-size: var(--text-xl)">@T["Home.MostSearched.Title"]</h2>
-                @if (Model.MostSearchedIsSample)
-                {
-                    <badge kind="Mock"></badge>
-                }
             </div>
             @if (Model.MostSearchedTlds.Count == 0)
             {

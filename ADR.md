@@ -14,13 +14,15 @@ Biçim: **Bağlam** (sorun neydi), **Karar** (ne yapıldı), **Sonuçlar** (kaza
 | 006 | TCMB kuruyla para birimi çevirme | Kabul edildi |
 | 007 | Sunucu tarafı Razor + htmx arayüz | Kabul edildi |
 | 008 | Sade CSS tasarım sistemi ve token'lar | Kabul edildi |
-| 009 | Katalog verisi arayüzlerin arkasında, önce Mock | Kabul edildi |
+| 009 | Katalog verisi arayüzlerin arkasında, önce Mock | Yerini ADR-017 aldı |
 | 010 | Sorgu geçmişi ve istatistikler | Kabul edildi |
 | 011 | Çerez tabanlı tercihler | Kabul edildi |
 | 012 | JSON anahtar/değer yerelleştirme (TR/EN) | Kabul edildi |
 | 013 | Açık/koyu tema | Kabul edildi |
 | 014 | Gizli bilgiler depoda tutulmaz | Kabul edildi |
 | 015 | Docker Compose ile uygulama + PostgreSQL | Kabul edildi |
+| 016 | Sağlayıcı fiyat listelerini zamanlanmış strategy'lerle toplama | Kabul edildi |
+| 017 | Katalogdaki örnek veriyi kaldır ve modelleri ayır | Kabul edildi |
 
 ---
 
@@ -28,7 +30,7 @@ Biçim: **Bağlam** (sorun neydi), **Karar** (ne yapıldı), **Sonuçlar** (kaza
 
 **Bağlam:** Sorgu mantığı, sağlayıcı entegrasyonları, veri erişimi ve arayüz birbirinden bağımsız değişiyor. Sağlayıcı siteleri sık değişir; arayüz ve veritabanı bundan etkilenmemeli.
 
-**Karar:** Çözüm beş projeye ayrıldı: `Core` (modeller ve soyutlamalar), `Application` (servisler), `Infrastructure` (sağlayıcılar, HTTP, kur, Mock veri), `PostgreSQL` (EF Core) ve `SearchUI` (web). Bağımlılıklar Core'a doğrudur; Core hiçbir projeye bağımlı değildir. Kayıtlar her projenin `ServiceRegistrations` sınıfında yapılır.
+**Karar:** Çözüm beş projeye ayrıldı: `Core` (modeller ve soyutlamalar), `Application` (servisler), `Infrastructure` (sağlayıcılar, HTTP ve kur), `PostgreSQL` (EF Core) ve `SearchUI` (web). Bağımlılıklar Core'a doğrudur; Core hiçbir projeye bağımlı değildir. Kayıtlar her projenin `ServiceRegistrations` sınıfında yapılır.
 
 **Sonuçlar:** Sağlayıcı veya veri kaynağı değişikliği yalnızca kendi projesine dokunur, testlerde sahte uygulamalarla değiştirilebilir. Bedeli: küçük bir proje için fazladan proje ve arayüz sayısı.
 
@@ -92,6 +94,8 @@ Biçim: **Bağlam** (sorun neydi), **Karar** (ne yapıldı), **Sonuçlar** (kaza
 
 **Bağlam:** Uzantı listesi, sağlayıcı bilgileri ve fiyat geçmişi için henüz gerçek veri kaynağı yok, ama sayfaların şimdiden tasarlanması gerekiyor.
 
+**Durum:** Yerini ADR-017 aldı. Aşağıdaki karar önceki uygulamayı açıklar.
+
 **Karar:** Katalog ve istatistik verileri `ITldCatalog`, `IProviderCatalog` ve `ISearchStatistics` arayüzlerinin arkasındadır. İlk uygulamalar `Infrastructure/MockData` altındaki gömülü JSON'u okur. Kaynak `DataSource:Tlds`, `DataSource:Providers` ve `DataSource:Statistics` ayarlarıyla seçilir. Örnek veri sayfalarda "Örnek veri" rozetiyle işaretlenir. Domain sorgusunun kendisi her zaman canlıdır.
 
 **Sonuçlar:** Gerçek veri kaynağı geldiğinde yalnızca yeni bir arayüz uygulaması yazılır; view'lar değişmez. Bedeli: Mock verideki fiyatlar gerçeği yansıtmaz, bu yüzden açıkça işaretlenir.
@@ -143,3 +147,21 @@ Biçim: **Bağlam** (sorun neydi), **Karar** (ne yapıldı), **Sonuçlar** (kaza
 **Karar:** `Dockerfile` web uygulamasını Debian tabanlı `aspnet` imajında çalıştırır (dil ve sayı biçimleri için ICU gerekir; Alpine kullanılmaz). `docker-compose.yml` uygulamayı ve `postgres:16`'yı birlikte çalıştırır; veritabanı sağlık kontrolünden geçmeden uygulama başlamaz, veriler kalıcı bir volume'dadır, parola `.env`'den gelir. Migration'lar uygulama açılışında uygulanır (`Database:MigrateOnStartup`). Geliştirmede yalnızca PostgreSQL konteyneri kullanılıp uygulama `dotnet run` ile de çalıştırılabilir. Docker kurulumu ve konteyner yönetimi geliştiricinin kendisindedir.
 
 **Sonuçlar:** Kurulum basit ve tekrarlanabilir. Bedeli: açılışta migration uygulamak çok örnekli dağıtımlarda yarışa yol açabilir; o durumda ayrı bir migration adımına geçilmelidir.
+
+## ADR-016: Sağlayıcı fiyat listelerini zamanlanmış strategy'lerle toplama
+
+**Bağlam:** Uzantı fiyat sayfaları artık örnek fiyatlar yerine sağlayıcıların yayımladığı gerçek kayıt ve yenileme fiyatlarını göstermelidir. Her fiyat, sağlayıcının sunduğu minimum kayıt/yenileme süresiyle birlikte tutulmalıdır.
+
+**Karar:** Her fiyat listesi kaynağı `IProviderTldPriceStrategy` uygular. Zamanlanmış `BackgroundService` stratejileri sınırlı paralellikle çalıştırır; her sağlayıcı sonucu doğrulanır ve yalnızca başarılı, boş olmayan bir liste sağlayıcı bazında atomik olarak değiştirilir. Başarısız çekim eski fiyatları silmez. PostgreSQL mevcut fiyatları, süreleri, para birimini, kaynak adresini, son başarılı çekim zamanını ve son hatayı tutar. `ITldCatalog` okuma sözleşmesi korunur.
+
+Fiyat kapsamı kayıt ve yenilemedir; transfer alınmaz. KDV ve kampanya bitiş tarihi saklanmaz. Sağlayıcının o anda sunduğu kampanya fiyatı güncel kayıt fiyatı kabul edilir. TLD kategorisi, popülerlik, açıklama, belge şartı ve benzeri metaveriler fiyat modelinde tutulmaz; ihtiyaç olursa ayrı bir şema değişikliğiyle eklenir.
+
+**Sonuçlar:** Arayüz katalog sözleşmesiyle güncel fiyatları kullanır; kaynaklardan biri geçici hata verdiğinde önceki fiyatlar korunur. Bedeli: her sağlayıcı sayfa/API biçimi değiştiğinde kendi stratejisi ve ayrıştırma testi güncellenmelidir. Uygulama birden fazla eşzamanlı örnekle çalıştırılırsa zamanlayıcı için veritabanı kilidi veya ayrı worker gerekir.
+
+## ADR-017: Katalog örnek verisini kaldır ve modelleri ayır
+
+**Bağlam:** Fiyat listesi çekim sistemi ve PostgreSQL kataloğu hazırlandıktan sonra örnek JSON verileri, mock kataloglar ve kaynağı seçen çalışma zamanı ayarları üretim yolunda gereksiz bir alternatif oluşturmaya devam ediyor. Büyük model dosyaları da farklı katman sorumluluklarını tek dosyada topluyor.
+
+**Karar:** Üretim uygulamasında uzantı fiyatları ve arama istatistikleri yalnızca PostgreSQL'den okunur. Sağlayıcı profilleri fiyat listesi stratejilerinin metadata'sından üretilir. `MockData` kaynakları ve mock katalog sınıfları tamamen silinir. Fiyat, sorgu ve sayfa modelleri ile katalog arayüzleri mevcut proje ve namespace yapıları içinde sınıf başına dosyalara ayrılır. Testlere özel küçük fixture'lar test projesinde kalabilir.
+
+**Sonuçlar:** Uygulama örnek veriye sessizce geri dönmez; kataloglar gerçek fiyat çekim ve veritabanı durumunu yansıtır. Testler production mock JSON'una bağlı kalmaz. Bedeli: PostgreSQL olmadan uygulama başlayamaz ve fiyat çekim worker'ı veritabanına ihtiyaç duyar.

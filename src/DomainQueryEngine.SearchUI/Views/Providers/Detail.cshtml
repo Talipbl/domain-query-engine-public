@@ -43,7 +43,6 @@
                             <th scope="col">@T["Tlds.Col.Tld"]</th>
                             <th scope="col" class="num">@T["TldDetail.Col.Registration"]</th>
                             <th scope="col" class="num">@T["TldDetail.Col.Renewal"]</th>
-                            <th scope="col" class="num">@T["TldDetail.Col.Transfer"]</th>
                             <th scope="col"><span class="sr-only">@T["Tlds.Compare"]</span></th>
                         </tr>
                     </thead>
@@ -63,7 +62,6 @@
                                 </th>
                                 <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Registration, ShowDetails: true)" /></td>
                                 <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Renewal)" /></td>
-                                <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Transfer)" /></td>
                                 <td><a href="@tldUrl" style="font-weight: 600; text-decoration: none; white-space: nowrap">@T["ProviderDetail.OtherProviders"] →</a></td>
                             </tr>
                         }
@@ -73,5 +71,5 @@
         </section>
     }
 
-    <partial name="Components/_DataNote" model="new DataNoteModel(Model.Prices.IsSample, Model.Prices.AsOf, Model.Prices.Rates, Model.AnyConverted)" />
+    <partial name="Components/_DataNote" model="new DataNoteModel(Model.Prices.AsOf, Model.Prices.Rates, Model.AnyConverted)" />
 </div>

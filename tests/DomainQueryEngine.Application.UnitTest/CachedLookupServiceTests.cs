@@ -1,4 +1,4 @@
-using DomainQueryEngine.Application.Lookup;
+using DomainQueryEngine.Application.DomainSearch;
 using DomainQueryEngine.Core;
 using DomainQueryEngine.Core.Abstractions;
 using DomainQueryEngine.Core.Entities;
@@ -45,10 +45,10 @@ namespace DomainQueryEngine.Application.Test
             Assert.Single(second);
         }
 
-        private static CachedLookupService Create(IDomainLookupStrategy strategy)
+        private static CachedLookupService Create(IDomainAvailabilityProvider strategy)
             => new(new LookupService(new[] { strategy }, new NullRepository()), new MemoryCache(new MemoryCacheOptions()));
 
-        private sealed class CountingStrategy : IDomainLookupStrategy
+        private sealed class CountingStrategy : IDomainAvailabilityProvider
         {
             private readonly bool _success;
             public CountingStrategy(bool success) => _success = success;

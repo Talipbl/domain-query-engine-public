@@ -11,6 +11,8 @@ namespace DomainQueryEngine.PostgreSQL
         public DbSet<Provider> Providers => Set<Provider>();
         public DbSet<DomainLookupResult> DomainLookupResults => Set<DomainLookupResult>();
         public DbSet<DomainVisit> DomainVisits => Set<DomainVisit>();
+        public DbSet<TldProviderPriceRecord> TldProviderPrices => Set<TldProviderPriceRecord>();
+        public DbSet<TldPriceSyncRecord> TldPriceSync => Set<TldPriceSyncRecord>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -18,6 +20,8 @@ namespace DomainQueryEngine.PostgreSQL
             modelBuilder.ApplyConfiguration(new DomainLookupResultConfiguration());
             modelBuilder.ApplyConfiguration(new DomainVisitConfiguration());
             modelBuilder.ApplyConfiguration(new ProviderConfiguration());
+            modelBuilder.ApplyConfiguration(new TldProviderPriceConfiguration());
+            modelBuilder.ApplyConfiguration(new TldPriceSyncConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

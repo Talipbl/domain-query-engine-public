@@ -2,8 +2,7 @@
 @{
     var tld = Model.Entry.Tld;
     var detail = Model.Detail;
-    var priced = detail.Rows.Count(r => r.Registration != null);
-    var description = CatalogText.Description(Model.Entry);
+    var priced = detail.Rows.Count(r => r.Registration != null || r.Renewal != null);
     ViewData["Title"] = T["TldDetail.Title", tld].Value;
     ViewData["Description"] = T["TldDetail.Description", tld, priced].Value;
     ViewData["Nav"] = "tlds";
@@ -17,10 +16,7 @@
     <div class="page-title">
         <div class="page-title__text">
             <h1>@T["TldDetail.Title", tld]</h1>
-            @if (!string.IsNullOrEmpty(description))
-            {
-                <p class="lead">@description @T["TldDetail.Lead", priced]</p>
-            }
+            <p class="lead">@T["TldDetail.Lead", priced]</p>
         </div>
         <form class="search-form search-form--compact" role="search" method="get" action="@Url.Action("Index", "Search")" style="flex: 0 1 440px">
             <input type="hidden" name="extension" value="@tld" />
@@ -46,23 +42,6 @@
                 <div class="stat__value">—</div>
             }
         </div>
-        <div class="stat">
-            <div class="stat__label">@T["TldDetail.Median"]</div>
-            <div class="stat__value">@(detail.MedianRegistration != null ? PriceFormatter.Format(detail.MedianRegistration) : "—")</div>
-            <div class="stat__note">@T["TldDetail.ProviderCount", priced]</div>
-        </div>
-        <div class="stat">
-            <div class="stat__label">@T["Tlds.Col.Document"]</div>
-            <div class="stat__value">@(Model.Entry.DocumentRequired switch { true => T["Document.Required"].Value, false => T["Document.NotRequired"].Value, _ => "—" })</div>
-            <div class="stat__note">@(Model.Entry.DocumentRequired switch { true => T["Document.RequiredNote"].Value, false => T["Document.NotRequiredNote"].Value, _ => T["Document.AskProvider"].Value })</div>
-        </div>
-        @if (!string.IsNullOrEmpty(Model.Entry.Registry))
-        {
-            <div class="stat">
-                <div class="stat__label">@T["TldDetail.Registry"]</div>
-                <div class="stat__value">@Model.Entry.Registry</div>
-            </div>
-        }
     </div>
 
     <section class="stack" style="gap: var(--space-3)" aria-labelledby="providers-title">
@@ -75,7 +54,6 @@
                         <th scope="col">@T["Common.Provider"]</th>
                         <th scope="col" class="num">@T["TldDetail.Col.Registration"]</th>
                         <th scope="col" class="num">@T["TldDetail.Col.Renewal"]</th>
-                        <th scope="col" class="num">@T["TldDetail.Col.Transfer"]</th>
                         <th scope="col"><span class="sr-only">@T["TldDetail.Col.Website"]</span></th>
                     </tr>
                 </thead>
@@ -95,14 +73,9 @@
                                         <badge kind="Campaign">@T["Badge.Campaign"]</badge>
                                     }
                                 </div>
-                                @if (Model.IsOutlier(row.Registration))
-                                {
-                                    <div class="small" style="color: var(--color-campaign); font-weight: 500; margin-top: 4px">@T["Price.Outlier"]</div>
-                                }
                             </th>
                             <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Registration, ShowDetails: true, Highlight: row.IsCheapest)" /></td>
                             <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Renewal)" /></td>
-                            <td class="num"><partial name="Components/_Offer" model="new OfferCellModel(row.Transfer)" /></td>
                             <td>
                                 @if (!string.IsNullOrEmpty(row.Provider.Website))
                                 {
@@ -116,50 +89,5 @@
         </div>
     </section>
 
-    <div class="split">
-        @if (Model.History.Count > 0)
-        {
-            <section class="card" aria-labelledby="history-title">
-                <div class="card__head">
-                    <h2 id="history-title" style="font-size: var(--text-xl)">@T["TldDetail.History.Title", Model.History.Count]</h2>
-                    @if (detail.IsSample)
-                    {
-                        <badge kind="Mock"></badge>
-                    }
-                </div>
-                <div class="bars" role="img" aria-label="@string.Join(", ", Model.History.Select(b => $"{b.Label} {PriceFormatter.Format(b.Point.Amount, "TRY")}"))">
-                    @foreach (var bar in Model.History)
-                    {
-                        <div class="bars__item@(bar.IsLatest ? " bars__item--latest" : "")">
-                            <span class="bars__value">@PriceFormatter.Number(bar.Point.Amount)</span>
-                            <div class="bars__bar" style="height: @bar.BarHeightPercent%"></div>
-                        </div>
-                    }
-                </div>
-                <div class="bars__labels" aria-hidden="true">
-                    @foreach (var bar in Model.History)
-                    {
-                        <span>@bar.Label</span>
-                    }
-                </div>
-                <p class="small muted" style="margin-top: var(--space-3)">@T["TldDetail.History.Note"]</p>
-            </section>
-        }
-
-        @if (Model.Entry.Faq.Count > 0)
-        {
-            <section class="card faq" aria-labelledby="faq-title">
-                <h2 id="faq-title" style="font-size: var(--text-xl); margin-bottom: var(--space-2)">@T["TldDetail.Faq"]</h2>
-                @for (var i = 0; i < Model.Entry.Faq.Count; i++)
-                {
-                    <details open="@(i == 0)">
-                        <summary>@CatalogText.Question(Model.Entry.Faq[i])</summary>
-                        <p>@CatalogText.Answer(Model.Entry.Faq[i])</p>
-                    </details>
-                }
-            </section>
-        }
-    </div>
-
-    <partial name="Components/_DataNote" model="new DataNoteModel(detail.IsSample, detail.AsOf, detail.Rates, Model.AnyConverted)" />
+    <partial name="Components/_DataNote" model="new DataNoteModel(detail.AsOf, detail.Rates, Model.AnyConverted)" />
 </div>

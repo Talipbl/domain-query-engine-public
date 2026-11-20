@@ -12,7 +12,7 @@ Bu dosya, bu depoda çalışan Claude (ve diğer geliştiriciler) için proje ö
 |---|---|
 | `src/DomainQueryEngine.Core` | Varlıklar, modeller, soyutlamalar (`IDomainLookupStrategy`, `ITldCatalog`, `IProviderCatalog`, `ISearchStatistics`, `IExchangeRateProvider`), yardımcılar. Başka projeye bağımlı değildir. |
 | `src/DomainQueryEngine.Application` | Sorgu orkestrasyonu (`LookupService`, önbellekli sürümü), fiyat karşılaştırma ve kur çevirme (`PriceComparisonService`), uzantı fiyat sayfaları (`TldPriceService`), arama kaydı. |
-| `src/DomainQueryEngine.Infrastructure` | Sağlayıcı başına strateji + parser (`Strategies/`, `Parsers/`), HTTP istemcisi, TCMB kur sağlayıcısı, gömülü örnek veri (`MockData/`) ve Mock kataloglar. |
+| `src/DomainQueryEngine.Infrastructure` | Sağlayıcı başına strateji + parser (`Strategies/`, `Parsers/`, `Catalog/`), HTTP istemcisi ve TCMB kur sağlayıcısı. |
 | `src/DomainQueryEngine.PostgreSQL` | EF Core `DbContext`, migration'lar, repository'ler, veritabanı istatistikleri. |
 | `src/DomainQueryEngine.SearchUI` | ASP.NET Core MVC (Razor + htmx) web uygulaması ve `/api/lookup` API'si. |
 | `tests/*` | Birim testleri ve canlı sitelere giden entegrasyon testleri. |
@@ -56,7 +56,7 @@ cd .\src\DomainQueryEngine.SearchUI; dotnet run
 - Fiyat, sayı ve tarih biçimi için `PriceFormatter` kullanılır (kültüre göre biçimler); elle `ToString("N2", tr-TR)` yazılmaz.
 - Renkler ve boşluklar `tokens.css` token'larıyla verilir; yeni renk eklenirse koyu tema karşılığı da eklenir.
 - Sayfalar JavaScript olmadan da çalışmalıdır; JS yalnızca iyileştirmedir.
-- Katalog verisi (uzantılar, sağlayıcılar) şimdilik Mock'tur ve arayüzlerin arkasındadır. Gerçek kaynağa geçiş `DataSource:*` ayarıyla ve yeni bir arayüz uygulamasıyla yapılır; view'lar değişmez.
+- Uzantı fiyatları ve arama istatistikleri PostgreSQL'den okunur; sağlayıcı profilleri kayıtlı fiyat listesi stratejilerinden üretilir. Fiyat listeleri zamanlanmış arka plan servisiyle yenilenir.
 - Değişiklikten sonra birim testleri çalıştırılır; UI değişikliği tarayıcıda (açık/koyu tema, TR/EN, mobil genişlik) kontrol edilir.
 
 ### Git
